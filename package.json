@@ -1,0 +1,52 @@
+{
+  "name": "gamelib",
+  "version": "1.0.0",
+  "description": "A simple set of TS classes to manage game development.",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/hhenrichsen/gamelib",
+    "directory": ".git"
+  },
+  "scripts": {
+    "build": "webpack",
+    "build:watch": "webpack watch -c ./webpack.config.js",
+    "build:prod": "webpack -c ./webpack.prod.js",
+    "deploy": "npm run build:prod && gh-pages -d dist",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "check": "prettier --check \"src/**/*.ts\"",
+    "lint": ""
+  },
+  "author": "Hunter Henrichsen <hunter.henrichsen@gmail.com>",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "gh-pages": "^3.1.0",
+    "typescript": "^4.2.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.13.10",
+    "@babel/preset-env": "^7.13.10",
+    "@babel/preset-typescript": "^7.13.0",
+    "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "@typescript-eslint/parser": "^4.18.0",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "copy-webpack-plugin": "^8.0.0",
+    "eslint": "^7.22.0",
+    "eslint-config-prettier": "^8.1.0",
+    "html-webpack-plugin": "^5.3.1",
+    "lint-staged": "^10.5.4",
+    "prettier": "2.2.1",
+    "simple-git-hooks": "^2.2.0",
+    "source-map-loader": "^2.0.1",
+    "ts-loader": "^8.0.18",
+    "webpack": "^5.26.2",
+    "webpack-cli": "^4.5.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.ts": "prettier --write"
+  }
+}
