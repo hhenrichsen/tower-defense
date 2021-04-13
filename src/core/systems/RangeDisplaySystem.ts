@@ -1,10 +1,7 @@
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import { Component } from "../ecs/Component";
-import { PositionComponent, PositionEntity } from "../components/Position";
-import { RotationComponent, RotationEntity } from "../components/Rotation";
-import RotationDebuggerComponent from "../components/RotationDebugger";
-import Vector2 from "../geometry/Vector2";
+import { PositionComponent } from "../components/Position";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import {
   RangeDisplayComponent,

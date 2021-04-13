@@ -1,4 +1,3 @@
-import { PositionComponent } from "../components/Position";
 import { LifetimeComponent, LifetimeEntity } from "../components/Lifetime";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";

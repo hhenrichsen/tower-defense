@@ -3,7 +3,6 @@ import {
   VelocityTargetComponent,
   VelocityTargetEntity,
 } from "../components/PositionTarget";
-import { RotationComponent } from "../components/Rotation";
 import { VelocityComponent } from "../components/Velocity";
 import { getDynamic } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";

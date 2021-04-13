@@ -5,7 +5,6 @@ import TextRenderComponent, {
 } from "../components/TextRender";
 import { Component } from "../ecs/Component";
 import { PositionComponent } from "../components/Position";
-import { RotationComponent } from "../components/Rotation";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { getDynamic } from "../data/DynamicConstant";
 

@@ -1,6 +1,5 @@
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
-import Vector2 from "../geometry/Vector2";
 
 export interface HealthData extends Record<string, unknown> {
   health: number; // health units

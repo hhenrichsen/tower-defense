@@ -1,15 +1,9 @@
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
-import { Prefab, PrefabSpawner } from "../ecs/Prefab";
+import { PrefabSpawner } from "../ecs/Prefab";
 import { IntervalStorage } from "../ecs/System";
-import Vector2 from "../geometry/Vector2";
 import { testPrefab } from "../prefabs/TestPrefab";
-import { random } from "../Random";
-import { LifetimeComponent } from "./Lifetime";
-import { PositionComponent, PositionEntity } from "./Position";
-import { RotationComponent } from "./Rotation";
-import SpriteComponent from "./Sprite";
-import { VelocityComponent } from "./Velocity";
+import { PositionEntity } from "./Position";
 
 export interface SpawnerData extends Record<string, unknown>, IntervalStorage {
   prefab: PrefabSpawner;

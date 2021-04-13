@@ -4,7 +4,6 @@ import SpriteComponent, { SpriteEntity } from "../components/Sprite";
 import { Component } from "../ecs/Component";
 import { PositionComponent } from "../components/Position";
 import { RotationComponent } from "../components/Rotation";
-import { VirtualCoordinateSystem } from "../rendering/VirtualCoordinate";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { getDynamic } from "../data/DynamicConstant";
 
