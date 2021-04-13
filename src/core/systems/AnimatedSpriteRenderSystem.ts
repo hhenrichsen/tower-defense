@@ -36,7 +36,8 @@ export class AnimatedSpriteRenderSystem extends BaseSystem {
       getDynamic(rotation.rotation),
       animatedsprite.size,
       animatedsprite.frameSize,
-      animatedsprite.frame
+      animatedsprite.frame,
+      getDynamic(animatedsprite.opacity)
     );
   }
 

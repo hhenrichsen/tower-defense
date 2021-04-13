@@ -1,3 +1,4 @@
+import { DynamicConstant } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
 import { Vector2 } from "../geometry/Vector2";
@@ -12,6 +13,7 @@ export interface AnimatedSpriteData extends Record<string, unknown> {
   frames: Array<number>; // in seconds per frame
   frame: number;
   currentDuration: number; // in seconds
+  opacity: DynamicConstant<number>;
 }
 
 export type AnimatedSpriteEntity = Entity &
@@ -36,6 +38,7 @@ export class AnimatedSprite extends Component {
       frames: [1, 1],
       frame: 0,
       currentDuration: 0,
+      opacity: 1,
     };
   }
 }

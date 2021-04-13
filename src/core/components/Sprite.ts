@@ -4,10 +4,12 @@ import Vector2 from "../geometry/Vector2";
 import { PositionEntity } from "./Position";
 import { RotationEntity } from "./Rotation";
 import { Texture } from "../rendering/Texture";
+import { DynamicConstant } from "../data/DynamicConstant";
 
 export interface SpriteData extends Record<string, unknown> {
   size: Vector2; // in virtual coordinates
   source: Texture;
+  opacity: DynamicConstant<number>;
 }
 
 export type SpriteEntity = Entity &
@@ -30,7 +32,7 @@ export class Sprite extends Component {
   }
 
   protected defaultData(): Partial<SpriteData> {
-    return { source: Sprite.NO_TEXTURE, size: Sprite.DEFAULT_SIZE };
+    return { source: Sprite.NO_TEXTURE, size: Sprite.DEFAULT_SIZE, opacity: 1 };
   }
 }
 

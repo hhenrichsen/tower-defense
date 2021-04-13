@@ -23,7 +23,8 @@ export class SpriteRenderSystem extends BaseSystem {
       sprite.source,
       getDynamic(position.position),
       sprite.size,
-      getDynamic(rotation.rotation)
+      getDynamic(rotation.rotation),
+      getDynamic(sprite.opacity)
     );
   }
 

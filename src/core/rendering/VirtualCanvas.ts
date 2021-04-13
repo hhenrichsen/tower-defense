@@ -55,11 +55,13 @@ export class VirtualCanvas {
     texture: Texture,
     position: Vector2,
     size: Vector2,
-    rotation = 0
+    rotation = 0,
+    opacity = 1
   ): void {
     if (!texture.ready) {
       return;
     }
+    this.context.globalAlpha = opacity;
     const adjustedPosition = this.vcs.translate(position);
     const adjustedSize = this.vcs.translate(size);
     this.context.save();
@@ -74,6 +76,7 @@ export class VirtualCanvas {
       adjustedSize.y
     );
     this.context.restore();
+    this.context.globalAlpha = 1;
   }
 
   public drawCircle(
@@ -115,11 +118,13 @@ export class VirtualCanvas {
     rotation: number,
     size: Vector2,
     frameSize: Vector2,
-    frame: number
+    frame: number,
+    opacity = 1
   ): void {
     if (!texture.ready) {
       return;
     }
+    this.context.globalAlpha = opacity;
     const adjustedPosition = this.vcs.translate(position);
     const adjustedSize = this.vcs.translate(size);
     this.context.save();
@@ -138,6 +143,7 @@ export class VirtualCanvas {
       adjustedSize.y
     );
     this.context.restore();
+    this.context.globalAlpha = 1;
   }
 
   public rectangle(
