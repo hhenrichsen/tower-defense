@@ -17,7 +17,7 @@ import { VelocitySystem } from "../systems/VelocitySystem";
 import { VelocityTargetSystem } from "../systems/VelocityTargetSystem";
 
 export abstract class BaseGameModel {
-  protected eventQueue: Array<Event> = [];
+  protected eventQueue: Array<string> = [];
   protected ecs: ECSManager;
   protected virtualCanvas: VirtualCanvas;
   protected lastTime: number;
@@ -50,10 +50,10 @@ export abstract class BaseGameModel {
         new Vector2(evt.x, evt.y).subtract(offset)
       );
     });
-    element.addEventListener("mousedown", (evt) => {
+    element.addEventListener("mousedown", (_evt) => {
       this.mouse.isLeftMouseDown = true;
     });
-    element.addEventListener("mouseup", (evt) => {
+    element.addEventListener("mouseup", (_evt) => {
       this.mouse.isLeftMouseDown = false;
     });
   }
@@ -112,7 +112,7 @@ export abstract class BaseGameModel {
     this.onUpdate(deltaTime);
   }
 
-  protected onUpdate(deltaTime: number): void {
+  protected onUpdate(_deltaTime: number): void {
     return;
   }
 
