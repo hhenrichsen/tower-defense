@@ -15,15 +15,15 @@ export class VelocityTargetSystem extends BaseSystem {
   protected updateEntity(deltaTime: number, entity: Entity): void {
     const targetEntity = entity as VelocityTargetEntity;
     const { position, velocity, velocitytarget } = targetEntity.data;
-    const target = getDynamic<Vector2>(velocitytarget.target);
-    const relativePosition = target.subtract(position.position);
+    const target = getDynamic(velocitytarget.target);
+    const relativePosition = target.subtract(getDynamic(position.position));
     const direction = relativePosition.normalize();
     const perSecond = direction.normalize().scale(velocitytarget.velocity);
 
     if (
       this.checkRelativeThreshold(
         target,
-        position.position,
+        getDynamic(position.position),
         velocitytarget.strictness
       )
     ) {

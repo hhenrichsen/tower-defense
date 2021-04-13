@@ -11,6 +11,7 @@ import {
   RangeDisplayEntity,
 } from "../components/RangeDisplay";
 import { RangeComponent } from "../components/Range";
+import { getDynamic } from "../data/DynamicConstant";
 
 export class RangeDisplaySystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
@@ -30,7 +31,7 @@ export class RangeDisplaySystem extends BaseSystem {
       lineWidth,
     } = targetEntity.data.rangedisplay;
     this.virtualCanvas.drawCircle(
-      position,
+      getDynamic(position),
       range,
       fillStyle,
       strokeStyle,

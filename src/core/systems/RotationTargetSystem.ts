@@ -18,10 +18,10 @@ export class RotationTargetSystem extends BaseSystem {
     const rotation = rotationEntity.data.rotation;
 
     // Getting some important values
-    const relativeTarget = getDynamic<Vector2>(rotationTarget.target).subtract(
-      position.position
+    const relativeTarget = getDynamic(rotationTarget.target).subtract(
+      getDynamic(position.position)
     );
-    const currentRotation = rotation.rotation;
+    const currentRotation = getDynamic(rotation.rotation);
     const currentRotationVector = Vector2.fromAngle(currentRotation);
     const targetRotation = relativeTarget.toAngle();
 
@@ -42,7 +42,7 @@ export class RotationTargetSystem extends BaseSystem {
         Math.min(rotationTarget.turnRate * deltaTime, desiredRotation) *
         rotationDirection;
       rotationEntity.data.rotation.rotation =
-        (rotation.rotation + deltaRotation) % 360;
+        (getDynamic(rotation.rotation) + deltaRotation) % 360;
     }
   }
 

@@ -6,6 +6,7 @@ import { PositionComponent } from "../components/Position";
 import { RotationComponent } from "../components/Rotation";
 import { VirtualCoordinateSystem } from "../rendering/VirtualCoordinate";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
+import { getDynamic } from "../data/DynamicConstant";
 
 export class SpriteRenderSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
@@ -20,9 +21,9 @@ export class SpriteRenderSystem extends BaseSystem {
     const { sprite, rotation, position } = spriteEntity.data;
     this.virtualCanvas.drawImage(
       sprite.source,
-      position.position,
+      getDynamic(position.position),
       sprite.size,
-      rotation.rotation
+      getDynamic(rotation.rotation)
     );
   }
 

@@ -7,6 +7,7 @@ import { Component } from "../ecs/Component";
 import { PositionComponent } from "../components/Position";
 import { RotationComponent } from "../components/Rotation";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
+import { getDynamic } from "../data/DynamicConstant";
 
 export class TextRenderSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
@@ -21,7 +22,7 @@ export class TextRenderSystem extends BaseSystem {
     const { textrender, position } = targetEntity.data;
     this.virtualCanvas.drawText(
       textrender.textSource(),
-      position.position,
+      getDynamic(position.position),
       textrender.style,
       textrender.size
     );

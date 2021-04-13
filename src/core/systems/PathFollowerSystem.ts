@@ -26,7 +26,7 @@ export class PathFollowerSystem extends BaseSystem {
     if (
       this.checkRelativeThreshold(
         target,
-        position.position,
+        getDynamic(position.position),
         velocitytarget.strictness
       ) &&
       pathfollower.point < path.length

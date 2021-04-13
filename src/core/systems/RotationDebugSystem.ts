@@ -6,6 +6,7 @@ import { RotationComponent, RotationEntity } from "../components/Rotation";
 import RotationDebuggerComponent from "../components/RotationDebugger";
 import Vector2 from "../geometry/Vector2";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
+import { getDynamic } from "../data/DynamicConstant";
 
 export class RotationDebugSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
@@ -19,9 +20,9 @@ export class RotationDebugSystem extends BaseSystem {
     const targetEntity = entity as RotationEntity & PositionEntity;
     const { rotation } = targetEntity.data.rotation;
     const { position } = targetEntity.data.position;
-    const rotVec = Vector2.fromAngle(rotation).scale(2);
-    const vecTarget = position.add(rotVec);
-    this.virtualCanvas.line(position, vecTarget, "#ff0000");
+    const rotVec = Vector2.fromAngle(getDynamic(rotation)).scale(2);
+    const vecTarget = getDynamic(position).add(rotVec);
+    this.virtualCanvas.line(getDynamic(position), vecTarget, "#ff0000");
   }
 
   protected getBasisComponent(): Component | null {

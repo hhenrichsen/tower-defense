@@ -1,8 +1,9 @@
+import { DynamicConstant } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
 
 export interface RotationData extends Record<string, unknown> {
-  rotation: number; // degrees
+  rotation: DynamicConstant<number>; // degrees
 }
 
 export type RotationEntity = Entity & { data: { rotation: RotationData } };

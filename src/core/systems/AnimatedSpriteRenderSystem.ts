@@ -7,6 +7,7 @@ import AnimatedSpriteComponent, {
   AnimatedSpriteEntity,
 } from "../components/AnimatedSprite";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
+import { getDynamic } from "../data/DynamicConstant";
 
 export class AnimatedSpriteRenderSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
@@ -31,8 +32,8 @@ export class AnimatedSpriteRenderSystem extends BaseSystem {
     }
     this.virtualCanvas.drawImageAnimated(
       animatedsprite.source,
-      position.position,
-      rotation.rotation,
+      getDynamic(position.position),
+      getDynamic(rotation.rotation),
       animatedsprite.size,
       animatedsprite.frameSize,
       animatedsprite.frame

@@ -75,7 +75,12 @@ export class GameModel extends BaseGameModel {
       target: () => this.mouse.mouseCoordinate,
     });
     this.ecs.addComponent(entityID, PathFollowerComponent, {
-      path: [new Vector2(1, 1), new Vector2(3, 35), new Vector2(40, 40)],
+      path: [
+        new Vector2(1, 1),
+        new Vector2(3, 35),
+        new Vector2(40, 40),
+        () => this.mouse.mouseCoordinate,
+      ],
     });
     this.ecs.addComponent(entityID, AnimatedSpriteComponent, {
       source: new Texture("assets/testAnim.png", new Vector2(768, 32)),
