@@ -15,11 +15,11 @@ export class VelocitySystem extends BaseSystem {
     );
   }
 
-  protected getBasisComponent(): Component {
+  getBasisComponent(): Component {
     return VelocityComponent;
   }
 
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
     return set;

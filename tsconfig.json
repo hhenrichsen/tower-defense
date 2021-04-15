@@ -3,6 +3,7 @@
     "outDir": "./dist/",
     "noImplicitAny": true,
     "module": "none",
+    "moduleResolution": "node",
     "target": "es6",
     "sourceMap": true,
     "allowJs": true,

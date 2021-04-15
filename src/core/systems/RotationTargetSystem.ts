@@ -54,11 +54,11 @@ export class RotationTargetSystem extends BaseSystem {
     return Math.abs(a - b) < threshold;
   }
 
-  protected getBasisComponent(): Component {
+  getBasisComponent(): Component {
     return RotationTargetComponent;
   }
 
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
     set.add(RotationComponent);

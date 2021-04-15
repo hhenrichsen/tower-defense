@@ -8,7 +8,7 @@ export class SpawnerSystem extends BaseSystem {
   protected updateEntity(elapsedTime: number, entity: Entity): void {
     const targetEntity = entity as SpawnerEntity;
     const { spawner } = targetEntity.data;
-    while (this.checkInterval(elapsedTime, targetEntity.data.spawner)) {
+    while (this.checkInterval(elapsedTime, spawner)) {
       for (let spawn = 0; spawn < spawner.spawnCount; spawn++) {
         const spawn = spawner.prefab(targetEntity);
         spawn.create(this.manager);
@@ -16,11 +16,11 @@ export class SpawnerSystem extends BaseSystem {
     }
   }
 
-  protected getBasisComponent(): Component {
+  getBasisComponent(): Component {
     return SpawnerComponent;
   }
 
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
     return set;

@@ -95,6 +95,9 @@ export class Vector2 {
 
   normalize(): Vector2 {
     const magnitude = this.magnitude();
+    if (magnitude == 0) {
+      return Vector2.ZERO;
+    }
     return new Vector2(this.x / magnitude, this.y / magnitude);
   }
 
@@ -163,6 +166,25 @@ export class Vector2 {
 
   toString(): string {
     return `Vector2(x: ${this.x}, y: ${this.y})`;
+  }
+
+  public equals(other: unknown): boolean {
+    return (
+      other !== undefined &&
+      typeof other === "object" &&
+      Object.prototype.hasOwnProperty.call(other, "_x") &&
+      Object.prototype.hasOwnProperty.call(other, "_y") &&
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore We literally test for it above
+      other.x === this.x &&
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore We literally test for it above
+      other.y === this.y
+    );
+  }
+
+  public hashCode(): number {
+    return 31 * this.x + this.y;
   }
 }
 

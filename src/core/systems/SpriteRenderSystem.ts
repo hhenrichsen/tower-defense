@@ -27,11 +27,11 @@ export class SpriteRenderSystem extends BaseSystem {
     );
   }
 
-  protected getBasisComponent(): Component | null {
+  getBasisComponent(): Component | null {
     return SpriteComponent;
   }
 
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
     set.add(RotationComponent);

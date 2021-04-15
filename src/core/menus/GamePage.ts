@@ -1,40 +1,50 @@
 import { Page } from "./Page";
 import { BaseGameModel } from "../data/BaseGameModel";
+import { Router } from "./Router";
 
 export abstract class GamePage<T extends BaseGameModel> implements Page<T> {
   protected gameModel: T;
+  private focused = true;
 
   constructor(gameModel: T) {
     this.gameModel = gameModel;
   }
 
-  load(element: HTMLElement): void {
+  load(element: HTMLElement, router: Router<T>): void {
     this.gameModel.install(element);
   }
 
   init(): void {
     this.preInit();
-    requestAnimationFrame(this.loop());
+    // window.onfocus = () => {
+    //   this.focused = true;
+    //   console.info("Refocused window.");
+    //   this.gameModel.findCanvas();
+    // }
+    // window.onblur = () => {
+    //   this.focused = false;
+    //   console.info("Unfocused window.")
+    // }
+    requestAnimationFrame(this.loopfn);
   }
 
   protected preInit(): void {
     this.gameModel.preStart();
   }
 
-  public canTransition(nextPage: string): boolean {
+  public canTransition(router: Router<T>, nextPage: string): boolean {
     return true;
   }
 
-  private loop(): FrameRequestCallback {
-    const fn = (totalTime: number) => {
+  private loopfn: FrameRequestCallback = (totalTime: number) => {
+    if (this.focused) {
       this.gameModel.updateRawTime(totalTime);
+    }
 
-      if (this.gameModel.isRunning()) {
-        requestAnimationFrame(fn);
-      }
-    };
-    return fn;
-  }
+    if (this.gameModel.isRunning()) {
+      requestAnimationFrame(this.loopfn);
+    }
+  };
 
   protected preCleanup(): void {
     return;

@@ -11,6 +11,21 @@ export interface System {
     data?: Record<string, unknown>
   ): void;
   setManager(manager: ECSManager): void;
+
+  /**
+   * @returns The component that triggers interest in an entity.
+   */
+  getBasisComponent(): Component | null;
+
+  /**
+   * @returns The components that must already be present on the entity.
+   */
+  getRequiredComponents(): Set<Component>;
+
+  /**
+   * @returns The components that must not be present on the entity.
+   */
+  getExcludedComponents(): Set<Component>;
 }
 
 export interface IntervalStorage {
@@ -108,29 +123,34 @@ export abstract class BaseSystem implements System {
   }
 
   public update(deltaTime: number, model: BaseGameModel): void {
+    this.systemUpdate(deltaTime, model);
     for (const entity of this.entities) {
       this.updateEntity(deltaTime, entity, model);
     }
   }
 
+  protected systemUpdate(deltaTime: number, model: BaseGameModel): void {
+    return;
+  }
+
   /**
    * @returns The component that triggers interest in an entity.
    */
-  protected getBasisComponent(): Component | null {
+  getBasisComponent(): Component | null {
     return null;
   }
 
   /**
    * @returns The components that must already be present on the entity.
    */
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     return new Set();
   }
 
   /**
    * @returns The components that must not be present on the entity.
    */
-  protected getExcludedComponents(): Set<Component> {
+  getExcludedComponents(): Set<Component> {
     return new Set();
   }
 

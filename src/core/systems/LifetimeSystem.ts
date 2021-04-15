@@ -13,7 +13,7 @@ export class LifetimeSystem extends BaseSystem {
     }
   }
 
-  protected getBasisComponent(): Component {
+  getBasisComponent(): Component {
     return LifetimeComponent;
   }
 }

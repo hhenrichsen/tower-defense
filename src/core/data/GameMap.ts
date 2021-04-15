@@ -1,24 +1,35 @@
 import { Entity } from "../../core/ecs/Entity";
 import Vector2 from "../../core/geometry/Vector2";
+import { Pathable } from "./Pathable";
 
-export class GameMap {
-  private positions: Map<Vector2, Entity>;
+export class GameMap implements Pathable {
+  private positions: Map<string, Entity>;
   private minimumBound: Vector2;
   private maximumBound: Vector2;
 
+  constructor(minimum: Vector2, maximum: Vector2) {
+    this.positions = new Map();
+    this.minimumBound = minimum;
+    this.maximumBound = maximum;
+  }
+
+  public clear(): void {
+    this.positions.clear();
+  }
+
   public getEntityAt(position: Vector2): Entity | null {
-    if (this.positions.has(position)) {
-      return this.positions.get(position);
+    if (this.positions.has(position.toString())) {
+      return this.positions.get(position.toString());
     }
     return null;
   }
 
   public hasEntityAt(position: Vector2): boolean {
-    return this.positions.has(position);
+    return this.positions.has(position.toString());
   }
 
   public createEntityLink(position: Vector2, entity: Entity): void {
-    this.positions.set(position, entity);
+    this.positions.set(position.toString(), entity);
   }
 
   public getNeighbors(position: Vector2): Array<Entity> {
@@ -45,5 +56,9 @@ export class GameMap {
       }
     }
     return results;
+  }
+
+  isBlocked(v: Vector2): boolean {
+    return this.hasEntityAt(v);
   }
 }

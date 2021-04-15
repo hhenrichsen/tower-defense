@@ -4,11 +4,14 @@ export class Texture {
   size: Vector2;
   el: HTMLImageElement;
   ready = false;
-  constructor(texture: string, size: Vector2) {
+  constructor(texture: string, size?: Vector2) {
     this.el = new Image();
     this.el.src = texture;
-    this.el.addEventListener("load", () => {
+    this.el.addEventListener("load", (evt) => {
       this.ready = true;
+      if (!size) {
+        this.size = new Vector2(this.el.naturalWidth, this.el.naturalHeight);
+      }
     });
   }
 

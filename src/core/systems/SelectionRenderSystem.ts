@@ -1,16 +1,14 @@
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import { Component } from "../ecs/Component";
-import { PositionComponent } from "../components/Position";
+import { PositionComponent, PositionEntity } from "../components/Position";
+import { RotationComponent, RotationEntity } from "../components/Rotation";
+import { SelectedComponent } from "../components/Selected";
+import Vector2 from "../geometry/Vector2";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
-import {
-  RangeDisplayComponent,
-  RangeDisplayEntity,
-} from "../components/RangeDisplay";
-import { RangeComponent } from "../components/Range";
 import { getDynamic } from "../data/DynamicConstant";
 
-export class RangeDisplaySystem extends BaseSystem {
+export class SelectionSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
 
   constructor(virtualCanvas: VirtualCanvas) {
@@ -19,31 +17,23 @@ export class RangeDisplaySystem extends BaseSystem {
   }
 
   protected updateEntity(deltaTime: number, entity: Entity): void {
-    const targetEntity = entity as RangeDisplayEntity;
+    const targetEntity = entity as PositionEntity;
     const { position } = targetEntity.data.position;
-    const { range } = targetEntity.data.range;
-    const {
-      strokeStyle,
-      fillStyle,
-      lineWidth,
-    } = targetEntity.data.rangedisplay;
     this.virtualCanvas.drawCircle(
       getDynamic(position),
-      range,
-      fillStyle,
-      strokeStyle,
-      lineWidth >= 1 ? lineWidth : undefined
+      1,
+      "#ff000000",
+      "#ffff00"
     );
   }
 
   getBasisComponent(): Component | null {
-    return RangeDisplayComponent;
+    return SelectedComponent;
   }
 
   getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
-    set.add(RangeComponent);
     return set;
   }
 }

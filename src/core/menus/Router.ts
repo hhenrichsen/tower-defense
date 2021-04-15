@@ -13,7 +13,7 @@ export interface Router<T> {
 }
 
 export class SimpleRouter<T> implements Router<T> {
-  private _currentPage = undefined as Page<T>;
+  private _currentPage: Page<T> = undefined as Page<T>;
   private _transitionData: Record<string, unknown> = {};
   private _pages: Record<string, Page<T>> = {};
   private _history: Array<string> = [];
@@ -53,12 +53,12 @@ export class SimpleRouter<T> implements Router<T> {
       purge = false,
       data?: Record<string, unknown>
     ) {
-      if (this._pages[id] === undefined) {
+      if (this._pages[id] === undefined || this._pages[id] === null) {
         return;
       }
       if (
         this._currentPage === undefined ||
-        this._currentPage.canTransition(id)
+        this._currentPage.canTransition(this, id)
       ) {
         if (purge) {
           this._history = [];
@@ -70,8 +70,8 @@ export class SimpleRouter<T> implements Router<T> {
         el.innerHTML = "";
         el.classList.forEach((it) => el.classList.remove(it));
         el.classList.add(id);
-        this._currentPage.load(el, state);
-        this._currentPage.init(state);
+        this._currentPage.load(el, this, state);
+        this._currentPage.init(this, state);
       }
     };
     fn = fn.bind(this);
@@ -81,7 +81,7 @@ export class SimpleRouter<T> implements Router<T> {
   previous(state: T): void {
     const prev = this._history.slice(-2)[0];
     if (prev !== undefined) {
-      this._currentPage.cleanup(state);
+      this._currentPage.cleanup(this, state);
       this._history.splice(-2, 2);
       this.requestTransition(prev, false);
     }

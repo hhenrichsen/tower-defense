@@ -25,11 +25,11 @@ export class RotationDebugSystem extends BaseSystem {
     this.virtualCanvas.line(getDynamic(position), vecTarget, "#ff0000");
   }
 
-  protected getBasisComponent(): Component | null {
+  getBasisComponent(): Component | null {
     return RotationDebuggerComponent;
   }
 
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
     set.add(RotationComponent);

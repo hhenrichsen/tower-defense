@@ -6,8 +6,8 @@ export interface PersistedData {
 export const DEFAULT_PERSISTED_DATA: PersistedData = {
   actions: ["upgrade", "sell", "nextWave"],
   keyMap: {
-    u: "upgrade",
-    s: "sell",
-    g: "nextWave",
+    upgrade: "u",
+    sell: "s",
+    start: "g",
   },
 };

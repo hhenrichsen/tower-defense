@@ -21,7 +21,7 @@ export class AnimatedSpriteRenderSystem extends BaseSystem {
     const targetEntity = entity as AnimatedSpriteEntity;
     const { animatedsprite, rotation, position } = targetEntity.data;
     animatedsprite.currentDuration += deltaTime;
-    if (
+    while (
       animatedsprite.currentDuration >
       animatedsprite.frames[animatedsprite.frame]
     ) {
@@ -41,11 +41,11 @@ export class AnimatedSpriteRenderSystem extends BaseSystem {
     );
   }
 
-  protected getBasisComponent(): Component | null {
+  getBasisComponent(): Component | null {
     return AnimatedSpriteComponent;
   }
 
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
     set.add(RotationComponent);

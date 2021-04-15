@@ -7,7 +7,7 @@ import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import CardinalConnectedSpriteComponent, {
   CardinalConnectedSpriteEntity,
 } from "../components/CardinalConnectedSprite";
-import { GameMap } from "../../content/types/GameMap";
+import { GameMap } from "../data/GameMap";
 
 export class AnimatedSpriteRenderSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
@@ -22,17 +22,17 @@ export class AnimatedSpriteRenderSystem extends BaseSystem {
     const { cardinalconnectedsprite, rotation, position } = targetEntity.data;
   }
 
-  protected getBasisComponent(): Component | null {
+  getBasisComponent(): Component | null {
     return CardinalConnectedSpriteComponent;
   }
 
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
     return set;
   }
 
-  protected getExcludedComponents(): Set<Component> {
+  getExcludedComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(RotationComponent);
     return set;

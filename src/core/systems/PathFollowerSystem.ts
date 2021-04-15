@@ -49,11 +49,11 @@ export class PathFollowerSystem extends BaseSystem {
     return Math.abs(a.x - b.x) < threshold && Math.abs(a.y - b.y) < threshold;
   }
 
-  protected getBasisComponent(): Component {
+  getBasisComponent(): Component {
     return PathFollowerComponent;
   }
 
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
     set.add(RotationTargetComponent);

@@ -1,3 +1,4 @@
+import { sys } from "typescript";
 import { BaseGameModel } from "../data/BaseGameModel";
 import { Component } from "./Component";
 import { Entity } from "./Entity";
@@ -8,6 +9,7 @@ export class ECSManager {
   private entities: Map<number, Entity>;
   private entityComponents: Map<string, Array<number>>;
   private systems: Map<number, Set<System>>;
+  private interestedSystems: Map<string, Set<System>>;
   private allSystems: Set<System>;
   private systemOrder: Array<number>;
 
@@ -18,6 +20,7 @@ export class ECSManager {
     this.allSystems = new Set();
     this.systemOrder = [];
     this.update = this.update.bind(this);
+    this.interestedSystems = new Map();
   }
 
   public createEntity(
@@ -37,6 +40,13 @@ export class ECSManager {
     }
     this.systems.get(wave).add(system);
     this.allSystems.add(system);
+    const basis = system.getBasisComponent();
+    if (basis !== null) {
+      if (!this.interestedSystems.has(basis.getName())) {
+        this.interestedSystems.set(basis.getName(), new Set());
+      }
+      this.interestedSystems.get(basis.getName()).add(system);
+    }
     system.setManager(this);
   }
 
@@ -66,16 +76,16 @@ export class ECSManager {
       return;
     }
     const entity = this.entities.get(entityID);
-    if (!(component.getName() in entity.data)) {
-      entity.data[component.getName()] = component.init(initialData);
-      for (const system of this.allSystems) {
+    entity.data[component.getName()] = component.init(initialData);
+    if (this.interestedSystems.get(component.getName()) !== undefined) {
+      for (const system of this.interestedSystems.get(component.getName())) {
         system.notify(component.getName(), entity);
       }
-      if (!this.entityComponents.has(component.getName())) {
-        this.entityComponents.set(component.getName(), []);
-      }
-      this.entityComponents.get(component.getName()).push(entityID);
     }
+    if (!this.entityComponents.has(component.getName())) {
+      this.entityComponents.set(component.getName(), []);
+    }
+    this.entityComponents.get(component.getName()).push(entityID);
   }
 
   public getEntity(entityID: number): Entity | null {
@@ -85,7 +95,18 @@ export class ECSManager {
     return null;
   }
 
-  public getEntitiesWithComponent(componentName: string): Array<Entity> | null {
+  public getEntityIDsWithComponent(componentName: string): Array<number> {
+    if (this.entityComponents.has(componentName)) {
+      const res: Array<number> = [];
+      for (const id of this.entityComponents.get(componentName)) {
+        res.push(id);
+      }
+      return res;
+    }
+    return [];
+  }
+
+  public getEntitiesWithComponent(componentName: string): Array<Entity> {
     if (this.entityComponents.has(componentName)) {
       const res: Array<Entity> = [];
       for (const id of this.entityComponents.get(componentName)) {
@@ -93,7 +114,7 @@ export class ECSManager {
       }
       return res;
     }
-    return null;
+    return [];
   }
 
   public removeComponent(entityID: number, component: Component): void {
@@ -110,7 +131,18 @@ export class ECSManager {
     if (!this.entityComponents.has(component.getName())) {
       this.entityComponents.set(component.getName(), []);
     }
-    this.entityComponents.get(component.getName()).push(entityID);
+    this.entityComponents.set(
+      component.getName(),
+      this.entityComponents
+        .get(component.getName())
+        .filter((ent) => ent !== entityID)
+    );
+    if (this.interestedSystems.has(component.getName())) {
+      const systems = this.interestedSystems.get(component.getName());
+      for (const system of systems) {
+        system.notify("__delete", this.entities.get(entityID));
+      }
+    }
   }
 
   public update(elapsedTime: number, model: BaseGameModel): void {

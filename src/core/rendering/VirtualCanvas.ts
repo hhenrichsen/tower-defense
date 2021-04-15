@@ -19,15 +19,30 @@ export class VirtualCanvas {
   public install(element: HTMLElement): void {
     const canvas = document.createElement("canvas");
     this.canvas = canvas;
+    this.initCanvas();
+    element.appendChild(canvas);
+    this.parent = element;
+    this.installed = true;
+    this.resize();
+  }
+
+  private initCanvas() {
+    const canvas = this.canvas;
     this.context = this.canvas.getContext("2d");
     canvas.width = this.virtualSize.x;
     canvas.height = this.virtualSize.y;
     canvas.id = "canvas";
-    element.appendChild(canvas);
-    element.addEventListener("resize", this.resize);
-    this.parent = element;
-    this.installed = true;
-    this.resize();
+    canvas.addEventListener("resize", this.resize);
+  }
+
+  public findCanvas() {
+    const el = document.getElementById("canvas");
+    if (el.nodeName.toLowerCase() !== "canvas") {
+      console.error(`Cannot find valid canvas, found ${el.nodeName} instead.`);
+    } else {
+      this.canvas = el as HTMLCanvasElement;
+      this.initCanvas();
+    }
   }
 
   public uninstall(): void {
@@ -146,11 +161,11 @@ export class VirtualCanvas {
     this.context.globalAlpha = 1;
   }
 
-  public rectangle(
+  public drawRectangle(
     p1: Vector2,
     p2: Vector2,
-    fillStyle?: string | CanvasPattern | CanvasGradient,
-    strokeStyle?: string | CanvasPattern | CanvasGradient
+    fillStyle: string | CanvasPattern | CanvasGradient = "#ffffff00",
+    strokeStyle: string | CanvasPattern | CanvasGradient = "#ffffff00"
   ): void {
     const p1adj = this.vcs.translate(p1);
     const p2adj = this.vcs.translate(p2);

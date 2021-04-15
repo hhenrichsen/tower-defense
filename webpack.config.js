@@ -5,7 +5,10 @@ const HTMLWebpackPlugin = require("html-webpack-plugin");
 module.exports = {
     mode: "development",
     entry: "./src/index.ts",
-    devtool: "inline-source-map",
+    devtool: "source-map",
+    resolve: {
+        modulesDirectories: ['public/js', 'node_modules']
+    },
     module: {
         rules: [
             {
@@ -41,4 +44,9 @@ module.exports = {
         filename: "bundle.js",
         path: path.resolve(__dirname, "dist"),
     },
+    optimization: {
+        splitChunks: {
+            chunks: 'all'
+        }
+    }
 };

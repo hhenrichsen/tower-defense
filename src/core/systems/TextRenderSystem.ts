@@ -27,11 +27,11 @@ export class TextRenderSystem extends BaseSystem {
     );
   }
 
-  protected getBasisComponent(): Component | null {
+  getBasisComponent(): Component | null {
     return TextRenderComponent;
   }
 
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
     return set;

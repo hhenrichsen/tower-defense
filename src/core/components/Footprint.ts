@@ -1,11 +1,13 @@
 import { Component } from "../ecs/Component";
-import { Entity } from "../ecs/Entity";
+import { PositionEntity } from "./Position";
 
 export interface FootprintData extends Record<string, unknown> {
   size: number; // virtual coordinate units^2
 }
 
-export type FootprintEntity = Entity & { data: { health: FootprintData } };
+export type FootprintEntity = PositionEntity & {
+  data: { footprint: FootprintData };
+};
 
 /**
  * Deals with grid-aligned sizes of entities.

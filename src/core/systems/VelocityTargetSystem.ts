@@ -23,6 +23,18 @@ export class VelocityTargetSystem extends BaseSystem {
       this.checkRelativeThreshold(
         target,
         getDynamic(position.position),
+        perSecond.magnitude() * deltaTime
+      )
+    ) {
+      position.position = target;
+      velocity.velocity = Vector2.ZERO;
+      return;
+    }
+
+    if (
+      this.checkRelativeThreshold(
+        target,
+        getDynamic(position.position),
         velocitytarget.strictness
       )
     ) {
@@ -40,11 +52,11 @@ export class VelocityTargetSystem extends BaseSystem {
     return Math.abs(a.x - b.x) < threshold && Math.abs(a.y - b.y) < threshold;
   }
 
-  protected getBasisComponent(): Component {
+  getBasisComponent(): Component {
     return VelocityTargetComponent;
   }
 
-  protected getRequiredComponents(): Set<Component> {
+  getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
     set.add(VelocityComponent);
