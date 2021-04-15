@@ -45,7 +45,12 @@ export abstract class BaseGameModel {
   protected actionSet: Set<string>;
   private selection: number;
 
-  protected getSelection(): Entity {
+  protected invalidateSelection(): void {
+    this.selection = -1;
+  }
+
+  protected getSelection(): Entity | null {
+    if (this.selection === -1) return null;
     return this.ecs.getEntity(this.selection);
   }
 

@@ -134,6 +134,7 @@ export class GameModel extends BaseGameModel {
       const value = (entity as ValueEntity).data.value.value;
       this.money += getDynamic(value);
       this.ecs.removeEntity(entity.id);
+      this.invalidateSelection();
     }
   }
 
