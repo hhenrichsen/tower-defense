@@ -22,7 +22,6 @@ export class Clickable extends Component {
 
   protected defaultData(): ClickableData {
     return {
-      nwConstraint: Vector2.ZERO,
       delta: Vector2.ZERO,
       action: () => {
         return;

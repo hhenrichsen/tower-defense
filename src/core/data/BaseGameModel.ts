@@ -15,6 +15,7 @@ import { LifetimeRenderSystem } from "../systems/LifetimeRenderSystem";
 import { LifetimeSystem } from "../systems/LifetimeSystem";
 import { PathFollowerSystem } from "../systems/PathFollowerSystem";
 import { RangeDisplaySystem } from "../systems/RangeDisplaySystem";
+import { RegionRenderSystem } from "../systems/RegionRenderSystem";
 import { RotationDebugSystem } from "../systems/RotationDebugSystem";
 import { RotationTargetSystem } from "../systems/RotationTargetSystem";
 import { SelectionSystem } from "../systems/SelectionRenderSystem";
@@ -126,6 +127,7 @@ export abstract class BaseGameModel {
       new AnimatedSpriteRenderSystem(this.virtualCanvas),
       51
     );
+    this.ecs.createSystem(new RegionRenderSystem(this.virtualCanvas), 54);
     this.ecs.createSystem(new TextRenderSystem(this.virtualCanvas), 55);
     this.ecs.createSystem(
       new ClickableDisplaySystem(

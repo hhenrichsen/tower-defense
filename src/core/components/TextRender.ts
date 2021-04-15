@@ -1,11 +1,14 @@
+import { DynamicConstant } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
 import { PositionEntity } from "./Position";
 
 export interface TextRenderData extends Record<string, unknown> {
-  textSource: () => string; // virtual coordinate units per second,
+  text: DynamicConstant<string>; // virtual coordinate units per second,
   style: string;
   size: number;
+  font: string;
+  align: CanvasTextAlign;
 }
 
 export type TextRenderEntity = Entity &
@@ -18,9 +21,11 @@ export class TextRender extends Component {
 
   protected defaultData(): TextRenderData {
     return {
-      textSource: () => "Sample text",
+      text: "Sample text",
       style: "#000000ff",
       size: 1,
+      font: "Montserrat",
+      align: "center",
     };
   }
 }

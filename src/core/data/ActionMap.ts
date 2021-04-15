@@ -35,6 +35,7 @@ export class ActionMap {
 
   constructor() {
     this.actions = new Map();
+    this.serializeActions = [];
   }
 
   public createAction(name: string, serialize = false): void {

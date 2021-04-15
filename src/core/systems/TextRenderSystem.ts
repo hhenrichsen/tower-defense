@@ -20,10 +20,12 @@ export class TextRenderSystem extends BaseSystem {
     const targetEntity = entity as TextRenderEntity;
     const { textrender, position } = targetEntity.data;
     this.virtualCanvas.drawText(
-      textrender.textSource(),
+      getDynamic(textrender.text),
       getDynamic(position.position),
       textrender.style,
-      textrender.size
+      textrender.size,
+      textrender.font,
+      textrender.align
     );
   }
 

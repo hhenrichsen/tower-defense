@@ -24,10 +24,12 @@ import { LifetimeComponent } from "../core/components/Lifetime";
 import { ClickableComponent } from "../core/components/Clickable";
 import { Entity } from "../core/ecs/Entity";
 import { ECSManager } from "../core/ecs/ECSManager";
-import { getDynamic } from "../core/data/DynamicConstant";
+import { DynamicConstant, getDynamic } from "../core/data/DynamicConstant";
 import { ClickableDisplayComponent } from "../core/components/ClickableDisplay";
 import SelectedComponent from "../core/components/Selected";
 import { textChangeRangeIsUnchanged } from "typescript";
+import { RegionComponent } from "../core/components/RegionRender";
+import TextRenderComponent from "../core/components/TextRender";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
@@ -77,8 +79,7 @@ export class GameModel extends BaseGameModel {
 
   public preStart(): void {
     // this.ecs.addComponent(entityID, SpawnerComponent, { rate: 0.05, spawnCount: 2, prefab: makeSmokeParticle });
-    const leftUIPane = this.ecs.createEntity();
-    this.ecs.addComponent();
+    this.createUI();
     this.createDrone(new Vector2(5, 7));
     this.createDrone(new Vector2(6, 7));
     this.createDrone(new Vector2(7, 7));
@@ -87,6 +88,53 @@ export class GameModel extends BaseGameModel {
     }
     this.ecs.update(0, this);
     this.findPath();
+  }
+
+  private createUI(): void {
+    this.createUIRegion(new Vector2(5, 15), new Vector2(5, 15));
+    this.createUIText(new Vector2(5, 1), "Tower Defense", "#ffffff", 2);
+    this.createUIText(new Vector2(5, 2), "Towers", "#ffffff");
+  }
+
+  private createUIText(
+    position: Vector2,
+    text: DynamicConstant<string>,
+    style?: string,
+    size?: number
+  ) {
+    const el = this.ecs.createEntity();
+    this.ecs.addComponent(el, PositionComponent, {
+      position,
+    });
+    this.ecs.addComponent(el, TextRenderComponent, {
+      text,
+      style,
+      size,
+    });
+  }
+
+  private createUIRegion(
+    position: Vector2,
+    delta?: Vector2,
+    clickable = false,
+    action?: (entity: Entity) => void
+  ): number {
+    const el = this.ecs.createEntity();
+    this.ecs.addComponent(el, PositionComponent, {
+      position,
+    });
+    if (!clickable && delta) {
+      this.ecs.addComponent(el, RegionComponent, {
+        delta,
+      });
+    } else {
+      this.ecs.addComponent(el, ClickableComponent, {
+        delta,
+        action,
+      });
+      this.ecs.addComponent(el, ClickableDisplayComponent, {});
+    }
+    return el;
   }
 
   public onUpdate(): void {

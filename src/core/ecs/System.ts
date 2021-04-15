@@ -76,18 +76,12 @@ export abstract class BaseSystem implements System {
   }
 
   protected checkBasis(componentName: string, entity: Entity): boolean {
-    const basis = this.getBasisComponent();
     const required = this.getRequiredComponents();
     const excluded = this.getExcludedComponents();
-    if (basis === null && required.size === 0 && excluded.size === 0) {
-      return true;
-    }
-    if (basis !== null && componentName === basis.getName()) {
-      return (
-        this.checkRequired(componentName, entity, required) &&
-        this.checkExcluded(componentName, entity, excluded)
-      );
-    }
+    return (
+      this.checkRequired(componentName, entity, required) &&
+      this.checkExcluded(componentName, entity, excluded)
+    );
   }
 
   protected checkRequired(

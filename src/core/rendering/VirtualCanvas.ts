@@ -32,7 +32,7 @@ export class VirtualCanvas {
     canvas.width = this.virtualSize.x;
     canvas.height = this.virtualSize.y;
     canvas.id = "canvas";
-    canvas.addEventListener("resize", this.resize);
+    window.addEventListener("resize", this.resize.bind(this));
   }
 
   public findCanvas() {
@@ -61,7 +61,9 @@ export class VirtualCanvas {
   ): void {
     const adjustedPosition = this.vcs.translate(position);
     this.context.fillStyle = style || "#ffffff";
-    this.context.font = `${weight} ${size * 16}px ${font}`;
+    this.context.font = `${weight} ${
+      size * this.vcs.translateValueY(0.5)
+    }px ${font}`;
     this.context.textAlign = textAlign;
     this.context.fillText(text, adjustedPosition.x, adjustedPosition.y);
   }
