@@ -51,7 +51,6 @@ export class ClickableDisplaySystem extends BaseSystem {
         getDynamic(clickabledisplay.backgroundHover)
       );
     }
-    this.virtualCanvas.drawText(getDynamic(clickabledisplay.text), pos);
   }
 
   getBasisComponent(): Component {

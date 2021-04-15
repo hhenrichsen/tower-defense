@@ -12,6 +12,7 @@ export class ECSManager {
   private interestedSystems: Map<string, Set<System>>;
   private allSystems: Set<System>;
   private systemOrder: Array<number>;
+  private availableIDs: Array<number>;
 
   constructor() {
     this.entities = new Map();
@@ -20,15 +21,24 @@ export class ECSManager {
     this.allSystems = new Set();
     this.systemOrder = [];
     this.update = this.update.bind(this);
+    this.getEntityIDsWithComponent = this.getEntityIDsWithComponent.bind(this);
+    this.getEntitiesWithComponent = this.getEntitiesWithComponent.bind(this);
     this.interestedSystems = new Map();
+    this.availableIDs = [];
   }
 
   public createEntity(
     initialData?: Record<string, Record<string, unknown>>
   ): number {
-    const id = this.nextId++;
-    const entity = new Entity(id, initialData);
-    this.entities.set(id, entity);
+    let id;
+    if (this.availableIDs.length > 0) {
+      id = this.availableIDs.splice(0, 1)[0];
+      this.entities.get(id).data = initialData || {};
+    } else {
+      id = this.nextId++;
+      const entity = new Entity(id, initialData);
+      this.entities.set(id, entity);
+    }
     return id;
   }
 
@@ -61,7 +71,7 @@ export class ECSManager {
 
   public hasComponent(entityID: number, component: Component): boolean {
     const entity = this.entities.get(entityID);
-    return component.getName() in Object.keys(entity.data);
+    return component.getName() in entity.data;
   }
 
   public addComponent(
@@ -75,13 +85,23 @@ export class ECSManager {
       );
       return;
     }
+
     const entity = this.entities.get(entityID);
+    if (!entity.active) {
+      console.warn(
+        `Trying to add component ${component} to non-existent entity ${entityID}`
+      );
+      return;
+    }
+
     entity.data[component.getName()] = component.init(initialData);
+
     if (this.interestedSystems.get(component.getName()) !== undefined) {
       for (const system of this.interestedSystems.get(component.getName())) {
         system.notify(component.getName(), entity);
       }
     }
+
     if (!this.entityComponents.has(component.getName())) {
       this.entityComponents.set(component.getName(), []);
     }
@@ -90,7 +110,8 @@ export class ECSManager {
 
   public getEntity(entityID: number): Entity | null {
     if (this.entities.has(entityID)) {
-      return this.entities.get(entityID);
+      const entity = this.entities.get(entityID);
+      return entity.active ? entity : null;
     }
     return null;
   }
@@ -124,19 +145,30 @@ export class ECSManager {
       );
       return;
     }
+
     const entity = this.entities.get(entityID);
+    if (!entity.active) {
+      console.warn(
+        `Trying to add component ${component} to non-existent entity ${entityID}`
+      );
+      return;
+    }
+
     if (component.getName() in entity.data) {
       delete entity.data[component.getName()];
     }
+
     if (!this.entityComponents.has(component.getName())) {
       this.entityComponents.set(component.getName(), []);
     }
+
     this.entityComponents.set(
       component.getName(),
       this.entityComponents
         .get(component.getName())
         .filter((ent) => ent !== entityID)
     );
+
     if (this.interestedSystems.has(component.getName())) {
       const systems = this.interestedSystems.get(component.getName());
       for (const system of systems) {
@@ -158,7 +190,9 @@ export class ECSManager {
     for (const system of this.allSystems) {
       system.notify("__delete", this.entities.get(entityID));
     }
-    this.entities.delete(entityID);
+    this.entities.get(entityID).data = {};
+    this.entities.get(entityID).active = false;
+    this.availableIDs.push(entityID);
   }
 
   clear(): void {

@@ -34,7 +34,7 @@ export interface IntervalStorage {
 }
 
 export abstract class BaseSystem implements System {
-  private entities: Set<Entity> = new Set();
+  private entities: Map<number, Entity> = new Map();
   protected manager: ECSManager;
 
   protected checkInterval(deltaTime: number, data: IntervalStorage): boolean {
@@ -52,18 +52,18 @@ export abstract class BaseSystem implements System {
     data?: Record<string, unknown>
   ): void {
     if (notification === "__delete") {
-      this.entities.delete(entity);
-    }
-    if (notification === "__remove_component") {
+      this.entities.delete(entity.id);
+      return;
+    } else if (notification === "__remove_component") {
       const { componentName } = data;
       const basis = this.getBasisComponent();
       if (basis.getName() === componentName) {
-        this.entities.delete(entity);
+        this.entities.delete(entity.id);
       }
-    }
-    if (this.checkBasis(notification, entity)) {
+      return;
+    } else if (this.checkBasis(notification, entity)) {
       if (this.isInterested(notification, entity)) {
-        this.entities.add(entity);
+        this.entities.set(entity.id, entity);
         console.debug(
           `Adding ${notification} on entity ${entity.id} to tracking.`
         );
@@ -118,7 +118,7 @@ export abstract class BaseSystem implements System {
 
   public update(deltaTime: number, model: BaseGameModel): void {
     this.systemUpdate(deltaTime, model);
-    for (const entity of this.entities) {
+    for (const entity of this.entities.values()) {
       this.updateEntity(deltaTime, entity, model);
     }
   }

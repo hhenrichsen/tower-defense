@@ -1,6 +1,7 @@
 export class Entity {
   id: number;
   data: Record<string, Record<string, unknown>>;
+  active = true;
 
   constructor(
     id: number,

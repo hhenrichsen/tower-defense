@@ -1,4 +1,6 @@
+import SelectedComponent from "../components/Selected";
 import { ECSManager } from "../ecs/ECSManager";
+import { Entity } from "../ecs/Entity";
 import Vector2 from "../geometry/Vector2";
 import { KeyboardInput, KeyboardInteraction } from "../input/KeyboardInput";
 import {
@@ -41,6 +43,22 @@ export abstract class BaseGameModel {
   private mouseAction: string;
   private clicksPerFrame: number;
   protected actionSet: Set<string>;
+  private selection: number;
+
+  protected getSelection(): Entity {
+    return this.ecs.getEntity(this.selection);
+  }
+
+  protected setSelection(id: number): void {
+    this.selection = id;
+    const ids = this.ecs.getEntityIDsWithComponent(SelectedComponent.getName());
+
+    for (let i = 0; i < ids.length; i++) {
+      this.ecs.removeComponent(ids[i], SelectedComponent);
+    }
+
+    this.ecs.addComponent(id, SelectedComponent);
+  }
 
   constructor(virtualSize: Vector2) {
     this.virtualSize = virtualSize;
@@ -53,6 +71,9 @@ export abstract class BaseGameModel {
     this.keys = new KeyboardInput();
 
     this.mouse = new MouseInput();
+
+    this.setSelection = this.setSelection.bind(this);
+    this.getSelection = this.getSelection.bind(this);
   }
 
   public findCanvas() {
@@ -106,9 +127,10 @@ export abstract class BaseGameModel {
 
   private initSystems() {
     // Entity creation/deletion
+    this.ecs.createSystem(new ClickableSystem(this.mouse.getMousePosition), -5);
+
     this.ecs.createSystem(new SpawnerSystem(), -1);
     this.ecs.createSystem(new LifetimeSystem(), -1);
-    this.ecs.createSystem(new ClickableSystem(this.mouse.getMousePosition), -1);
 
     // Modifying "base" components
     this.ecs.createSystem(new PathFollowerSystem(), 0);

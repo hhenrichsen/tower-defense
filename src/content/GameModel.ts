@@ -30,12 +30,14 @@ import SelectedComponent from "../core/components/Selected";
 import { textChangeRangeIsUnchanged } from "typescript";
 import { RegionComponent } from "../core/components/RegionRender";
 import TextRenderComponent from "../core/components/TextRender";
+import SellableComponent from "../core/components/Sellable";
+import { ValueComponent, ValueEntity } from "../core/components/Value";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
   private unstructured: Map<string, unknown>;
-  public lives: number;
-  public money: number;
+  public lives = 20;
+  public money = 50;
   public wave: number;
   public waveSet: Array<WaveManifest>;
   public persistence: PersistenceManager<GameModel, PersistedData>;
@@ -93,7 +95,50 @@ export class GameModel extends BaseGameModel {
   private createUI(): void {
     this.createUIRegion(new Vector2(5, 15), new Vector2(5, 15));
     this.createUIText(new Vector2(5, 1), "Tower Defense", "#ffffff", 2);
-    this.createUIText(new Vector2(5, 2), "Towers", "#ffffff");
+    this.createUIText(
+      new Vector2(2.5, 2),
+      () => "Lives: " + this.lives.toFixed(0),
+      "#ffffff"
+    );
+    this.createUIText(
+      new Vector2(7.5, 2),
+      () => "Money: " + this.money.toFixed(0),
+      "#ffffff"
+    );
+    this.createUIText(new Vector2(5, 4), "Towers", "#ffffff");
+    this.createUIText(new Vector2(5, 4), "Towers", "#ffffff");
+    const sellButton = this.createUIRegion(
+      new Vector2(2.5, 25),
+      new Vector2(2, 1),
+      true,
+      this.attemptSell.bind(this)
+    );
+    this.ecs.addComponent(sellButton, TextRenderComponent, {
+      text: "Sell",
+    });
+    const upgradeButton = this.createUIRegion(
+      new Vector2(7.5, 25),
+      new Vector2(2, 1),
+      true,
+      this.attemptUpgrade.bind(this)
+    );
+    this.ecs.addComponent(upgradeButton, TextRenderComponent, {
+      text: "Upgrade",
+    });
+  }
+
+  private attemptSell() {
+    const entity = this.getSelection();
+    console.log("Selling " + entity);
+    if (this.ecs.hasComponent(entity.id, SellableComponent)) {
+      const value = (entity as ValueEntity).data.value.value;
+      this.money += getDynamic(value);
+      this.ecs.removeEntity(entity.id);
+    }
+  }
+
+  private attemptUpgrade() {
+    const selection = this.getSelection();
   }
 
   private createUIText(
@@ -234,15 +279,8 @@ export class GameModel extends BaseGameModel {
     });
     this.ecs.addComponent(entityID, ClickableComponent, {
       delta: Vector2.matching(0.5),
-      action: (entity: Entity, _model: BaseGameModel, ecs: ECSManager) => {
-        const entities = ecs.getEntityIDsWithComponent(
-          SelectedComponent.getName()
-        );
-        for (let ent = 0; ent < entities.length; ent++) {
-          ecs.removeComponent(entities[ent], SelectedComponent);
-        }
-        ecs.addComponent(entity.id, SelectedComponent);
-      },
+      action: (entity: Entity, _model: BaseGameModel, ecs: ECSManager) =>
+        this.setSelection(entityID),
     });
     this.ecs.addComponent(entityID, AnimatedSpriteComponent, {
       source: new Texture("assets/testAnim.png", new Vector2(768, 32)),
@@ -274,5 +312,9 @@ export class GameModel extends BaseGameModel {
       ],
       size: Vector2.matching(1),
     });
+    this.ecs.addComponent(entityID, ValueComponent, {
+      value: 5,
+    });
+    this.ecs.addComponent(entityID, SellableComponent);
   }
 }

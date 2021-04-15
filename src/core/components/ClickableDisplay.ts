@@ -4,7 +4,6 @@ import { Component } from "../ecs/Component";
 import { ClickableEntity } from "./Clickable";
 
 export interface ClickableDisplayData extends Record<string, unknown> {
-  text: DynamicConstant<string>; // virtual coordinate units
   background: DynamicConstant<string | CanvasGradient | CanvasPattern>;
   backgroundHover: DynamicConstant<string | CanvasGradient | CanvasPattern>;
 }
@@ -20,7 +19,6 @@ export class ClickableDisplay extends Component {
 
   protected defaultData(): ClickableDisplayData {
     return {
-      text: "Click me!",
       background: "#77777755",
       backgroundHover: "#aaaaaa55",
     };
