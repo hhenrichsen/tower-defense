@@ -1,7 +1,7 @@
 import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
 import { LifetimeEntity } from "../behavior/Lifetime";
-import { SpriteEntity } from "../behavior/Sprite";
+import { SpriteEntity } from "./Sprite";
 
 export type LifetimeRenderEntity = SpriteEntity & LifetimeEntity;
 

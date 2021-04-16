@@ -9,7 +9,7 @@ import Circle from "./Circle";
  * @param pt1 The first point of the line.
  * @param pt2 The second point of the line.
  */
-export function isColliding(
+export function circleLineCollision(
   circle: Circle,
   pt1: Vector2,
   pt2: Vector2

@@ -29,16 +29,19 @@ export class ECSManager {
   public createEntity(
     initialData?: Record<string, Record<string, unknown>>
   ): number {
-    let id;
     if (this.availableIDs.length > 0) {
-      id = this.availableIDs.splice(0, 1)[0];
-      this.entities.get(id).data = initialData || {};
+      const id = this.availableIDs.splice(0, 1)[0];
+      console.debug(`Reusing ID ${id}`);
+      const entity = this.entities.get(id);
+      entity.data = initialData || {};
+      entity.active = true;
+      return id;
     } else {
-      id = this.nextId++;
+      const id = this.nextId++;
       const entity = new Entity(id, initialData);
       this.entities.set(id, entity);
+      return id;
     }
-    return id;
   }
 
   public createSystem(system: System, wave = 1): void {
@@ -80,7 +83,7 @@ export class ECSManager {
   ): void {
     if (entityID >= this.nextId || !this.entities.has(entityID)) {
       console.warn(
-        `Trying to add component ${component} to non-existent entity ${entityID}`
+        `Trying to add component ${component.getName()} to non-existent entity ${entityID}`
       );
       return;
     }
@@ -88,7 +91,7 @@ export class ECSManager {
     const entity = this.entities.get(entityID);
     if (!entity.active) {
       console.warn(
-        `Trying to add component ${component} to non-existent entity ${entityID}`
+        `Trying to add component ${component.getName()} to non-existent entity ${entityID}`
       );
       return;
     }
@@ -140,7 +143,7 @@ export class ECSManager {
   public removeComponent(entityID: number, component: Component): void {
     if (entityID >= this.nextId || !this.entities.has(entityID)) {
       console.warn(
-        `Trying to remove component ${component} from non-existent entity ${entityID}`
+        `Trying to remove component ${component.getName()} from non-existent entity ${entityID}`
       );
       return;
     }
@@ -148,7 +151,7 @@ export class ECSManager {
     const entity = this.entities.get(entityID);
     if (!entity.active) {
       console.warn(
-        `Trying to add component ${component} to non-existent entity ${entityID}`
+        `Trying to add component ${component.getName()} to non-existent entity ${entityID}`
       );
       return;
     }

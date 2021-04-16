@@ -1,7 +1,7 @@
 import { LifetimeComponent } from "../components/behavior/Lifetime";
 import { PositionComponent, PositionEntity } from "../components/data/Position";
 import { RotationComponent } from "../components/data/Rotation";
-import SpriteComponent from "../components/behavior/Sprite";
+import SpriteComponent from "../components/rendering/Sprite";
 import { VelocityComponent } from "../components/data/Velocity";
 import { DynamicConstant, getDynamic } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";

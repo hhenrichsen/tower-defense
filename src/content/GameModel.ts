@@ -14,11 +14,11 @@ import { DEFAULT_PERSISTED_DATA, PersistedData } from "./PersistedData";
 import { VelocityTargetComponent } from "../core/components/behavior/PositionTarget";
 import { PathFollowerComponent } from "../core/components/behavior/PathFollower";
 import { FootprintComponent } from "../core/components/data/Footprint";
-import SpriteComponent from "../core/components/behavior/Sprite";
+import SpriteComponent from "../core/components/rendering/Sprite";
 import { Pathfinder } from "../core/data/Pathfinder";
 import { Direction } from "../core/data/Direction";
 import { LifetimeComponent } from "../core/components/behavior/Lifetime";
-import { ClickableComponent } from "../core/components/behavior/Clickable";
+import { ClickableComponent } from "../core/components/ui/Clickable";
 import { Entity } from "../core/ecs/Entity";
 import { ECSManager } from "../core/ecs/ECSManager";
 import { DynamicConstant, getDynamic } from "../core/data/DynamicConstant";
@@ -28,6 +28,12 @@ import TextRenderComponent from "../core/components/ui/TextRender";
 import SellableComponent from "../core/components/marker/Sellable";
 import { ValueComponent, ValueEntity } from "../core/components/data/Value";
 import { NameComponent } from "../core/components/data/Name";
+import { TowerType } from "./types/TowerType";
+import { RangeComponent } from "../core/components/data/Range";
+import { RangeDisplayComponent } from "../core/components/rendering/RangeDisplay";
+import { ProjectileType } from "./types/ProjectileType";
+import { TurretBaseRenderSystem } from "./systems/BaseRenderSystem";
+import TurretBaseComponent, { TurretBase } from "./components/BaseComponent";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
@@ -41,6 +47,15 @@ export class GameModel extends BaseGameModel {
   private eastWestPath: Array<Vector2> = [];
   private northSouthPath: Array<Vector2>;
   private actionQueue: Array<string>;
+  private mouseEntity: Entity = null;
+  private towers: Map<string, TowerType>;
+  private towerTextures: Record<string, Texture> = {
+    "tower-1-1": new Texture("assets/turret-1-1.png"),
+    "tower-1-2": new Texture("assets/turret-1-2.png"),
+    "tower-1-3": new Texture("assets/turret-1-3.png"),
+    "tower-2-1": new Texture("assets/turret-2-1.png"),
+  };
+  baseSprite: unknown;
 
   constructor() {
     super(new Vector2(40, 30));
@@ -55,7 +70,7 @@ export class GameModel extends BaseGameModel {
     this.particleManager = new ParticleManager();
     this.initParticleEffects();
 
-    const { actions, keyMap } = persistedData;
+    const { keyMap } = persistedData;
 
     this._actionMap = new ActionMap();
     this.initActions();
@@ -64,15 +79,46 @@ export class GameModel extends BaseGameModel {
         this._actionMap.invoke(action);
       });
     }
+    this.keys.addKeyListener("escape", () => {
+      this._actionMap.invoke("clear");
+    });
 
     this._actionMap.addHandler("sell", this.attemptSell.bind(this));
     this._actionMap.addHandler("upgrade", this.attemptUpgrade.bind(this));
+    this._actionMap.addHandler("clear", this.clearMouseMode.bind(this));
+    this._actionMap.addHandler("setTower", this.setMouseMode.bind(this));
+
+    this.towers = new Map();
+    this.towers.set("tower-1", {
+      cost: 0,
+      size: 2,
+      name: "Basic Tower",
+      description: "A really basic tower",
+      rotationRate: 30,
+      range: 5,
+      fireRate: 1,
+      projectile: ProjectileType.DEFAULT,
+      levelSprites: ["tower-1-1"],
+    });
+    this.towers.set("tower-2", {
+      cost: 0,
+      size: 3,
+      name: "Basic Tower",
+      description: "A really basic tower",
+      rotationRate: 30,
+      range: 5,
+      fireRate: 1,
+      projectile: ProjectileType.DEFAULT,
+      levelSprites: ["tower-2-1"],
+    });
   }
 
   private initActions() {
     this._actionMap.createAction("upgrade", true);
     this._actionMap.createAction("sell", true);
     this._actionMap.createAction("start", true);
+    this._actionMap.createAction("clear");
+    this._actionMap.createAction("setTower");
   }
 
   private initParticleEffects() {
@@ -85,11 +131,16 @@ export class GameModel extends BaseGameModel {
     this.createDrone(new Vector2(5, 7));
     this.createDrone(new Vector2(6, 7));
     this.createDrone(new Vector2(7, 7));
-    for (let i = 0; i <= 12; i++) {
-      this.createBlocker(new Vector2(8, i + 3));
-    }
+    this.buildTower(Vector2.matching(15), this.towers.get("tower-1"));
+    // for (let i = 0; i <= 12; i++) {
+    //   this.createBlocker(new Vector2(8, i + 3));
+    // }
     this.ecs.update(0, this);
     this.findPath();
+  }
+
+  public addSystems(): void {
+    this.ecs.createSystem(new TurretBaseRenderSystem(this.virtualCanvas), 40);
   }
 
   private createUI(): void {
@@ -114,9 +165,10 @@ export class GameModel extends BaseGameModel {
     );
     this.ecs.addComponent(sellButton, TextRenderComponent, {
       text: "Sell",
+      style: "#ffffff",
     });
     this.createUIText(new Vector2(5, 7), "Selected", "#ffffff");
-    const selectionInfo = this.createUIText(
+    this.createUIText(
       new Vector2(1, 8),
       (): string => {
         const sel = this.getSelection();
@@ -149,6 +201,69 @@ export class GameModel extends BaseGameModel {
     );
     this.ecs.addComponent(upgradeButton, TextRenderComponent, {
       text: "Upgrade",
+      style: "#ffffff",
+    });
+    const tower1 = this.createUIRegion(
+      new Vector2(2, 5),
+      new Vector2(0.5, 0.5),
+      true,
+      () => this.actionMap.invoke("setTower", { tower: "tower-1" })
+    );
+    this.ecs.addComponent(tower1, TextRenderComponent, {
+      text: "1",
+      style: "#ffffff",
+    });
+    const tower2 = this.createUIRegion(
+      new Vector2(4, 5),
+      new Vector2(0.5, 0.5),
+      true,
+      () => this.actionMap.invoke("setTower", { tower: "tower-2" })
+    );
+    this.ecs.addComponent(tower2, TextRenderComponent, {
+      text: "2",
+      style: "#ffffff",
+    });
+  }
+
+  private clearMouseMode() {
+    console.log("Clearing mouse mode.");
+    if (this.mouseEntity === null) {
+      return;
+    }
+    this.ecs.removeEntity(this.mouseEntity.id);
+    this.mouseEntity = null;
+  }
+
+  private setMouseMode(_action: string, data: Record<string, unknown>) {
+    const towerName = data["tower"] as string;
+    const tower = this.towers.get(towerName);
+    if (this.money < tower.cost) {
+      return;
+    }
+    if (this.mouseEntity !== null) {
+      this.clearMouseMode();
+    }
+    const id = this.ecs.createEntity();
+    this.mouseEntity = this.ecs.getEntity(id);
+    this.ecs.addComponent(id, PositionComponent, {
+      position: () =>
+        this.mouse
+          .getMousePosition()
+          .ceil()
+          .addConstant((1 - tower.size) / 2, (1 - tower.size) / 2),
+    });
+    this.ecs.addComponent(id, RangeComponent, {
+      range: tower.range,
+    });
+    this.ecs.addComponent(id, RotationComponent);
+    const offset = tower.size % 2 === 0 ? Vector2.matching(-0.5) : Vector2.ZERO;
+    this.ecs.addComponent(id, RangeDisplayComponent, {
+      // strokeStyle: "#ffff"
+      offset: offset.addConstant(0.5, 0.5),
+    });
+    this.ecs.addComponent(id, SpriteComponent, {
+      source: this.towerTextures[tower.levelSprites[0]],
+      size: Vector2.matching(tower.size),
     });
   }
 
@@ -217,18 +332,34 @@ export class GameModel extends BaseGameModel {
   }
 
   public onUpdate(): void {
-    this.findPath();
+    // this.findPath();
+    this.virtualCanvas.drawGrid();
   }
 
-  private found = false;
   private findPath(): void {
-    if (this.found) return;
-    this.found = true;
     const eastLocations = new Set<Vector2>();
-    eastLocations.add(new Vector2(20, 7));
+    eastLocations.add(new Vector2(39, 13));
+    eastLocations.add(new Vector2(39, 14));
+    eastLocations.add(new Vector2(39, 15));
+    eastLocations.add(new Vector2(39, 16));
+    eastLocations.add(new Vector2(39, 17));
     this.eastWestPath = Pathfinder.findPath(
       this.entityMap,
-      new Vector2(5, 7),
+      new Vector2(10, 15),
+      eastLocations,
+      Direction.getAllCardinal(),
+      Vector2.ZERO,
+      this.virtualSize
+    );
+    const southLocations = new Set<Vector2>();
+    southLocations.add(new Vector2(19, 30));
+    southLocations.add(new Vector2(20, 30));
+    southLocations.add(new Vector2(21, 30));
+    southLocations.add(new Vector2(22, 30));
+    southLocations.add(new Vector2(23, 30));
+    this.northSouthPath = Pathfinder.findPath(
+      this.entityMap,
+      new Vector2(1, 30),
       eastLocations,
       Direction.getAllCardinal(),
       Vector2.ZERO,
@@ -251,10 +382,46 @@ export class GameModel extends BaseGameModel {
     return this.particleManager;
   }
 
-  public buildTower(position: Vector2): void {
-    const towerID = this.ecs.createEntity();
-    this.ecs.addComponent(towerID, PositionComponent, {
-      position: position.floor(),
+  public buildTower(
+    position: DynamicConstant<Vector2>,
+    tower: TowerType
+  ): void {
+    const { size } = tower;
+    const pos = getDynamic(position);
+    if (!this.entityMap.checkArea(pos, pos.addConstant(size, size))) {
+      return;
+    }
+    if (this.money < tower.cost) {
+      return;
+    }
+    const id = this.ecs.createEntity();
+    this.mouseEntity = this.ecs.getEntity(id);
+    this.ecs.addComponent(id, PositionComponent, {
+      position: getDynamic(position)
+        .ceil()
+        .addConstant((1 - tower.size) / 2, (1 - tower.size) / 2),
+    });
+    this.ecs.addComponent(id, RangeComponent, {
+      range: tower.range,
+    });
+    this.ecs.addComponent(id, RotationComponent);
+    const offset = tower.size % 2 === 0 ? Vector2.matching(-0.5) : Vector2.ZERO;
+    this.ecs.addComponent(id, RangeDisplayComponent, {
+      // strokeStyle: "#ffff"
+      offset: offset.addConstant(0.5, 0.5),
+    });
+    this.ecs.addComponent(id, SpriteComponent, {
+      source: this.towerTextures[tower.levelSprites[0]],
+      size: Vector2.matching(tower.size),
+      offset,
+    });
+    this.ecs.addComponent(id, TurretBaseComponent, {
+      source: this.baseSprite,
+    });
+    this.ecs.addComponent(id, FootprintComponent, {
+      source: this.towerTextures[tower.levelSprites[0]],
+      size: Vector2.matching(tower.size),
+      offset,
     });
   }
 

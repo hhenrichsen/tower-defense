@@ -37,7 +37,6 @@ export class ClickableSystem extends BaseSystem {
         mouse.x < southEast.x &&
         mouse.y < southEast.y
       ) {
-        console.log("clicked");
         clickable.action(entity, model, this.manager);
       }
     }

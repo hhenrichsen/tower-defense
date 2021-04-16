@@ -7,6 +7,7 @@ export class VirtualCanvas {
   private context: CanvasRenderingContext2D;
   private virtualSize: Vector2;
   private aspectRatio: Vector2;
+  private offset: Vector2 = Vector2.matching(0.5);
   private vcs: VirtualCoordinateSystem;
   private installed = false;
   private parent: HTMLElement;
@@ -33,6 +34,23 @@ export class VirtualCanvas {
     canvas.height = this.virtualSize.y;
     canvas.id = "canvas";
     window.addEventListener("resize", this.resize.bind(this));
+  }
+
+  public drawGrid(): void {
+    for (let x = 0; x < this.virtualSize.x; x++) {
+      this.line(
+        new Vector2(x, 0),
+        new Vector2(x, this.virtualSize.y),
+        "#000000ff"
+      );
+    }
+    for (let y = 0; y < this.virtualSize.y; y++) {
+      this.line(
+        new Vector2(0, y),
+        new Vector2(this.virtualSize.x, y),
+        "#000000ff"
+      );
+    }
   }
 
   public findCanvas(): void {
@@ -82,7 +100,7 @@ export class VirtualCanvas {
       return;
     }
     this.context.globalAlpha = opacity;
-    const adjustedPosition = this.vcs.translate(position);
+    const adjustedPosition = this.vcs.translate(position.add(this.offset));
     const adjustedSize = this.vcs.translate(size);
     this.context.save();
     this.context.translate(adjustedPosition.x, adjustedPosition.y);
@@ -106,7 +124,7 @@ export class VirtualCanvas {
     strokeStyle?: string,
     lineWidth?: number
   ): void {
-    const adjustedPosition = this.vcs.translate(center);
+    const adjustedPosition = this.vcs.translate(center.add(this.offset));
     const adjustedRadius = this.vcs.translateValueX(radius);
 
     this.context.fillStyle = fillStyle || "#ffffff00";
@@ -145,7 +163,7 @@ export class VirtualCanvas {
       return;
     }
     this.context.globalAlpha = opacity;
-    const adjustedPosition = this.vcs.translate(position);
+    const adjustedPosition = this.vcs.translate(position.add(this.offset));
     const adjustedSize = this.vcs.translate(size);
     this.context.save();
     this.context.translate(adjustedPosition.x, adjustedPosition.y);

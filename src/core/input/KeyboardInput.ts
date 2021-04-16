@@ -14,12 +14,10 @@ export class KeyboardInput {
   }
 
   private keyDown(evt: KeyboardEvent) {
-    evt.preventDefault();
     this.events.push({ key: evt.key, down: true });
   }
 
   private keyUp(evt: KeyboardEvent) {
-    evt.preventDefault();
     this.events.push({ key: evt.key, down: false });
   }
 
@@ -28,17 +26,17 @@ export class KeyboardInput {
   }
 
   public addKeyListener(key: string, listener: KeyboardListener): void {
-    if (!this.keyListeners.has(key)) {
-      this.keyListeners.set(key, []);
+    if (!this.keyListeners.has(key.toLowerCase())) {
+      this.keyListeners.set(key.toLowerCase(), []);
     }
-    this.keyListeners.get(key).push(listener);
+    this.keyListeners.get(key.toLowerCase()).push(listener);
   }
 
   public update(): void {
     for (let i = 0; i < this.events.length; i++) {
       const event = this.events[i];
-      if (this.keyListeners.has(event.key)) {
-        const keyListeners = this.keyListeners.get(event.key);
+      if (this.keyListeners.has(event.key.toLowerCase())) {
+        const keyListeners = this.keyListeners.get(event.key.toLowerCase());
         for (let listener = 0; listener < keyListeners.length; listener++) {
           keyListeners[listener](event);
         }

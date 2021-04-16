@@ -1,6 +1,6 @@
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
-import SpriteComponent, { SpriteEntity } from "../components/behavior/Sprite";
+import SpriteComponent, { SpriteEntity } from "../components/rendering/Sprite";
 import { Component } from "../ecs/Component";
 import { PositionComponent } from "../components/data/Position";
 import { RotationComponent } from "../components/data/Rotation";

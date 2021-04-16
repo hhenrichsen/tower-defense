@@ -32,8 +32,13 @@ export class Sprite extends Component {
     return lowerFirst(this.constructor.name);
   }
 
-  protected defaultData(): Partial<SpriteData> {
-    return { source: Sprite.NO_TEXTURE, size: Sprite.DEFAULT_SIZE, opacity: 1 };
+  protected defaultData(): SpriteData {
+    return {
+      source: Sprite.NO_TEXTURE,
+      size: Sprite.DEFAULT_SIZE,
+      opacity: 1,
+      offset: Vector2.ZERO,
+    };
   }
 }
 

@@ -17,6 +17,17 @@ export class GameMap implements Pathable {
     this.positions.clear();
   }
 
+  public checkArea(northWest: Vector2, southEast: Vector2): boolean {
+    for (let x = northWest.x; x < southEast.x; x++) {
+      for (let y = northWest.y; y < southEast.y; y++) {
+        if (this.hasEntityAt(northWest.addConstant(x, y))) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   public getEntityAt(position: Vector2): Entity | null {
     if (this.positions.has(position.toString())) {
       return this.positions.get(position.toString());

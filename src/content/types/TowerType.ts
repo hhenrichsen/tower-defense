@@ -1,11 +1,13 @@
 import { ProjectileType } from "./ProjectileType";
 
-export class TowerType {
-  name = "Tower";
-  description = "A generic tower";
-  size = 2; // virtual units
-  rotationRate = 30; // degrees per second
-  fireRate = 1; // entities per second
-  cost = 5;
-  projectile: ProjectileType = ProjectileType.DEFAULT;
+export interface TowerType {
+  name: string;
+  description: string;
+  size: number; // virtual units
+  range: number;
+  rotationRate: number; // degrees per second
+  fireRate: number; // entities per second
+  cost: number;
+  projectile: ProjectileType;
+  levelSprites: Array<string>;
 }
