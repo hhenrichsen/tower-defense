@@ -4,7 +4,7 @@ import { Component } from "../../ecs/Component";
 import { Entity } from "../../ecs/Entity";
 
 export interface NameData extends Record<string, unknown> {
-  name: DynamicConstant<string>; // degrees
+  name: DynamicConstant<string>;
 }
 
 export type NameEntity = Entity & { data: { name: NameData } };
