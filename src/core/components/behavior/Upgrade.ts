@@ -4,7 +4,7 @@ import { Entity } from "../../ecs/Entity";
 import { PositionEntity } from "../data/Position";
 
 export interface UpgradeData extends Record<string, unknown> {
-  cost: number;
+  cost: DynamicConstant<number>; // currency units
   dataDelta: DynamicConstant<Record<string, Record<string, unknown>>>;
 }
 

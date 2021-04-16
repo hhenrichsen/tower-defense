@@ -8,9 +8,6 @@ export interface LifetimeData extends Record<string, unknown> {
 
 export type LifetimeEntity = Entity & { data: { lifetime: LifetimeData } };
 
-/**
- * Deals with grid-aligned sizes of entities.
- */
 export class Lifetime extends Component {
   public getName(): string {
     return this.constructor.name.toLowerCase();
