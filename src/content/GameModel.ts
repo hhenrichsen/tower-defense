@@ -1,9 +1,5 @@
 import AnimatedSpriteComponent from "../core/components/rendering/AnimatedSprite";
-import ConnectedSpriteComponent from "../core/components/rendering/CardinalConnectedSprite";
-import {
-  PositionComponent,
-  PositionEntity,
-} from "../core/components/data/Position";
+import { PositionComponent } from "../core/components/data/Position";
 import { RotationComponent } from "../core/components/data/Rotation";
 import { RotationTargetComponent } from "../core/components/behavior/RotationTarget";
 import { VelocityComponent } from "../core/components/data/Velocity";
@@ -15,10 +11,8 @@ import { Texture } from "../core/rendering/Texture";
 import { WaveManifest } from "./types/WaveManifest";
 import { PersistenceManager } from "../core/data/Persistence";
 import { DEFAULT_PERSISTED_DATA, PersistedData } from "./PersistedData";
-import SpawnerComponent from "../core/components/behavior/Spawner";
 import { VelocityTargetComponent } from "../core/components/behavior/PositionTarget";
 import { PathFollowerComponent } from "../core/components/behavior/PathFollower";
-import { makeSmokeParticle } from "../core/prefabs/SmokeParticle";
 import { FootprintComponent } from "../core/components/data/Footprint";
 import SpriteComponent from "../core/components/behavior/Sprite";
 import { Pathfinder } from "../core/data/Pathfinder";
@@ -29,8 +23,6 @@ import { Entity } from "../core/ecs/Entity";
 import { ECSManager } from "../core/ecs/ECSManager";
 import { DynamicConstant, getDynamic } from "../core/data/DynamicConstant";
 import { ClickableDisplayComponent } from "../core/components/rendering/ClickableDisplay";
-import SelectedComponent from "../core/components/marker/Selected";
-import { textChangeRangeIsUnchanged } from "typescript";
 import { RegionComponent } from "../core/components/rendering/RegionRender";
 import TextRenderComponent from "../core/components/rendering/TextRender";
 import SellableComponent from "../core/components/marker/Sellable";
@@ -48,6 +40,7 @@ export class GameModel extends BaseGameModel {
   private _actionMap: ActionMap;
   private eastWestPath: Array<Vector2> = [];
   private northSouthPath: Array<Vector2>;
+  private actionQueue: Array<string>;
 
   constructor() {
     super(new Vector2(40, 30));
@@ -71,6 +64,9 @@ export class GameModel extends BaseGameModel {
         this._actionMap.invoke(action);
       });
     }
+
+    this._actionMap.addHandler("sell", this.attemptSell.bind(this));
+    this._actionMap.addHandler("upgrade", this.attemptUpgrade.bind(this));
   }
 
   private initActions() {
@@ -114,7 +110,7 @@ export class GameModel extends BaseGameModel {
       new Vector2(2.5, 25),
       new Vector2(2, 1),
       true,
-      this.attemptSell.bind(this)
+      () => this.actionMap.invoke("sell")
     );
     this.ecs.addComponent(sellButton, TextRenderComponent, {
       text: "Sell",
@@ -125,9 +121,19 @@ export class GameModel extends BaseGameModel {
       (): string => {
         const sel = this.getSelection();
         if (sel !== null) {
+          let val = "";
           if ("name" in sel.data) {
-            return sel.data.name.name as string;
+            val += (sel.data.name.name as string) + "\n";
           }
+          if ("health" in sel.data) {
+            val +=
+              "Health: " + (sel.data.health.health as number).toFixed(0) + "\n";
+          }
+          if ("value" in sel.data) {
+            val +=
+              "Value: " + (sel.data.value.value as number).toFixed(0) + "\n";
+          }
+          return val;
         }
         return "";
       },
@@ -139,7 +145,7 @@ export class GameModel extends BaseGameModel {
       new Vector2(7.5, 25),
       new Vector2(2, 1),
       true,
-      this.attemptUpgrade.bind(this)
+      () => this.actionMap.invoke("upgrade")
     );
     this.ecs.addComponent(upgradeButton, TextRenderComponent, {
       text: "Upgrade",
@@ -148,6 +154,9 @@ export class GameModel extends BaseGameModel {
 
   private attemptSell() {
     const entity = this.getSelection();
+    if (entity === null) {
+      return;
+    }
     console.log("Selling " + entity);
     if (this.ecs.hasComponent(entity.id, SellableComponent)) {
       const value = (entity as ValueEntity).data.value.value;
@@ -158,7 +167,10 @@ export class GameModel extends BaseGameModel {
   }
 
   private attemptUpgrade() {
-    const selection = this.getSelection();
+    const entity = this.getSelection();
+    if (entity === null) {
+      return;
+    }
   }
 
   private createUIText(

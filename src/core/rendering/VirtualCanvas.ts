@@ -59,13 +59,16 @@ export class VirtualCanvas {
     textAlign: CanvasTextAlign = "center",
     weight = 500
   ): void {
-    const adjustedPosition = this.vcs.translate(position);
+    const splits = text.trim().split("\n");
     this.context.fillStyle = style || "#ffffff";
     this.context.font = `${weight} ${
       size * this.vcs.translateValueY(0.5)
     }px ${font}`;
     this.context.textAlign = textAlign;
-    this.context.fillText(text, adjustedPosition.x, adjustedPosition.y);
+    for (let i = 0; i < splits.length; i++) {
+      const adjustedPosition = this.vcs.translate(position.addConstant(0, i));
+      this.context.fillText(splits[i], adjustedPosition.x, adjustedPosition.y);
+    }
   }
 
   public drawImage(
