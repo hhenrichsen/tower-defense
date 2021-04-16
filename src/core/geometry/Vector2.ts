@@ -113,6 +113,10 @@ export class Vector2 {
     return new Vector2(this.x + other.x, this.y + other.y);
   }
 
+  addConstant(x: number, y: number) {
+    return new Vector2(this.x + x, this.y + y);
+  }
+
   floor(): Vector2 {
     return new Vector2(Math.floor(this.x), Math.floor(this.y));
   }
