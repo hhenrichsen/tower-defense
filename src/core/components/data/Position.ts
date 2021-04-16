@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
 import { Entity } from "../../ecs/Entity";
@@ -11,7 +12,7 @@ export type PositionEntity = Entity & { data: { position: PositionData } };
 
 export class Position extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): PositionData {

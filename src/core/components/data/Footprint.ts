@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
 import { PositionEntity } from "./Position";
 
@@ -14,7 +15,7 @@ export type FootprintEntity = PositionEntity & {
  */
 export class Footprint extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): FootprintData {

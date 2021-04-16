@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
 import { LifetimeEntity } from "../behavior/Lifetime";
 import { SpriteEntity } from "../behavior/Sprite";
@@ -10,7 +11,7 @@ export class LifetimeRender extends Component {
   }
 
   getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 }
 

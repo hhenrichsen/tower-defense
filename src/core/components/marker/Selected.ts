@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
 
 export class Selected extends Component {
@@ -6,7 +7,7 @@ export class Selected extends Component {
   }
 
   getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 }
 

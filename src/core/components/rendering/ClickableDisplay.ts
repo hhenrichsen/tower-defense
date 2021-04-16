@@ -2,6 +2,7 @@ import { BaseGameModel } from "../../data/BaseGameModel";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
 import { ClickableEntity } from "../behavior/Clickable";
+import { lowerFirst } from "lodash";
 
 export interface ClickableDisplayData extends Record<string, unknown> {
   background: DynamicConstant<string | CanvasGradient | CanvasPattern>;
@@ -9,12 +10,12 @@ export interface ClickableDisplayData extends Record<string, unknown> {
 }
 
 export type ClickableDisplayEntity = ClickableEntity & {
-  data: { clickabledisplay: ClickableDisplayData };
+  data: { clickableDisplay: ClickableDisplayData };
 };
 
 export class ClickableDisplay extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): ClickableDisplayData {

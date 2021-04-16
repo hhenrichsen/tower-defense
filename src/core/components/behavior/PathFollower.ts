@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
 import Vector2 from "../../geometry/Vector2";
@@ -10,11 +11,11 @@ export interface PathFollowerData extends Record<string, unknown> {
 }
 
 export type PathFollowerEntity = RotationTargetEntity &
-  VelocityTargetEntity & { data: { pathfollower: PathFollowerData } };
+  VelocityTargetEntity & { data: { pathFollower: PathFollowerData } };
 
 export class PathFollower extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): PathFollowerData {

@@ -28,7 +28,7 @@ export class ClickableDisplaySystem extends BaseSystem {
   ): void {
     const mouse = getDynamic(this.mouse);
     const targetEntity = entity as ClickableDisplayEntity;
-    const { position, clickable, clickabledisplay } = targetEntity.data;
+    const { position, clickable, clickableDisplay } = targetEntity.data;
     const delta = getDynamic(clickable.delta);
     const pos = getDynamic(position.position);
     const northWest = pos.subtract(delta);
@@ -42,13 +42,13 @@ export class ClickableDisplaySystem extends BaseSystem {
       this.virtualCanvas.drawRectangle(
         northWest,
         southEast,
-        getDynamic(clickabledisplay.backgroundHover)
+        getDynamic(clickableDisplay.backgroundHover)
       );
     } else {
       this.virtualCanvas.drawRectangle(
         northWest,
         southEast,
-        getDynamic(clickabledisplay.backgroundHover)
+        getDynamic(clickableDisplay.backgroundHover)
       );
     }
   }

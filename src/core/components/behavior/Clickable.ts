@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { BaseGameModel } from "../../data/BaseGameModel";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
@@ -17,7 +18,7 @@ export type ClickableEntity = PositionEntity & {
 
 export class Clickable extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): ClickableData {

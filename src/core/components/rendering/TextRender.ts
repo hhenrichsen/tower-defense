@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
 import { Entity } from "../../ecs/Entity";
@@ -12,11 +13,11 @@ export interface TextRenderData extends Record<string, unknown> {
 }
 
 export type TextRenderEntity = Entity &
-  PositionEntity & { data: { textrender: TextRenderData } };
+  PositionEntity & { data: { textRender: TextRenderData } };
 
 export class TextRender extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): TextRenderData {

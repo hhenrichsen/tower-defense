@@ -5,6 +5,7 @@ import { PositionEntity } from "../data/Position";
 import { RotationEntity } from "../data/Rotation";
 import { Texture } from "../../rendering/Texture";
 import { DynamicConstant } from "../../data/DynamicConstant";
+import { lowerFirst } from "lodash";
 
 export interface SpriteData extends Record<string, unknown> {
   size: Vector2; // in virtual coordinates
@@ -28,7 +29,7 @@ export class Sprite extends Component {
   }
 
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): Partial<SpriteData> {

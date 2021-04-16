@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
 import { Entity } from "../../ecs/Entity";
@@ -13,11 +14,11 @@ export interface VelocityTargetData extends Record<string, unknown> {
 
 export type VelocityTargetEntity = Entity &
   PositionEntity &
-  VelocityEntity & { data: { velocitytarget: VelocityTargetData } };
+  VelocityEntity & { data: { velocityTarget: VelocityTargetData } };
 
 export class VelocityTarget extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): VelocityTargetData {

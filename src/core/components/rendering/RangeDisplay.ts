@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
 import { Entity } from "../../ecs/Entity";
 import { PositionEntity } from "../data/Position";
@@ -11,11 +12,11 @@ export interface RangeDisplayData extends Record<string, unknown> {
 
 export type RangeDisplayEntity = Entity &
   PositionEntity &
-  RangeEntity & { data: { rangedisplay: RangeDisplayData } };
+  RangeEntity & { data: { rangeDisplay: RangeDisplayData } };
 
 export class RangeDisplay extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): RangeDisplayData {

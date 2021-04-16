@@ -19,25 +19,25 @@ export class AnimatedSpriteRenderSystem extends BaseSystem {
 
   protected updateEntity(deltaTime: number, entity: Entity): void {
     const targetEntity = entity as AnimatedSpriteEntity;
-    const { animatedsprite, rotation, position } = targetEntity.data;
-    animatedsprite.currentDuration += deltaTime;
+    const { animatedSprite, rotation, position } = targetEntity.data;
+    animatedSprite.currentDuration += deltaTime;
     while (
-      animatedsprite.currentDuration >
-      animatedsprite.frames[animatedsprite.frame]
+      animatedSprite.currentDuration >
+      animatedSprite.frames[animatedSprite.frame]
     ) {
-      animatedsprite.currentDuration -=
-        animatedsprite.frames[animatedsprite.frame];
-      animatedsprite.frame =
-        (animatedsprite.frame + 1) % animatedsprite.frames.length;
+      animatedSprite.currentDuration -=
+        animatedSprite.frames[animatedSprite.frame];
+      animatedSprite.frame =
+        (animatedSprite.frame + 1) % animatedSprite.frames.length;
     }
     this.virtualCanvas.drawImageAnimated(
-      animatedsprite.source,
+      animatedSprite.source,
       getDynamic(position.position),
       getDynamic(rotation.rotation),
-      animatedsprite.size,
-      animatedsprite.frameSize,
-      animatedsprite.frame,
-      getDynamic(animatedsprite.opacity)
+      animatedSprite.size,
+      animatedSprite.frameSize,
+      animatedSprite.frame,
+      getDynamic(animatedSprite.opacity)
     );
   }
 

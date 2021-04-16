@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
 import { Entity } from "../../ecs/Entity";
@@ -17,7 +18,7 @@ export type RotationTargetEntity = Entity &
 
 export class RotationTarget extends Component {
   public getName(): string {
-    return "rotationTarget";
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): RotationTargetData {

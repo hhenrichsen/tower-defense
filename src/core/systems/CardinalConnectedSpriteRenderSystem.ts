@@ -19,7 +19,7 @@ export class AnimatedSpriteRenderSystem extends BaseSystem {
 
   protected updateEntity(deltaTime: number, entity: Entity): void {
     const targetEntity = entity as CardinalConnectedSpriteEntity;
-    const { cardinalconnectedsprite, rotation, position } = targetEntity.data;
+    const { cardinalConnectedSprite, rotation, position } = targetEntity.data;
   }
 
   getBasisComponent(): Component | null {

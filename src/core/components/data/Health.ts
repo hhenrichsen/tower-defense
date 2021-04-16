@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
 import { Entity } from "../../ecs/Entity";
 
@@ -9,7 +10,7 @@ export type HealthEntity = Entity & { data: { health: HealthData } };
 
 export class Health extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): HealthData {

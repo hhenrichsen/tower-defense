@@ -26,7 +26,7 @@ export class RangeDisplaySystem extends BaseSystem {
       strokeStyle,
       fillStyle,
       lineWidth,
-    } = targetEntity.data.rangedisplay;
+    } = targetEntity.data.rangeDisplay;
     this.virtualCanvas.drawCircle(
       getDynamic(position),
       range,

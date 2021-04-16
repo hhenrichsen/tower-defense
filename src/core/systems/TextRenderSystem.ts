@@ -18,14 +18,14 @@ export class TextRenderSystem extends BaseSystem {
 
   protected updateEntity(deltaTime: number, entity: Entity): void {
     const targetEntity = entity as TextRenderEntity;
-    const { textrender, position } = targetEntity.data;
+    const { textRender, position } = targetEntity.data;
     this.virtualCanvas.drawText(
-      getDynamic(textrender.text),
+      getDynamic(textRender.text),
       getDynamic(position.position),
-      textrender.style,
-      textrender.size,
-      textrender.font,
-      textrender.align
+      textRender.style,
+      textRender.size,
+      textRender.font,
+      textRender.align
     );
   }
 

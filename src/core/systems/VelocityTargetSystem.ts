@@ -13,11 +13,11 @@ import Vector2 from "../geometry/Vector2";
 export class VelocityTargetSystem extends BaseSystem {
   protected updateEntity(deltaTime: number, entity: Entity): void {
     const targetEntity = entity as VelocityTargetEntity;
-    const { position, velocity, velocitytarget } = targetEntity.data;
-    const target = getDynamic(velocitytarget.target);
+    const { position, velocity, velocityTarget } = targetEntity.data;
+    const target = getDynamic(velocityTarget.target);
     const relativePosition = target.subtract(getDynamic(position.position));
     const direction = relativePosition.normalize();
-    const perSecond = direction.normalize().scale(velocitytarget.velocity);
+    const perSecond = direction.normalize().scale(velocityTarget.velocity);
 
     if (
       this.checkRelativeThreshold(
@@ -35,7 +35,7 @@ export class VelocityTargetSystem extends BaseSystem {
       this.checkRelativeThreshold(
         target,
         getDynamic(position.position),
-        velocitytarget.strictness
+        velocityTarget.strictness
       )
     ) {
       velocity.velocity = Vector2.ZERO;

@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
 import Vector2 from "../../geometry/Vector2";
@@ -15,7 +16,7 @@ export type RegionEntity = PositionEntity & {
 
 export class Region extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): RegionData {

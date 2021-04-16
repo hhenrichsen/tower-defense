@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
 import { Entity } from "../../ecs/Entity";
 import { PrefabSpawner } from "../../ecs/Prefab";
@@ -21,8 +22,9 @@ export type SpawnerEntity = Entity &
 
 export class Spawner extends Component {
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
+
   protected defaultData(): SpawnerData {
     return { rate: 1, elapsed: 0, spawnCount: 1, prefab: testPrefab };
   }

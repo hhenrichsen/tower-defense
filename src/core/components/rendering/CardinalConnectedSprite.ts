@@ -4,6 +4,7 @@ import Vector2 from "../../geometry/Vector2";
 import { PositionEntity } from "../data/Position";
 import { Texture } from "../../rendering/Texture";
 import { IndexedSpriteProvider } from "../../rendering/IndexedSpriteProvider";
+import { lowerFirst } from "lodash";
 
 export interface CardinalConnectedSpriteData extends Record<string, unknown> {
   size: Vector2; // virtual coordinate units
@@ -17,7 +18,7 @@ export interface CardinalConnectedSpriteData extends Record<string, unknown> {
 
 export type CardinalConnectedSpriteEntity = Entity &
   PositionEntity & {
-    data: { cardinalconnectedsprite: CardinalConnectedSpriteData };
+    data: { cardinalConnectedSprite: CardinalConnectedSpriteData };
   };
 
 export class CardinalConnectedSprite extends Component {
@@ -35,7 +36,7 @@ export class CardinalConnectedSprite extends Component {
   }
 
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): Partial<CardinalConnectedSpriteData> {

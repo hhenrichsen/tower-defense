@@ -1,3 +1,4 @@
+import { lowerFirst } from "lodash";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
 import { Entity } from "../../ecs/Entity";
@@ -18,7 +19,7 @@ export interface AnimatedSpriteData extends Record<string, unknown> {
 
 export type AnimatedSpriteEntity = Entity &
   PositionEntity &
-  RotationEntity & { data: { animatedsprite: AnimatedSpriteData } };
+  RotationEntity & { data: { animatedSprite: AnimatedSpriteData } };
 
 export class AnimatedSprite extends Component {
   private static NoTex = new Texture(
@@ -27,7 +28,7 @@ export class AnimatedSprite extends Component {
   );
 
   public getName(): string {
-    return this.constructor.name.toLowerCase();
+    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): Record<string, unknown> {
