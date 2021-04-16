@@ -3,11 +3,7 @@ import { ECSManager } from "../ecs/ECSManager";
 import { Entity } from "../ecs/Entity";
 import Vector2 from "../geometry/Vector2";
 import { KeyboardInput, KeyboardInteraction } from "../input/KeyboardInput";
-import {
-  MouseInput,
-  MouseInteraction,
-  OnClickListener,
-} from "../input/MouseInput";
+import { MouseInput, MouseInteraction } from "../input/MouseInput";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { AnimatedSpriteRenderSystem } from "../systems/AnimatedSpriteRenderSystem";
 import { ClickableDisplaySystem } from "../systems/ClickableDisplaySystem";
@@ -82,7 +78,7 @@ export abstract class BaseGameModel {
     this.getSelection = this.getSelection.bind(this);
   }
 
-  public findCanvas() {
+  public findCanvas(): void {
     this.virtualCanvas.findCanvas();
   }
 
@@ -94,7 +90,7 @@ export abstract class BaseGameModel {
     return this.mouseAction;
   }
 
-  protected updateInput(deltaTime: number) {
+  protected updateInput(_deltaTime: number): void {
     this.mouseAction = "none";
     this.clicksPerFrame = 0;
     this.keySet.clear();

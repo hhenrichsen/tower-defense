@@ -1,7 +1,7 @@
 import {
   ClickableComponent,
   ClickableEntity,
-} from "../components/behavior/Clickable";
+} from "../components/ui/Clickable";
 import { PositionComponent } from "../components/data/Position";
 import { BaseGameModel } from "../data/BaseGameModel";
 import { DynamicConstant, getDynamic } from "../data/DynamicConstant";
@@ -9,7 +9,6 @@ import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import Vector2 from "../geometry/Vector2";
-import { MouseInput, MouseState } from "../input/MouseInput";
 
 export class ClickableSystem extends BaseSystem {
   private mouse: DynamicConstant<Vector2>;

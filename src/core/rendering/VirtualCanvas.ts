@@ -35,7 +35,7 @@ export class VirtualCanvas {
     window.addEventListener("resize", this.resize.bind(this));
   }
 
-  public findCanvas() {
+  public findCanvas(): void {
     const el = document.getElementById("canvas");
     if (el.nodeName.toLowerCase() !== "canvas") {
       console.error(`Cannot find valid canvas, found ${el.nodeName} instead.`);

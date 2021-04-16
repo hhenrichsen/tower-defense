@@ -2,9 +2,7 @@ import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import { Component } from "../ecs/Component";
 import { PositionComponent, PositionEntity } from "../components/data/Position";
-import { RotationComponent, RotationEntity } from "../components/data/Rotation";
 import { SelectedComponent } from "../components/marker/Selected";
-import Vector2 from "../geometry/Vector2";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { getDynamic } from "../data/DynamicConstant";
 

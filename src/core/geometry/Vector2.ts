@@ -113,7 +113,7 @@ export class Vector2 {
     return new Vector2(this.x + other.x, this.y + other.y);
   }
 
-  addConstant(x: number, y: number) {
+  addConstant(x: number, y: number): Vector2 {
     return new Vector2(this.x + x, this.y + y);
   }
 

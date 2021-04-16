@@ -2,7 +2,7 @@ import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import TextRenderComponent, {
   TextRenderEntity,
-} from "../components/rendering/TextRender";
+} from "../components/ui/TextRender";
 import { Component } from "../ecs/Component";
 import { PositionComponent } from "../components/data/Position";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";

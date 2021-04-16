@@ -19,7 +19,7 @@ export class FootprintSystem extends BaseSystem {
     this.map = map;
   }
 
-  protected systemUpdate(deltaTime: number, model: BaseGameModel): void {
+  protected systemUpdate(_deltaTime: number, _model: BaseGameModel): void {
     this.map.clear();
   }
 

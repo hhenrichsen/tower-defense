@@ -123,7 +123,7 @@ export abstract class BaseSystem implements System {
     }
   }
 
-  protected systemUpdate(deltaTime: number, model: BaseGameModel): void {
+  protected systemUpdate(_deltaTime: number, _model: BaseGameModel): void {
     return;
   }
 
@@ -148,7 +148,7 @@ export abstract class BaseSystem implements System {
     return new Set();
   }
 
-  protected isInterested(componentName: string, entity: Entity): boolean {
+  protected isInterested(_componentName: string, _entity: Entity): boolean {
     return true;
   }
 

@@ -1,7 +1,4 @@
-import {
-  LifetimeComponent,
-  LifetimeEntity,
-} from "../components/behavior/Lifetime";
+import { LifetimeComponent } from "../components/behavior/Lifetime";
 import LifetimeRenderComponent, {
   LifetimeRenderEntity,
 } from "../components/rendering/LifetimeRender";

@@ -1,9 +1,8 @@
 import {
   ClickableDisplayComponent,
   ClickableDisplayEntity,
-} from "../components/rendering/ClickableDisplay";
+} from "../components/ui/ClickableDisplay";
 import { PositionComponent } from "../components/data/Position";
-import { BaseGameModel } from "../data/BaseGameModel";
 import { DynamicConstant, getDynamic } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
@@ -21,11 +20,7 @@ export class ClickableDisplaySystem extends BaseSystem {
     this.virtualCanvas = virtualCanvas;
   }
 
-  protected updateEntity(
-    deltaTime: number,
-    entity: Entity,
-    model: BaseGameModel
-  ): void {
+  protected updateEntity(deltaTime: number, entity: Entity): void {
     const mouse = getDynamic(this.mouse);
     const targetEntity = entity as ClickableDisplayEntity;
     const { position, clickable, clickableDisplay } = targetEntity.data;

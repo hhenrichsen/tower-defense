@@ -8,7 +8,7 @@ export class KeyboardInput {
     this.keyUp = this.keyUp.bind(this);
   }
 
-  public install() {
+  public install(): void {
     window.addEventListener("keydown", this.keyDown);
     window.addEventListener("keyup", this.keyUp);
   }
@@ -23,18 +23,18 @@ export class KeyboardInput {
     this.events.push({ key: evt.key, down: false });
   }
 
-  public addListener(listener: KeyboardListener) {
+  public addListener(listener: KeyboardListener): void {
     this.listeners.push(listener);
   }
 
-  public addKeyListener(key: string, listener: KeyboardListener) {
+  public addKeyListener(key: string, listener: KeyboardListener): void {
     if (!this.keyListeners.has(key)) {
       this.keyListeners.set(key, []);
     }
     this.keyListeners.get(key).push(listener);
   }
 
-  public update() {
+  public update(): void {
     for (let i = 0; i < this.events.length; i++) {
       const event = this.events[i];
       if (this.keyListeners.has(event.key)) {
@@ -50,7 +50,7 @@ export class KeyboardInput {
     this.events.length = 0;
   }
 
-  public uninstall() {
+  public uninstall(): void {
     window.removeEventListener("keydown", this.keyDown);
     window.removeEventListener("keyup", this.keyUp);
   }

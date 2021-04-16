@@ -8,18 +8,29 @@ import CardinalConnectedSpriteComponent, {
   CardinalConnectedSpriteEntity,
 } from "../components/rendering/CardinalConnectedSprite";
 import { GameMap } from "../data/GameMap";
+import { getDynamic } from "../data/DynamicConstant";
 
-export class AnimatedSpriteRenderSystem extends BaseSystem {
+export class CardinalConnectedSpriteRenderSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
+  private map: GameMap;
 
   constructor(virtualCanvas: VirtualCanvas, map: GameMap) {
     super();
     this.virtualCanvas = virtualCanvas;
+    this.map = map;
   }
 
   protected updateEntity(deltaTime: number, entity: Entity): void {
     const targetEntity = entity as CardinalConnectedSpriteEntity;
-    const { cardinalConnectedSprite, rotation, position } = targetEntity.data;
+    const { cardinalConnectedSprite, position } = targetEntity.data;
+    const pos = getDynamic(position.position);
+    const count = 0;
+    // const neighbors = this.map.getNeighbors(pos);
+    this.virtualCanvas.drawImage(
+      cardinalConnectedSprite.provider.getSprite(count),
+      pos,
+      cardinalConnectedSprite.size
+    );
   }
 
   getBasisComponent(): Component | null {

@@ -1,4 +1,3 @@
-import { sys } from "typescript";
 import { BaseGameModel } from "../data/BaseGameModel";
 import { Component } from "./Component";
 import { Entity } from "./Entity";
