@@ -1,7 +1,6 @@
-import { BaseGameModel } from "../../data/BaseGameModel";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
-import { ClickableEntity } from "../behavior/Clickable";
+import { ClickableEntity } from "./Clickable";
 import { lowerFirst } from "lodash";
 
 export interface ClickableDisplayData extends Record<string, unknown> {
