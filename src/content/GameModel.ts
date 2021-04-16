@@ -1,9 +1,12 @@
-import AnimatedSpriteComponent from "../core/components/AnimatedSprite";
-import ConnectedSpriteComponent from "../core/components/CardinalConnectedSprite";
-import { PositionComponent, PositionEntity } from "../core/components/Position";
-import { RotationComponent } from "../core/components/Rotation";
-import { RotationTargetComponent } from "../core/components/RotationTarget";
-import { VelocityComponent } from "../core/components/Velocity";
+import AnimatedSpriteComponent from "../core/components/rendering/AnimatedSprite";
+import ConnectedSpriteComponent from "../core/components/rendering/CardinalConnectedSprite";
+import {
+  PositionComponent,
+  PositionEntity,
+} from "../core/components/data/Position";
+import { RotationComponent } from "../core/components/data/Rotation";
+import { RotationTargetComponent } from "../core/components/behavior/RotationTarget";
+import { VelocityComponent } from "../core/components/data/Velocity";
 import { ActionMap, ImmutableActionMap } from "../core/data/ActionMap";
 import { BaseGameModel } from "../core/data/BaseGameModel";
 import Vector2 from "../core/geometry/Vector2";
@@ -12,26 +15,27 @@ import { Texture } from "../core/rendering/Texture";
 import { WaveManifest } from "./types/WaveManifest";
 import { PersistenceManager } from "../core/data/Persistence";
 import { DEFAULT_PERSISTED_DATA, PersistedData } from "./PersistedData";
-import SpawnerComponent from "../core/components/Spawner";
-import { VelocityTargetComponent } from "../core/components/PositionTarget";
-import { PathFollowerComponent } from "../core/components/PathFollower";
+import SpawnerComponent from "../core/components/behavior/Spawner";
+import { VelocityTargetComponent } from "../core/components/behavior/PositionTarget";
+import { PathFollowerComponent } from "../core/components/behavior/PathFollower";
 import { makeSmokeParticle } from "../core/prefabs/SmokeParticle";
-import { FootprintComponent } from "../core/components/Footprint";
-import SpriteComponent from "../core/components/Sprite";
+import { FootprintComponent } from "../core/components/data/Footprint";
+import SpriteComponent from "../core/components/behavior/Sprite";
 import { Pathfinder } from "../core/data/Pathfinder";
 import { Direction } from "../core/data/Direction";
-import { LifetimeComponent } from "../core/components/Lifetime";
-import { ClickableComponent } from "../core/components/Clickable";
+import { LifetimeComponent } from "../core/components/behavior/Lifetime";
+import { ClickableComponent } from "../core/components/behavior/Clickable";
 import { Entity } from "../core/ecs/Entity";
 import { ECSManager } from "../core/ecs/ECSManager";
 import { DynamicConstant, getDynamic } from "../core/data/DynamicConstant";
-import { ClickableDisplayComponent } from "../core/components/ClickableDisplay";
-import SelectedComponent from "../core/components/Selected";
+import { ClickableDisplayComponent } from "../core/components/rendering/ClickableDisplay";
+import SelectedComponent from "../core/components/marker/Selected";
 import { textChangeRangeIsUnchanged } from "typescript";
-import { RegionComponent } from "../core/components/RegionRender";
-import TextRenderComponent from "../core/components/TextRender";
-import SellableComponent from "../core/components/Sellable";
-import { ValueComponent, ValueEntity } from "../core/components/Value";
+import { RegionComponent } from "../core/components/rendering/RegionRender";
+import TextRenderComponent from "../core/components/rendering/TextRender";
+import SellableComponent from "../core/components/marker/Sellable";
+import { ValueComponent, ValueEntity } from "../core/components/data/Value";
+import { NameComponent } from "../core/components/data/Name";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
@@ -106,7 +110,6 @@ export class GameModel extends BaseGameModel {
       "#ffffff"
     );
     this.createUIText(new Vector2(5, 4), "Towers", "#ffffff");
-    this.createUIText(new Vector2(5, 4), "Towers", "#ffffff");
     const sellButton = this.createUIRegion(
       new Vector2(2.5, 25),
       new Vector2(2, 1),
@@ -116,6 +119,22 @@ export class GameModel extends BaseGameModel {
     this.ecs.addComponent(sellButton, TextRenderComponent, {
       text: "Sell",
     });
+    this.createUIText(new Vector2(5, 7), "Selected", "#ffffff");
+    const selectionInfo = this.createUIText(
+      new Vector2(1, 8),
+      (): string => {
+        const sel = this.getSelection();
+        if (sel !== null) {
+          if ("name" in sel.data) {
+            return sel.data.name.name as string;
+          }
+        }
+        return "";
+      },
+      "#ffffff",
+      1,
+      "left"
+    );
     const upgradeButton = this.createUIRegion(
       new Vector2(7.5, 25),
       new Vector2(2, 1),
@@ -146,7 +165,8 @@ export class GameModel extends BaseGameModel {
     position: Vector2,
     text: DynamicConstant<string>,
     style?: string,
-    size?: number
+    size?: number,
+    align?: CanvasTextAlign
   ) {
     const el = this.ecs.createEntity();
     this.ecs.addComponent(el, PositionComponent, {
@@ -156,6 +176,7 @@ export class GameModel extends BaseGameModel {
       text,
       style,
       size,
+      align,
     });
   }
 
@@ -317,5 +338,8 @@ export class GameModel extends BaseGameModel {
       value: 5,
     });
     this.ecs.addComponent(entityID, SellableComponent);
+    this.ecs.addComponent(entityID, NameComponent, {
+      name: `Drone ${entityID}`,
+    });
   }
 }

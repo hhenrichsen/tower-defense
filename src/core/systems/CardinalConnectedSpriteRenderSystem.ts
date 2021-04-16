@@ -1,12 +1,12 @@
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import { Component } from "../ecs/Component";
-import { PositionComponent } from "../components/Position";
-import { RotationComponent } from "../components/Rotation";
+import { PositionComponent } from "../components/data/Position";
+import { RotationComponent } from "../components/data/Rotation";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import CardinalConnectedSpriteComponent, {
   CardinalConnectedSpriteEntity,
-} from "../components/CardinalConnectedSprite";
+} from "../components/rendering/CardinalConnectedSprite";
 import { GameMap } from "../data/GameMap";
 
 export class AnimatedSpriteRenderSystem extends BaseSystem {

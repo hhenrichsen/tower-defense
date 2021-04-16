@@ -1,5 +1,5 @@
-import { Component } from "../ecs/Component";
-import { Entity } from "../ecs/Entity";
+import { Component } from "../../ecs/Component";
+import { Entity } from "../../ecs/Entity";
 import { PositionEntity } from "./Position";
 
 export interface RangeData extends Record<string, unknown> {

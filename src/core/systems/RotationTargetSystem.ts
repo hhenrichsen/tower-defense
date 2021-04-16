@@ -1,9 +1,9 @@
-import { PositionComponent } from "../components/Position";
-import { RotationComponent } from "../components/Rotation";
+import { PositionComponent } from "../components/data/Position";
+import { RotationComponent } from "../components/data/Rotation";
 import {
   RotationTargetComponent,
   RotationTargetEntity,
-} from "../components/RotationTarget";
+} from "../components/behavior/RotationTarget";
 import { getDynamic } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";

@@ -1,9 +1,9 @@
-import { Component } from "../ecs/Component";
-import { Entity } from "../ecs/Entity";
-import Vector2 from "../geometry/Vector2";
-import { PositionEntity } from "./Position";
-import { Texture } from "../rendering/Texture";
-import { IndexedSpriteProvider } from "../rendering/IndexedSpriteProvider";
+import { Component } from "../../ecs/Component";
+import { Entity } from "../../ecs/Entity";
+import Vector2 from "../../geometry/Vector2";
+import { PositionEntity } from "../data/Position";
+import { Texture } from "../../rendering/Texture";
+import { IndexedSpriteProvider } from "../../rendering/IndexedSpriteProvider";
 
 export interface CardinalConnectedSpriteData extends Record<string, unknown> {
   size: Vector2; // virtual coordinate units

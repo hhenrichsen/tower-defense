@@ -1,4 +1,4 @@
-import { HealthEntity } from "../../core/components/Health";
+import { HealthEntity } from "../../core/components/data/Health";
 
 export class ProjectileType {
   public static readonly DEFAULT = new ProjectileType();

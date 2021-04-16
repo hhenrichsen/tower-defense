@@ -1,4 +1,4 @@
-import { Component } from "../ecs/Component";
+import { Component } from "../../ecs/Component";
 
 export class Sellable extends Component {
   protected defaultData(): Record<string, unknown> {

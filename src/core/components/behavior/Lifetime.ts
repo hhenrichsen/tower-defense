@@ -1,5 +1,5 @@
-import { Component } from "../ecs/Component";
-import { Entity } from "../ecs/Entity";
+import { Component } from "../../ecs/Component";
+import { Entity } from "../../ecs/Entity";
 
 export interface LifetimeData extends Record<string, unknown> {
   lifetime: number; // seconds

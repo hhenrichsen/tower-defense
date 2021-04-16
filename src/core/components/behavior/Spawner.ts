@@ -1,9 +1,9 @@
-import { Component } from "../ecs/Component";
-import { Entity } from "../ecs/Entity";
-import { PrefabSpawner } from "../ecs/Prefab";
-import { IntervalStorage } from "../ecs/System";
-import { testPrefab } from "../prefabs/TestPrefab";
-import { PositionEntity } from "./Position";
+import { Component } from "../../ecs/Component";
+import { Entity } from "../../ecs/Entity";
+import { PrefabSpawner } from "../../ecs/Prefab";
+import { IntervalStorage } from "../../ecs/System";
+import { testPrefab } from "../../prefabs/TestPrefab";
+import { PositionEntity } from "../data/Position";
 
 export interface SpawnerData extends Record<string, unknown>, IntervalStorage {
   prefab: PrefabSpawner;

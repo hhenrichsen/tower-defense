@@ -1,7 +1,7 @@
-import { BaseGameModel } from "../data/BaseGameModel";
-import { DynamicConstant } from "../data/DynamicConstant";
-import { Component } from "../ecs/Component";
-import { ClickableEntity } from "./Clickable";
+import { BaseGameModel } from "../../data/BaseGameModel";
+import { DynamicConstant } from "../../data/DynamicConstant";
+import { Component } from "../../ecs/Component";
+import { ClickableEntity } from "../behavior/Clickable";
 
 export interface ClickableDisplayData extends Record<string, unknown> {
   background: DynamicConstant<string | CanvasGradient | CanvasPattern>;

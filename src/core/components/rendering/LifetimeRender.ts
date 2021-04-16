@@ -1,6 +1,6 @@
-import { Component } from "../ecs/Component";
-import { LifetimeEntity } from "./Lifetime";
-import { SpriteEntity } from "./Sprite";
+import { Component } from "../../ecs/Component";
+import { LifetimeEntity } from "../behavior/Lifetime";
+import { SpriteEntity } from "../behavior/Sprite";
 
 export type LifetimeRenderEntity = SpriteEntity & LifetimeEntity;
 

@@ -1,10 +1,10 @@
-import { LifetimeComponent } from "../components/Lifetime";
-import { PositionComponent, PositionEntity } from "../components/Position";
-import { RangeComponent } from "../components/Range";
-import { RangeDisplayComponent } from "../components/RangeDisplay";
-import { RotationComponent } from "../components/Rotation";
-import SpriteComponent from "../components/Sprite";
-import { VelocityComponent } from "../components/Velocity";
+import { LifetimeComponent } from "../components/behavior/Lifetime";
+import { PositionComponent, PositionEntity } from "../components/data/Position";
+import { RangeComponent } from "../components/data/Range";
+import { RangeDisplayComponent } from "../components/rendering/RangeDisplay";
+import { RotationComponent } from "../components/data/Rotation";
+import SpriteComponent from "../components/behavior/Sprite";
+import { VelocityComponent } from "../components/data/Velocity";
 import { Component } from "../ecs/Component";
 import { Prefab } from "../ecs/Prefab";
 import Vector2 from "../geometry/Vector2";

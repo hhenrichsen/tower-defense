@@ -1,10 +1,10 @@
-import { BaseGameModel } from "../data/BaseGameModel";
-import { DynamicConstant } from "../data/DynamicConstant";
-import { Component } from "../ecs/Component";
-import { ECSManager } from "../ecs/ECSManager";
-import { Entity } from "../ecs/Entity";
-import Vector2 from "../geometry/Vector2";
-import { PositionEntity } from "./Position";
+import { BaseGameModel } from "../../data/BaseGameModel";
+import { DynamicConstant } from "../../data/DynamicConstant";
+import { Component } from "../../ecs/Component";
+import { ECSManager } from "../../ecs/ECSManager";
+import { Entity } from "../../ecs/Entity";
+import Vector2 from "../../geometry/Vector2";
+import { PositionEntity } from "../data/Position";
 
 export interface ClickableData extends Record<string, unknown> {
   delta: DynamicConstant<Vector2>; // virtual coordinate units

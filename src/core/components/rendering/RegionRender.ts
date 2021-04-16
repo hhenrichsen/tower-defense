@@ -1,7 +1,7 @@
-import { DynamicConstant } from "../data/DynamicConstant";
-import { Component } from "../ecs/Component";
-import Vector2 from "../geometry/Vector2";
-import { PositionEntity } from "./Position";
+import { DynamicConstant } from "../../data/DynamicConstant";
+import { Component } from "../../ecs/Component";
+import Vector2 from "../../geometry/Vector2";
+import { PositionEntity } from "../data/Position";
 
 export interface RegionData extends Record<string, unknown> {
   delta: DynamicConstant<Vector2>; // virtual coordinate units

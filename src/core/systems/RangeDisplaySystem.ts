@@ -1,13 +1,13 @@
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import { Component } from "../ecs/Component";
-import { PositionComponent } from "../components/Position";
+import { PositionComponent } from "../components/data/Position";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import {
   RangeDisplayComponent,
   RangeDisplayEntity,
-} from "../components/RangeDisplay";
-import { RangeComponent } from "../components/Range";
+} from "../components/rendering/RangeDisplay";
+import { RangeComponent } from "../components/data/Range";
 import { getDynamic } from "../data/DynamicConstant";
 
 export class RangeDisplaySystem extends BaseSystem {

@@ -1,10 +1,10 @@
 import {
   PathFollowerComponent,
   PathFollowerEntity,
-} from "../components/PathFollower";
-import { PositionComponent } from "../components/Position";
-import { VelocityTargetComponent } from "../components/PositionTarget";
-import { RotationTargetComponent } from "../components/RotationTarget";
+} from "../components/behavior/PathFollower";
+import { PositionComponent } from "../components/data/Position";
+import { VelocityTargetComponent } from "../components/behavior/PositionTarget";
+import { RotationTargetComponent } from "../components/behavior/RotationTarget";
 import { getDynamic } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";

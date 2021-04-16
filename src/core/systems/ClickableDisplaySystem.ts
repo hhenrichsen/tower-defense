@@ -1,8 +1,8 @@
 import {
   ClickableDisplayComponent,
   ClickableDisplayEntity,
-} from "../components/ClickableDisplay";
-import { PositionComponent } from "../components/Position";
+} from "../components/rendering/ClickableDisplay";
+import { PositionComponent } from "../components/data/Position";
 import { BaseGameModel } from "../data/BaseGameModel";
 import { DynamicConstant, getDynamic } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";

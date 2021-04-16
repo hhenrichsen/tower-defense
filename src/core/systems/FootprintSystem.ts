@@ -1,5 +1,8 @@
-import { FootprintComponent, FootprintEntity } from "../components/Footprint";
-import { PositionComponent } from "../components/Position";
+import {
+  FootprintComponent,
+  FootprintEntity,
+} from "../components/data/Footprint";
+import { PositionComponent } from "../components/data/Position";
 import { BaseGameModel } from "../data/BaseGameModel";
 import { getDynamic } from "../data/DynamicConstant";
 import { GameMap } from "../data/GameMap";

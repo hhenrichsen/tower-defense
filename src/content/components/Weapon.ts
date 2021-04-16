@@ -1,4 +1,4 @@
-import { PositionEntity } from "../../core/components/Position";
+import { PositionEntity } from "../../core/components/data/Position";
 import { Component } from "../../core/ecs/Component";
 import { Entity } from "../../core/ecs/Entity";
 import { PrefabSpawner } from "../../core/ecs/Prefab";

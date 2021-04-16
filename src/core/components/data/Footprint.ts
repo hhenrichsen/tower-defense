@@ -1,4 +1,4 @@
-import { Component } from "../ecs/Component";
+import { Component } from "../../ecs/Component";
 import { PositionEntity } from "./Position";
 
 export interface FootprintData extends Record<string, unknown> {

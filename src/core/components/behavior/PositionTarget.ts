@@ -1,9 +1,9 @@
-import { DynamicConstant } from "../data/DynamicConstant";
-import { Component } from "../ecs/Component";
-import { Entity } from "../ecs/Entity";
-import Vector2 from "../geometry/Vector2";
-import { PositionEntity } from "./Position";
-import { VelocityEntity } from "./Velocity";
+import { DynamicConstant } from "../../data/DynamicConstant";
+import { Component } from "../../ecs/Component";
+import { Entity } from "../../ecs/Entity";
+import Vector2 from "../../geometry/Vector2";
+import { PositionEntity } from "../data/Position";
+import { VelocityEntity } from "../data/Velocity";
 
 export interface VelocityTargetData extends Record<string, unknown> {
   target: DynamicConstant<Vector2>;

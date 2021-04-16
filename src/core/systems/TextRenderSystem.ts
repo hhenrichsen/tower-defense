@@ -2,9 +2,9 @@ import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import TextRenderComponent, {
   TextRenderEntity,
-} from "../components/TextRender";
+} from "../components/rendering/TextRender";
 import { Component } from "../ecs/Component";
-import { PositionComponent } from "../components/Position";
+import { PositionComponent } from "../components/data/Position";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { getDynamic } from "../data/DynamicConstant";
 

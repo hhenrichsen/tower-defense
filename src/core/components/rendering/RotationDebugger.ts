@@ -1,4 +1,4 @@
-import { Component } from "../ecs/Component";
+import { Component } from "../../ecs/Component";
 
 export class RotationDebugger extends Component {
   protected defaultData(): Record<string, unknown> {

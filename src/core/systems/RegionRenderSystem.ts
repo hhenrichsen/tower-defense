@@ -1,10 +1,13 @@
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import { Component } from "../ecs/Component";
-import { PositionComponent, PositionEntity } from "../components/Position";
+import { PositionComponent, PositionEntity } from "../components/data/Position";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { getDynamic } from "../data/DynamicConstant";
-import { RegionComponent, RegionEntity } from "../components/RegionRender";
+import {
+  RegionComponent,
+  RegionEntity,
+} from "../components/rendering/RegionRender";
 
 export class RegionRenderSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;

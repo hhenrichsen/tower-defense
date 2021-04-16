@@ -1,5 +1,7 @@
-import { PositionComponent } from "../components/Position";
-import SpawnerComponent, { SpawnerEntity } from "../components/Spawner";
+import { PositionComponent } from "../components/data/Position";
+import SpawnerComponent, {
+  SpawnerEntity,
+} from "../components/behavior/Spawner";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";

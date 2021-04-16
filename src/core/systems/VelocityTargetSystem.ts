@@ -1,9 +1,9 @@
-import { PositionComponent } from "../components/Position";
+import { PositionComponent } from "../components/data/Position";
 import {
   VelocityTargetComponent,
   VelocityTargetEntity,
-} from "../components/PositionTarget";
-import { VelocityComponent } from "../components/Velocity";
+} from "../components/behavior/PositionTarget";
+import { VelocityComponent } from "../components/data/Velocity";
 import { getDynamic } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";

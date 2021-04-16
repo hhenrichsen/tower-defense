@@ -1,9 +1,9 @@
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
-import SpriteComponent, { SpriteEntity } from "../components/Sprite";
+import SpriteComponent, { SpriteEntity } from "../components/behavior/Sprite";
 import { Component } from "../ecs/Component";
-import { PositionComponent } from "../components/Position";
-import { RotationComponent } from "../components/Rotation";
+import { PositionComponent } from "../components/data/Position";
+import { RotationComponent } from "../components/data/Rotation";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { getDynamic } from "../data/DynamicConstant";
 

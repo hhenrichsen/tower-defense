@@ -1,6 +1,6 @@
-import { DynamicConstant } from "../data/DynamicConstant";
-import { Component } from "../ecs/Component";
-import { Entity } from "../ecs/Entity";
+import { DynamicConstant } from "../../data/DynamicConstant";
+import { Component } from "../../ecs/Component";
+import { Entity } from "../../ecs/Entity";
 
 export interface ValueData extends Record<string, unknown> {
   value: DynamicConstant<number>; // virtual coordinate units

@@ -1,5 +1,8 @@
-import { ClickableComponent, ClickableEntity } from "../components/Clickable";
-import { PositionComponent } from "../components/Position";
+import {
+  ClickableComponent,
+  ClickableEntity,
+} from "../components/behavior/Clickable";
+import { PositionComponent } from "../components/data/Position";
 import { BaseGameModel } from "../data/BaseGameModel";
 import { DynamicConstant, getDynamic } from "../data/DynamicConstant";
 import { Component } from "../ecs/Component";

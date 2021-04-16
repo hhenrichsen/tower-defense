@@ -1,6 +1,6 @@
-import { DynamicConstant } from "../data/DynamicConstant";
-import { Component } from "../ecs/Component";
-import Vector2 from "../geometry/Vector2";
+import { DynamicConstant } from "../../data/DynamicConstant";
+import { Component } from "../../ecs/Component";
+import Vector2 from "../../geometry/Vector2";
 import { VelocityTargetEntity } from "./PositionTarget";
 import { RotationTargetEntity } from "./RotationTarget";
 

@@ -1,7 +1,7 @@
-import { Component } from "../ecs/Component";
-import { Entity } from "../ecs/Entity";
-import { PositionEntity } from "./Position";
-import { RangeEntity } from "./Range";
+import { Component } from "../../ecs/Component";
+import { Entity } from "../../ecs/Entity";
+import { PositionEntity } from "../data/Position";
+import { RangeEntity } from "../data/Range";
 
 export interface RangeDisplayData extends Record<string, unknown> {
   strokeStyle: string;

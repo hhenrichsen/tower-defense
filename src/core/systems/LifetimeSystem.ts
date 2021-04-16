@@ -1,4 +1,7 @@
-import { LifetimeComponent, LifetimeEntity } from "../components/Lifetime";
+import {
+  LifetimeComponent,
+  LifetimeEntity,
+} from "../components/behavior/Lifetime";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";

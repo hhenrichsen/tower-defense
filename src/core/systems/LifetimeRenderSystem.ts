@@ -1,8 +1,11 @@
-import { LifetimeComponent, LifetimeEntity } from "../components/Lifetime";
+import {
+  LifetimeComponent,
+  LifetimeEntity,
+} from "../components/behavior/Lifetime";
 import LifetimeRenderComponent, {
   LifetimeRenderEntity,
-} from "../components/LifetimeRender";
-import SpriteComponent from "../components/Sprite";
+} from "../components/rendering/LifetimeRender";
+import SpriteComponent from "../components/behavior/Sprite";
 import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";

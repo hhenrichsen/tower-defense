@@ -1,4 +1,4 @@
-import SelectedComponent from "../components/Selected";
+import SelectedComponent from "../components/marker/Selected";
 import { ECSManager } from "../ecs/ECSManager";
 import { Entity } from "../ecs/Entity";
 import Vector2 from "../geometry/Vector2";
@@ -43,7 +43,7 @@ export abstract class BaseGameModel {
   private mouseAction: string;
   private clicksPerFrame: number;
   protected actionSet: Set<string>;
-  private selection: number;
+  private selection = -1;
 
   protected invalidateSelection(): void {
     this.selection = -1;
@@ -57,6 +57,7 @@ export abstract class BaseGameModel {
   protected setSelection(id: number): void {
     this.selection = id;
     const ids = this.ecs.getEntityIDsWithComponent(SelectedComponent.getName());
+    console.log(this.ecs.getEntity(id));
 
     for (let i = 0; i < ids.length; i++) {
       this.ecs.removeComponent(ids[i], SelectedComponent);

@@ -1,7 +1,7 @@
-import { DynamicConstant } from "../data/DynamicConstant";
-import { Component } from "../ecs/Component";
-import { Entity } from "../ecs/Entity";
-import { PositionEntity } from "./Position";
+import { DynamicConstant } from "../../data/DynamicConstant";
+import { Component } from "../../ecs/Component";
+import { Entity } from "../../ecs/Entity";
+import { PositionEntity } from "../data/Position";
 
 export interface TextRenderData extends Record<string, unknown> {
   text: DynamicConstant<string>; // virtual coordinate units per second,

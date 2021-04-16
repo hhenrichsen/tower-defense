@@ -1,10 +1,10 @@
-import { DynamicConstant } from "../data/DynamicConstant";
-import { Component } from "../ecs/Component";
-import { Entity } from "../ecs/Entity";
-import { Vector2 } from "../geometry/Vector2";
-import { Texture } from "../rendering/Texture";
-import { PositionEntity } from "./Position";
-import { RotationEntity } from "./Rotation";
+import { DynamicConstant } from "../../data/DynamicConstant";
+import { Component } from "../../ecs/Component";
+import { Entity } from "../../ecs/Entity";
+import { Vector2 } from "../../geometry/Vector2";
+import { Texture } from "../../rendering/Texture";
+import { PositionEntity } from "../data/Position";
+import { RotationEntity } from "../data/Rotation";
 
 export interface AnimatedSpriteData extends Record<string, unknown> {
   size: Vector2; // in virtual coordinates
