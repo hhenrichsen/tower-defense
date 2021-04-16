@@ -20,11 +20,11 @@ export class PersistenceManager<T, R> {
       const val = JSON.parse(localStorage.getItem(this.name));
       if (this.typeGuard && !this.typeGuard(val)) {
         console.warn(
-          `Found invalid shape of persistent data ${this.name}. Using default.`
+          `Found invalid shape of persistent data ${this.name}, assigning to default.`
         );
-        return this.getDefault(state);
+        return Object.assign(this.getDefault(state), val);
       }
-      return val;
+      return Object.assign(this.getDefault(state), val);
     }
   }
 
