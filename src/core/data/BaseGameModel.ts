@@ -114,7 +114,7 @@ export abstract class BaseGameModel {
         this.clicksPerFrame++;
       }
     });
-    this.keys.install(element);
+    this.keys.install();
     this.keys.addListener((interaction: KeyboardInteraction) => {
       if (interaction.down) {
         this.keySet.add(interaction.key);
@@ -124,6 +124,7 @@ export abstract class BaseGameModel {
 
   public uninstall(): void {
     this.virtualCanvas.uninstall();
+    this.keys.uninstall();
     this.parentElement = null;
   }
 

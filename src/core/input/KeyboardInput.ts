@@ -3,15 +3,24 @@ export class KeyboardInput {
   private events: Array<KeyboardInteraction> = [];
   private keyListeners: Map<string, Array<KeyboardListener>> = new Map();
 
-  public install(element: HTMLElement) {
-    element.addEventListener("keydown", (evt) => {
-      evt.preventDefault();
-      this.events.push({ key: evt.key, down: true });
-    });
-    element.addEventListener("keyup", (evt) => {
-      evt.preventDefault();
-      this.events.push({ key: evt.key, down: false });
-    });
+  constructor() {
+    this.keyDown = this.keyDown.bind(this);
+    this.keyUp = this.keyUp.bind(this);
+  }
+
+  public install() {
+    window.addEventListener("keydown", this.keyDown);
+    window.addEventListener("keyup", this.keyUp);
+  }
+
+  private keyDown(evt: KeyboardEvent) {
+    evt.preventDefault();
+    this.events.push({ key: evt.key, down: true });
+  }
+
+  private keyUp(evt: KeyboardEvent) {
+    evt.preventDefault();
+    this.events.push({ key: evt.key, down: false });
   }
 
   public addListener(listener: KeyboardListener) {
@@ -39,6 +48,11 @@ export class KeyboardInput {
       }
     }
     this.events.length = 0;
+  }
+
+  public uninstall() {
+    window.removeEventListener("keydown", this.keyDown);
+    window.removeEventListener("keyup", this.keyUp);
   }
 }
 
