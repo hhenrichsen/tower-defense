@@ -1,7 +1,7 @@
 import { lowerFirst } from "lodash";
-import { DynamicConstant } from "../../data/DynamicConstant";
-import { Component } from "../../ecs/Component";
-import SelectedComponent from "../marker/Selected";
+import { DynamicConstant } from "../../../data/DynamicConstant";
+import { Component } from "../../../ecs/Component";
+import SelectedComponent from "../../marker/Selected";
 import { ClickableEntity } from "./Clickable";
 
 export interface ClickComponentAddData extends Record<string, unknown> {

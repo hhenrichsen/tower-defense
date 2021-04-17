@@ -1,6 +1,6 @@
 import { lowerFirst } from "lodash";
-import { DynamicConstant } from "../../data/DynamicConstant";
-import { Component } from "../../ecs/Component";
+import { DynamicConstant } from "../../../data/DynamicConstant";
+import { Component } from "../../../ecs/Component";
 import { ClickableEntity } from "./Clickable";
 
 export interface ClickComponentToggleMultipleData

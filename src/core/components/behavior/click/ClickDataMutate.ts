@@ -1,5 +1,5 @@
 import { lowerFirst } from "lodash";
-import { Component } from "../../ecs/Component";
+import { Component } from "../../../ecs/Component";
 import { ClickableEntity } from "./Clickable";
 
 export interface ClickDataMutateData extends Record<string, unknown> {
