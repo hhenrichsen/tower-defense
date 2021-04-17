@@ -42,3 +42,20 @@ export function circleLineCollision(
 export function circlePointCollision(circle: Circle, point: Vector2): boolean {
   return Vector2.distance(point, circle.center) <= circle.radius;
 }
+
+export function rectPointCollision(
+  nw1: Vector2,
+  se1: Vector2,
+  pt: Vector2
+): boolean {
+  return pt.x >= nw1.x && pt.x <= se1.x && pt.y >= nw1.y && pt.y <= se1.y;
+}
+
+export function rectRectCollision(
+  nw1: Vector2,
+  se1: Vector2,
+  nw2: Vector2,
+  se2: Vector2
+): boolean {
+  return nw1.x <= se2.x && se1.x >= nw2.x && nw1.y <= se2.y && se1.x >= nw2.y;
+}
