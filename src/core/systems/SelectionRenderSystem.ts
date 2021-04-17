@@ -1,10 +1,13 @@
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import { Component } from "../ecs/Component";
-import { PositionComponent, PositionEntity } from "../components/data/Position";
-import { SelectedComponent } from "../components/marker/Selected";
+import { PositionComponent } from "../components/data/Position";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { getDynamic } from "../data/DynamicConstant";
+import {
+  SelectionDisplayComponent,
+  SelectionDisplayEntity,
+} from "../components/rendering/SelectionDisplay";
 
 export class SelectionSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
@@ -15,18 +18,19 @@ export class SelectionSystem extends BaseSystem {
   }
 
   protected updateEntity(deltaTime: number, entity: Entity): void {
-    const targetEntity = entity as PositionEntity;
-    const { position } = targetEntity.data.position;
+    const targetEntity = entity as SelectionDisplayEntity;
+    const { position, selectionDisplay } = targetEntity.data;
     this.virtualCanvas.drawCircle(
-      getDynamic(position),
-      1,
-      "#ff000000",
-      "#ffff00"
+      getDynamic(position.position),
+      getDynamic(selectionDisplay.radius),
+      selectionDisplay.fillStyle,
+      selectionDisplay.strokeStyle,
+      selectionDisplay.lineWidth
     );
   }
 
   getBasisComponent(): Component | null {
-    return SelectedComponent;
+    return SelectionDisplayComponent;
   }
 
   getRequiredComponents(): Set<Component> {
