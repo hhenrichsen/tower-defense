@@ -3,6 +3,15 @@ import { Component } from "./Component";
 import { Entity } from "./Entity";
 import { System } from "./System";
 
+interface EntityEvent {
+  event: string;
+  entity: Entity;
+}
+
+interface EntityEventListener {
+  (event: EntityEvent): boolean;
+}
+
 export class ECSManager {
   private nextId = 0;
   private entities: Map<number, Entity>;
@@ -12,6 +21,8 @@ export class ECSManager {
   private allSystems: Set<System>;
   private systemOrder: Array<number>;
   private availableIDs: Array<number>;
+  private events: Array<EntityEvent>;
+  private listeners: Map<string, Array<EntityEventListener>>;
 
   constructor() {
     this.entities = new Map();
@@ -24,6 +35,8 @@ export class ECSManager {
     this.getEntitiesWithComponent = this.getEntitiesWithComponent.bind(this);
     this.interestedSystems = new Map();
     this.availableIDs = [];
+    this.events = [];
+    this.listeners = new Map();
   }
 
   public createEntity(
@@ -42,6 +55,45 @@ export class ECSManager {
       this.entities.set(id, entity);
       return id;
     }
+  }
+
+  public listenEvent(event: string, listener: EntityEventListener): void {
+    if (!this.listeners.has(event)) {
+      this.listeners.set(event, []);
+    }
+    this.listeners.get(event).push(listener);
+  }
+
+  public emitEvent(event: string, entity: Entity): void {
+    this.events.push({ event, entity });
+  }
+
+  private resolveId(entity: number | Entity): number {
+    if (typeof entity === "number" || typeof entity === "bigint") {
+      if (entity >= this.nextId || !this.entities.has(entity)) {
+        console.warn(`Cannot resolve entity ${entity}; it does not exist.`);
+        return -1;
+      }
+      return entity;
+    }
+    return entity.id;
+  }
+
+  private resolveEntity(entity: number | Entity): Entity | null {
+    if (typeof entity === "number" || typeof entity === "bigint") {
+      const entityID = entity;
+      if (entityID >= this.nextId || !this.entities.has(entityID)) {
+        console.warn(`Cannot resolve entity ${entity}; it does not exist.`);
+        return null;
+      }
+      const e = this.getEntity(entity);
+      if (!e.active) {
+        console.warn(`Cannot resolve entity ${entity}; it has been deleted.`);
+        return null;
+      }
+      return e;
+    }
+    return entity;
   }
 
   public createSystem(system: System, wave = 1): void {
@@ -71,31 +123,21 @@ export class ECSManager {
     });
   }
 
-  public hasComponent(entityID: number, component: Component): boolean {
-    const entity = this.entities.get(entityID);
-    return component.getName() in entity.data;
+  public hasComponent(entity: number | Entity, component: Component): boolean {
+    const e = this.resolveEntity(entity);
+    if (!e.active) {
+      return false;
+    }
+    return component.getName() in e.data;
   }
 
   public addComponent(
-    entityID: number,
+    entityID: number | Entity,
     component: Component,
     initialData?: Record<string, unknown>
   ): void {
-    if (entityID >= this.nextId || !this.entities.has(entityID)) {
-      console.warn(
-        `Trying to add component ${component.getName()} to non-existent entity ${entityID}`
-      );
-      return;
-    }
-
-    const entity = this.entities.get(entityID);
-    if (!entity.active) {
-      console.warn(
-        `Trying to add component ${component.getName()} to non-existent entity ${entityID}`
-      );
-      return;
-    }
-
+    const entity = this.resolveEntity(entityID);
+    if (entity === null) return;
     entity.data[component.getName()] = component.init(initialData);
 
     if (this.interestedSystems.get(component.getName()) !== undefined) {
@@ -107,7 +149,7 @@ export class ECSManager {
     if (!this.entityComponents.has(component.getName())) {
       this.entityComponents.set(component.getName(), []);
     }
-    this.entityComponents.get(component.getName()).push(entityID);
+    this.entityComponents.get(component.getName()).push(entity.id);
   }
 
   public getEntity(entityID: number): Entity | null {
@@ -143,21 +185,8 @@ export class ECSManager {
   }
 
   public removeComponent(entityID: number, component: Component): void {
-    if (entityID >= this.nextId || !this.entities.has(entityID)) {
-      console.warn(
-        `Trying to remove component ${component.getName()} from non-existent entity ${entityID}`
-      );
-      return;
-    }
-
-    const entity = this.entities.get(entityID);
-    if (!entity.active) {
-      console.warn(
-        `Trying to add component ${component.getName()} to non-existent entity ${entityID}`
-      );
-      return;
-    }
-
+    const entity = this.resolveEntity(entityID);
+    if (entity === null) return;
     if (component.getName() in entity.data) {
       delete entity.data[component.getName()];
     }
@@ -182,7 +211,24 @@ export class ECSManager {
   }
 
   public update(elapsedTime: number, model: BaseGameModel): void {
-    for (const wave of this.systemOrder) {
+    for (let eventIdx = 0; eventIdx < this.events.length; eventIdx++) {
+      const { event, entity } = this.events[eventIdx];
+      if (this.listeners.has(event)) {
+        const listeners = this.listeners.get(event);
+        for (
+          let listenerIdx = 0;
+          listenerIdx < listeners.length;
+          listenerIdx++
+        ) {
+          if (!listeners[listenerIdx]({ event, entity })) {
+            break;
+          }
+        }
+      }
+    }
+    this.events.length = 0;
+    for (let orderIdx = 0; orderIdx < this.systemOrder.length; orderIdx++) {
+      const wave = this.systemOrder[orderIdx];
       const systems = this.systems.get(wave);
       for (const system of systems) {
         system.update(elapsedTime, model);
@@ -190,13 +236,15 @@ export class ECSManager {
     }
   }
 
-  public removeEntity(entityID: number): void {
+  public removeEntity(entityID: number | Entity): void {
+    const entity = this.resolveEntity(entityID);
+    if (entity === null) return;
     for (const system of this.allSystems) {
-      system.notify("__delete", this.entities.get(entityID));
+      system.notify("__delete", this.entities.get(entity.id));
     }
-    this.entities.get(entityID).data = {};
-    this.entities.get(entityID).active = false;
-    this.availableIDs.push(entityID);
+    entity.data = {};
+    entity.active = false;
+    this.availableIDs.push(entity.id);
   }
 
   clear(): void {
