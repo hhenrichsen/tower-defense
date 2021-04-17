@@ -5,9 +5,13 @@ import Vector2 from "../geometry/Vector2";
 import { KeyboardInput, KeyboardInteraction } from "../input/KeyboardInput";
 import { MouseInput, MouseInteraction } from "../input/MouseInput";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
+import { AbstractClickSystem } from "../systems/AbstractClickSystem";
 import { AnimatedSpriteRenderSystem } from "../systems/AnimatedSpriteRenderSystem";
 import { ClickableDisplaySystem } from "../systems/ClickableDisplaySystem";
-import { ClickableSystem } from "../systems/ClickableSystem";
+import { ClickComponentAddSystem } from "../systems/ClickComponentAddSystem";
+import { ClickComponentToggleMultipleSystem } from "../systems/ClickComponentToggleMultipleSystem";
+import { ClickComponentToggleSystem } from "../systems/ClickComponentToggleSystem";
+import { ClickDataMutateSystem } from "../systems/ClickDataMutationSystem";
 import { DraggableSystem } from "../systems/DraggableSystem";
 import { FootprintSystem } from "../systems/FootprintSystem";
 import { LifetimeRenderSystem } from "../systems/LifetimeRenderSystem";
@@ -131,9 +135,29 @@ export abstract class BaseGameModel {
   }
 
   private initSystems() {
-    // Entity creation/deletion
-    this.ecs.createSystem(new ClickableSystem(this.mouse.getMousePosition), -5);
+    // Input-based modification
+    this.ecs.createSystem(
+      new ClickComponentAddSystem(this.mouse.getMousePosition),
+      -5
+    );
+    this.ecs.createSystem(
+      new AbstractClickSystem(this.mouse.getMousePosition),
+      -5
+    );
+    this.ecs.createSystem(
+      new ClickComponentToggleSystem(this.mouse.getMousePosition),
+      -5
+    );
+    this.ecs.createSystem(
+      new ClickComponentToggleMultipleSystem(this.mouse.getMousePosition),
+      -5
+    );
+    this.ecs.createSystem(
+      new ClickDataMutateSystem(this.mouse.getMousePosition),
+      -5
+    );
 
+    // Entity creation/deletion
     this.ecs.createSystem(new SpawnerSystem(), -1);
     this.ecs.createSystem(new LifetimeSystem(), -1);
 

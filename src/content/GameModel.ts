@@ -1,18 +1,16 @@
+import { ClickComponentToggleMultipleComponent } from "../core/components/behavior/ClickComponentToggleMultiple";
+import { ClickDataMutateComponent } from "../core/components/behavior/ClickDataMutate";
 import DraggableComponent, {
   DraggableEntity,
 } from "../core/components/behavior/Draggable";
 import { MagnetComponent } from "../core/components/behavior/Magnet";
-import {
-  PositionComponent,
-  PositionEntity,
-} from "../core/components/data/Position";
+import { PositionComponent } from "../core/components/data/Position";
 import { RotationComponent } from "../core/components/data/Rotation";
 import MagnetAttractedComponent from "../core/components/marker/MagnetAttracted";
 import SelectedComponent from "../core/components/marker/Selected";
 import SpriteComponent from "../core/components/rendering/Sprite";
-import { ClickableComponent } from "../core/components/ui/Clickable";
+import { ClickableComponent } from "../core/components/behavior/Clickable";
 import { BaseGameModel } from "../core/data/BaseGameModel";
-import { getDynamic } from "../core/data/DynamicConstant";
 import Vector2 from "../core/geometry/Vector2";
 
 export class GameModel extends BaseGameModel {
@@ -20,7 +18,7 @@ export class GameModel extends BaseGameModel {
     super(new Vector2(50, 50));
   }
 
-  preStart() {
+  preStart(): void {
     const entityID = this.ecs.createEntity();
     const entity = this.ecs.getEntity(entityID) as DraggableEntity;
     this.ecs.addComponent(entityID, PositionComponent, {
@@ -33,19 +31,25 @@ export class GameModel extends BaseGameModel {
     this.ecs.addComponent(entityID, ClickableComponent, {
       delta: Vector2.matching(0.5),
       offset: Vector2.matching(0.5),
-      action: () => {
-        if (this.ecs.hasComponent(entityID, SelectedComponent)) {
-          this.ecs.removeComponent(entityID, SelectedComponent);
-          this.ecs.addComponent(entityID, MagnetAttractedComponent);
-          entity.data.draggable.dragging = false;
-        } else {
-          this.ecs.addComponent(entityID, SelectedComponent);
-          this.ecs.removeComponent(entityID, MagnetAttractedComponent);
-          entity.data.draggable.dragging = true;
-        }
-      },
+    });
+    this.ecs.addComponent(entityID, ClickComponentToggleMultipleComponent, {
+      components: [SelectedComponent, MagnetAttractedComponent],
+    });
+    const mutateFn = () => {
+      return {
+        draggable: {
+          dragging: !entity.data.draggable.dragging,
+        },
+        clickDataMutate: {
+          data: mutateFn,
+        },
+      };
+    };
+    this.ecs.addComponent(entityID, ClickDataMutateComponent, {
+      data: mutateFn,
     });
     this.ecs.addComponent(entityID, SpriteComponent);
+    this.ecs.addComponent(entityID, MagnetAttractedComponent);
     this.createMagnet(Vector2.matching(10), true);
   }
 
