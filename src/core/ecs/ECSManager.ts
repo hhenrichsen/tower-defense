@@ -225,14 +225,16 @@ export class ECSManager {
   public update(elapsedTime: number, model: BaseGameModel): void {
     for (let eventIdx = 0; eventIdx < this.events.length; eventIdx++) {
       const { event, entity } = this.events[eventIdx];
+      console.debug(`Running event ${event}`);
       if (this.listeners.has(event)) {
+        console.debug(`Found a listener for event ${event}`);
         const listeners = this.listeners.get(event);
         for (
           let listenerIdx = 0;
           listenerIdx < listeners.length;
           listenerIdx++
         ) {
-          listeners[listenerIdx]({ event, entity });
+          listeners[listenerIdx](this.events[eventIdx]);
         }
       }
     }

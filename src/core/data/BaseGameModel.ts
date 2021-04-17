@@ -26,6 +26,7 @@ import { RotationTargetSystem } from "../systems/RotationTargetSystem";
 import { SelectionSystem } from "../systems/SelectionRenderSystem";
 import { SpawnerSystem } from "../systems/SpawnerSystem";
 import { SpriteRenderSystem } from "../systems/SpriteRenderSystem";
+import { StackSystem } from "../systems/StackSystem";
 import { TextRenderSystem } from "../systems/TextRenderSystem";
 import { VelocitySystem } from "../systems/VelocitySystem";
 import { VelocityTargetSystem } from "../systems/VelocityTargetSystem";
@@ -154,6 +155,7 @@ export abstract class BaseGameModel {
 
     // Modifying "base" components
     this.ecs.createSystem(new PathFollowerSystem(), 0);
+    this.ecs.createSystem(new StackSystem(), 0);
     this.ecs.createSystem(new VelocityTargetSystem(), 0);
     this.ecs.createSystem(new RotationTargetSystem(), 0);
     this.ecs.createSystem(new MagnetSystem(), 0);
