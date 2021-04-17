@@ -1,5 +1,4 @@
 import { lowerFirst } from "lodash";
-import { BaseGameModel } from "../../../data/BaseGameModel";
 import { Component } from "../../../ecs/Component";
 import { ECSManager } from "../../../ecs/ECSManager";
 import { Entity } from "../../../ecs/Entity";

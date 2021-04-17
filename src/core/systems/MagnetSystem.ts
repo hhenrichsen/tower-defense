@@ -26,6 +26,8 @@ export class MagnetSystem extends BaseSystem {
       ) {
         entity.data.position.position = targetEntity.data.position.position;
         magnet.onSnap(targetEntity, entity, this.manager);
+        this.manager.emitEvent("magnet:snap", entity);
+        this.manager.emitEvent("magnet:pull", entity);
       }
     }
   }

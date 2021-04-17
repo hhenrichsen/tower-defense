@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BaseGameModel } from "../data/BaseGameModel";
 import { Component } from "./Component";
 import { ECSManager, EntityEvent } from "./ECSManager";
@@ -128,7 +129,7 @@ export abstract class BaseSystem implements System {
     }
   }
 
-  protected systemUpdate(_deltaTime: number, _model: BaseGameModel): void {
+  protected systemUpdate(deltaTime: number, model: BaseGameModel): void {
     return;
   }
 
@@ -140,11 +141,11 @@ export abstract class BaseSystem implements System {
     this.onEvent(event, entity);
   }
 
-  protected listen(event: string) {
+  protected listen(event: string): void {
     this.manager.listenEvent(event, this.listener.bind(this));
   }
 
-  protected onEvent(event: string, entity: Entity) {
+  protected onEvent(event: string, entity: Entity): void {
     return;
   }
 
