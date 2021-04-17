@@ -3,13 +3,13 @@ import { Component } from "./Component";
 import { Entity } from "./Entity";
 import { System } from "./System";
 
-interface EntityEvent {
+export interface EntityEvent {
   event: string;
   entity: Entity;
 }
 
 interface EntityEventListener {
-  (event: EntityEvent): boolean;
+  (event: EntityEvent): void;
 }
 
 export class ECSManager {
@@ -40,9 +40,10 @@ export class ECSManager {
   }
 
   public createEntity(
-    initialData?: Record<string, Record<string, unknown>>
+    initialData?: Record<string, Record<string, unknown>>,
+    allowReuse = true
   ): number {
-    if (this.availableIDs.length > 0) {
+    if (this.availableIDs.length > 0 && allowReuse) {
       const id = this.availableIDs.splice(0, 1)[0];
       console.debug(`Reusing ID ${id}`);
       const entity = this.entities.get(id);
@@ -220,9 +221,7 @@ export class ECSManager {
           listenerIdx < listeners.length;
           listenerIdx++
         ) {
-          if (!listeners[listenerIdx]({ event, entity })) {
-            break;
-          }
+          listeners[listenerIdx]({ event, entity });
         }
       }
     }

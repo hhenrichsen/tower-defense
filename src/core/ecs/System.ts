@@ -1,6 +1,6 @@
 import { BaseGameModel } from "../data/BaseGameModel";
 import { Component } from "./Component";
-import { ECSManager } from "./ECSManager";
+import { ECSManager, EntityEvent } from "./ECSManager";
 import { Entity } from "./Entity";
 
 export interface System {
@@ -34,7 +34,7 @@ export interface IntervalStorage {
 }
 
 export abstract class BaseSystem implements System {
-  private entities: Map<number, Entity> = new Map();
+  protected entities: Map<number, Entity> = new Map();
   protected manager: ECSManager;
 
   protected checkInterval(deltaTime: number, data: IntervalStorage): boolean {
@@ -71,8 +71,13 @@ export abstract class BaseSystem implements System {
     }
   }
 
+  protected onManagerAwake(): void {
+    return;
+  }
+
   public setManager(manager: ECSManager): void {
     this.manager = manager;
+    this.onManagerAwake();
   }
 
   protected checkBasis(componentName: string, entity: Entity): boolean {
@@ -127,6 +132,22 @@ export abstract class BaseSystem implements System {
     return;
   }
 
+  private listener(entityEvent: EntityEvent) {
+    const { event, entity } = entityEvent;
+    if (!this.entities.has(entity.id)) {
+      return;
+    }
+    this.onEvent(event, entity);
+  }
+
+  protected listen(event: string) {
+    this.manager.listenEvent(event, this.listener.bind(this));
+  }
+
+  protected onEvent(event: string, entity: Entity) {
+    return;
+  }
+
   /**
    * @returns The component that triggers interest in an entity.
    */
@@ -152,9 +173,11 @@ export abstract class BaseSystem implements System {
     return true;
   }
 
-  protected abstract updateEntity(
+  protected updateEntity(
     deltaTime: number,
     entity: Entity,
     mode: BaseGameModel
-  ): void;
+  ): void {
+    return;
+  }
 }
