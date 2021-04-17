@@ -1,8 +1,6 @@
 import { lowerFirst } from "lodash";
 import { DynamicConstant } from "../../data/DynamicConstant";
 import { Component } from "../../ecs/Component";
-import { ECSManager } from "../../ecs/ECSManager";
-import { Entity } from "../../ecs/Entity";
 import Vector2 from "../../geometry/Vector2";
 import { PositionEntity } from "../data/Position";
 
