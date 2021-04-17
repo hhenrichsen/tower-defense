@@ -38,3 +38,7 @@ export function circleLineCollision(
   }
   return false;
 }
+
+export function circlePointCollision(circle: Circle, point: Vector2): boolean {
+  return Vector2.distance(point, circle.center) <= circle.radius;
+}

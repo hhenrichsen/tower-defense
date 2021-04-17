@@ -1,6 +1,6 @@
 import { Page } from "./Page";
 import { BaseGameModel } from "../data/BaseGameModel";
-import { BasePersistedData } from "../BasePersistedData";
+import { BasePersistedData } from "../data/BasePersistedData";
 import { GlobalState } from "./GlobalState";
 
 export abstract class GamePage<T extends BaseGameModel>
@@ -18,15 +18,6 @@ export abstract class GamePage<T extends BaseGameModel>
 
   init(): void {
     this.preInit();
-    // window.onfocus = () => {
-    //   this.focused = true;
-    //   console.info("Refocused window.");
-    //   this.gameModel.findCanvas();
-    // }
-    // window.onblur = () => {
-    //   this.focused = false;
-    //   console.info("Unfocused window.")
-    // }
     requestAnimationFrame(this.loopFunction);
   }
 

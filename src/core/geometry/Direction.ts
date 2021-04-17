@@ -1,4 +1,4 @@
-import Vector2 from "../geometry/Vector2";
+import Vector2 from "./Vector2";
 
 export class Direction {
   static readonly NORTH = new Direction(new Vector2(0, -1));

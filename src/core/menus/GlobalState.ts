@@ -1,4 +1,4 @@
-import { BasePersistedData, Score } from "../BasePersistedData";
+import { BasePersistedData, Score } from "../data/BasePersistedData";
 import { PersistenceManager } from "../data/Persistence";
 import { SimpleRouter } from "./Router";
 

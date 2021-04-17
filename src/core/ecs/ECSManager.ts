@@ -118,7 +118,8 @@ export class ECSManager {
     return null;
   }
 
-  public getEntityIDsWithComponent(componentName: string): Array<number> {
+  public getEntityIDsWithComponent(component: Component): Array<number> {
+    const componentName = component.getName();
     if (this.entityComponents.has(componentName)) {
       const res: Array<number> = [];
       for (const id of this.entityComponents.get(componentName)) {
@@ -129,7 +130,8 @@ export class ECSManager {
     return [];
   }
 
-  public getEntitiesWithComponent(componentName: string): Array<Entity> {
+  public getEntitiesWithComponent(component: Component): Array<Entity> {
+    const componentName = component.getName();
     if (this.entityComponents.has(componentName)) {
       const res: Array<Entity> = [];
       for (const id of this.entityComponents.get(componentName)) {
