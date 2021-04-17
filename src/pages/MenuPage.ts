@@ -1,10 +1,9 @@
-import { BasePersistedData } from "../core/BasePersistedData";
+import { BasePersistedData } from "../core/data/BasePersistedData";
 import { GlobalState } from "../core/menus/GlobalState";
 import { Page } from "../core/menus/Page";
 import { Router } from "../core/menus/Router";
 
 type GS = GlobalState<BasePersistedData>;
-
 export class HomePage implements Page<GS> {
   private playElement: HTMLElement;
   private controlsElement: HTMLElement;
@@ -12,6 +11,7 @@ export class HomePage implements Page<GS> {
   private creditsElement: HTMLElement;
   private router: Router<GS>;
   private name: string;
+  private firstTimeLoad = true;
 
   constructor(name: string) {
     this.name = name;
@@ -27,7 +27,6 @@ export class HomePage implements Page<GS> {
     const play = document.createElement("a");
     play.href = "#";
     play.id = "play";
-    play.innerText = "Play (Loading)";
     play.classList.add("inactive");
     base.appendChild(play);
     this.playElement = play;
@@ -55,6 +54,14 @@ export class HomePage implements Page<GS> {
     credits.classList.add("inactive");
     base.appendChild(credits);
     this.creditsElement = credits;
+
+    if (!this.firstTimeLoad) {
+      this.setPlayLoaded();
+      this.setCreditsLoaded();
+      this.setKeysLoaded();
+      this.setScoresLoaded();
+    }
+    this.firstTimeLoad = false;
   }
 
   public setPlayLoaded(): void {
@@ -82,7 +89,7 @@ export class HomePage implements Page<GS> {
   public setKeysLoaded(): void {
     this.controlsElement.classList.remove("inactive");
     this.controlsElement.addEventListener("click", () => {
-      this.router.requestTransition("controls");
+      this.router.requestTransition("keys");
     });
   }
 

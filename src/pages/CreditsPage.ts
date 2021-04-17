@@ -1,4 +1,4 @@
-import { BasePersistedData } from "../core/BasePersistedData";
+import { BasePersistedData } from "../core/data/BasePersistedData";
 import { GlobalState } from "../core/menus/GlobalState";
 import { Page } from "../core/menus/Page";
 import { Router } from "../core/menus/Router";

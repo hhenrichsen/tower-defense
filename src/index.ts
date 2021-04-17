@@ -1,32 +1,49 @@
-import { DEFAULT_PERSISTED_DATA } from "./core/BasePersistedData";
+import * as config from "./config.json";
 
-import("./core/menus/GlobalState").then((GlobalStateModule) => {
-  const { BaseGlobalState } = GlobalStateModule;
-  const globalState = new BaseGlobalState("game_name", DEFAULT_PERSISTED_DATA);
-  import("./pages/MenuPage").then((MenuPageModule) => {
-    const { HomePage } = MenuPageModule;
-    const home = new HomePage("Game Name");
-    globalState.router.addPage("main", home);
-    globalState.router.requestTransition("main", false);
-    import("./pages/MainPage").then((MainPageModule) => {
-      const { MainPage } = MainPageModule;
-      globalState.router.addPage("play", new MainPage());
-      home.setPlayLoaded();
-    });
-    import("./pages/CreditsPage").then((CreditsPageModule) => {
-      const { CreditsPage } = CreditsPageModule;
-      globalState.router.addPage("credits", new CreditsPage());
-      home.setCreditsLoaded();
-    });
-    import("./pages/KeysPage").then((KeyPageModule) => {
-      const { KeysPage } = KeyPageModule;
-      globalState.router.addPage("keys", new KeysPage());
-      home.setKeysLoaded();
-    });
-    import("./pages/ScorePage").then((ScorePageModule) => {
-      const { ScorePage } = ScorePageModule;
-      globalState.router.addPage("scores", new ScorePage());
-      home.setScoresLoaded();
+import("lodash").then((LodashModule) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore have to do this to work with dynamic imports.
+  const { camelCase } = LodashModule.default;
+  import("./core/data/BasePersistedData").then((BasePersistenceModule) => {
+    const { DEFAULT_PERSISTED_DATA } = BasePersistenceModule;
+    import("./core/menus/GlobalState").then((GlobalStateModule) => {
+      const customData = Object.assign(DEFAULT_PERSISTED_DATA, config);
+      const { BaseGlobalState } = GlobalStateModule;
+      const globalState = new BaseGlobalState(
+        camelCase(config.gameName),
+        customData
+      );
+      import("./pages/MenuPage").then((MenuPageModule) => {
+        const { HomePage } = MenuPageModule;
+        const home = new HomePage(config.gameName);
+        globalState.router.addPage("home", home);
+        globalState.router.requestTransition("home", false);
+        document.title = config.gameName;
+        import("./pages/MainPage").then((MainPageModule) => {
+          const { MainPage } = MainPageModule;
+          import("./content/GameModel").then((GameModelModule) => {
+            console.debug("GameModel loaded.");
+            const { GameModel } = GameModelModule;
+            globalState.router.addPage("play", new MainPage(new GameModel()));
+            home.setPlayLoaded();
+          });
+        });
+        import("./pages/CreditsPage").then((CreditsPageModule) => {
+          const { CreditsPage } = CreditsPageModule;
+          globalState.router.addPage("credits", new CreditsPage());
+          home.setCreditsLoaded();
+        });
+        import("./pages/KeysPage").then((KeyPageModule) => {
+          const { KeysPage } = KeyPageModule;
+          globalState.router.addPage("keys", new KeysPage());
+          home.setKeysLoaded();
+        });
+        import("./pages/ScorePage").then((ScorePageModule) => {
+          const { ScorePage } = ScorePageModule;
+          globalState.router.addPage("scores", new ScorePage());
+          home.setScoresLoaded();
+        });
+      });
     });
   });
 });

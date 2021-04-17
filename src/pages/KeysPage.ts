@@ -1,4 +1,4 @@
-import { BasePersistedData } from "../core/BasePersistedData";
+import { BasePersistedData } from "../core/data/BasePersistedData";
 import { GlobalState } from "../core/menus/GlobalState";
 import { Page } from "../core/menus/Page";
 import { Router } from "../core/menus/Router";
@@ -17,7 +17,7 @@ export class KeysPage implements Page<GlobalState<BasePersistedData>> {
     state: GlobalState<BasePersistedData>
   ): void {
     this.state = state;
-    const { actions } = state.getData();
+    const { actions, keyMap } = state.getData();
     const header = document.createElement("h1");
     header.innerText = "Key Configuration";
     base.appendChild(header);
@@ -28,7 +28,9 @@ export class KeysPage implements Page<GlobalState<BasePersistedData>> {
     for (const key of actions) {
       const btn = document.createElement("button");
       btn.id = key;
-      btn.innerText = `${key.replace(/([a-z](?=[A-Z]))/g, "$1 ")} (${key})`; // CamelCase -> Camel Case
+      btn.innerText = `${key.replace(/([a-z](?=[A-Z]))/g, "$1 ")} (${
+        keyMap[key]
+      })`; // CamelCase -> Camel Case
       btn.addEventListener("click", () => {
         this.setListeningEvent(state, key);
       });
@@ -98,6 +100,8 @@ export class KeysPage implements Page<GlobalState<BasePersistedData>> {
         return;
       }
       const action = this.listeningEvent;
+      console.log(action);
+      console.log(keyMap[action]);
       this.state.remapControl(action, event.key);
       const btn = document.getElementById(action);
       btn.innerText = `${action.replace(/([a-z](?=[A-Z]))/g, "$1 ")} (${

@@ -1,0 +1,7 @@
+{
+    "gameName": "Engine Game",
+    "actions": ["pause"],
+    "keyMap": {
+        "pause": "p"
+    }
+}
