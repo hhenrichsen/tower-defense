@@ -25,6 +25,7 @@ export class MagnetSystem extends BaseSystem {
         circlePointCollision(circle, getDynamic(entity.data.position.position))
       ) {
         entity.data.position.position = targetEntity.data.position.position;
+        magnet.onSnap(targetEntity, entity, this.manager);
       }
     }
   }
