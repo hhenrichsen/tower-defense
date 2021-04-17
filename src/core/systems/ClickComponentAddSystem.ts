@@ -9,6 +9,10 @@ import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 
 export class ClickComponentAddSystem extends BaseSystem {
+  protected onManagerAwake(): void {
+    this.listen("click");
+  }
+
   protected onEvent(_event: string, entity: Entity): void {
     const { clickComponentAdd } = (entity as ClickComponentAddEntity).data;
     this.manager.addComponent(
