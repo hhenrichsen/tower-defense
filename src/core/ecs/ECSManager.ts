@@ -6,6 +6,7 @@ import { System } from "./System";
 export interface EntityEvent {
   event: string;
   entity: Entity;
+  extra?: Record<string, unknown>;
 }
 
 interface EntityEventListener {
@@ -71,8 +72,12 @@ export class ECSManager {
     this.listeners.get(event).push(listener);
   }
 
-  public emitEvent(event: string, entity: Entity): void {
-    this.events.push({ event, entity });
+  public emitEvent(
+    event: string,
+    entity: Entity,
+    extra?: Record<string, unknown>
+  ): void {
+    this.events.push({ event, entity, extra });
   }
 
   private resolveId(entity: number | Entity): number {
