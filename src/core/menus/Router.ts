@@ -19,7 +19,7 @@ export class SimpleRouter<T> implements Router<T> {
   private _history: Array<string> = [];
   requestTransition: (
     id: string,
-    purge: boolean,
+    purge?: boolean,
     data?: Record<string, unknown>
   ) => void;
 

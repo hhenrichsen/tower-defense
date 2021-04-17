@@ -10,7 +10,10 @@ import { ParticleManager } from "../core/rendering/ParticleManager";
 import { Texture } from "../core/rendering/Texture";
 import { WaveManifest } from "./types/WaveManifest";
 import { PersistenceManager } from "../core/data/Persistence";
-import { DEFAULT_PERSISTED_DATA, PersistedData } from "./PersistedData";
+import {
+  DEFAULT_PERSISTED_DATA,
+  BasePersistedData,
+} from "../core/BasePersistedData";
 import { VelocityTargetComponent } from "../core/components/behavior/PositionTarget";
 import { PathFollowerComponent } from "../core/components/behavior/PathFollower";
 import { FootprintComponent } from "../core/components/data/Footprint";
@@ -42,7 +45,7 @@ export class GameModel extends BaseGameModel {
   public money = 50;
   public wave: number;
   public waveSet: Array<WaveManifest>;
-  public persistence: PersistenceManager<GameModel, PersistedData>;
+  public persistence: PersistenceManager<GameModel, BasePersistedData>;
   private _actionMap: ActionMap;
   private eastWestPath: Array<Vector2> = [];
   private northSouthPath: Array<Vector2>;

@@ -1,8 +1,10 @@
 import { Page } from "./Page";
 import { BaseGameModel } from "../data/BaseGameModel";
-import { Router } from "./Router";
+import { BasePersistedData } from "../BasePersistedData";
+import { GlobalState } from "./GlobalState";
 
-export abstract class GamePage<T extends BaseGameModel> implements Page<T> {
+export abstract class GamePage<T extends BaseGameModel>
+  implements Page<GlobalState<BasePersistedData>> {
   protected gameModel: T;
   private focused = true;
 
@@ -10,7 +12,7 @@ export abstract class GamePage<T extends BaseGameModel> implements Page<T> {
     this.gameModel = gameModel;
   }
 
-  load(element: HTMLElement, router: Router<T>): void {
+  load(element: HTMLElement): void {
     this.gameModel.install(element);
   }
 
@@ -25,24 +27,24 @@ export abstract class GamePage<T extends BaseGameModel> implements Page<T> {
     //   this.focused = false;
     //   console.info("Unfocused window.")
     // }
-    requestAnimationFrame(this.loopfn);
+    requestAnimationFrame(this.loopFunction);
   }
 
   protected preInit(): void {
     this.gameModel.preStart();
   }
 
-  public canTransition(router: Router<T>, nextPage: string): boolean {
+  public canTransition(): boolean {
     return true;
   }
 
-  private loopfn: FrameRequestCallback = (totalTime: number) => {
+  private loopFunction: FrameRequestCallback = (totalTime: number) => {
     if (this.focused) {
       this.gameModel.updateRawTime(totalTime);
     }
 
     if (this.gameModel.isRunning()) {
-      requestAnimationFrame(this.loopfn);
+      requestAnimationFrame(this.loopFunction);
     }
   };
 
