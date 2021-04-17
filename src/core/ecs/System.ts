@@ -134,18 +134,22 @@ export abstract class BaseSystem implements System {
   }
 
   private listener(entityEvent: EntityEvent) {
-    const { event, entity } = entityEvent;
+    const { event, entity, extra } = entityEvent;
     if (!this.entities.has(entity.id)) {
       return;
     }
-    this.onEvent(event, entity);
+    this.onEvent(event, entity, extra);
   }
 
   protected listen(event: string): void {
     this.manager.listenEvent(event, this.listener.bind(this));
   }
 
-  protected onEvent(event: string, entity: Entity): void {
+  protected onEvent(
+    event: string,
+    entity: Entity,
+    extra?: Record<string, unknown>
+  ): void {
     return;
   }
 
