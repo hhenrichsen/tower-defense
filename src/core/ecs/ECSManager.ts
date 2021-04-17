@@ -24,7 +24,7 @@ export class ECSManager {
   private events: Array<EntityEvent>;
   private listeners: Map<string, Array<EntityEventListener>>;
 
-  constructor() {
+  constructor(initialPoolSize = 250) {
     this.entities = new Map();
     this.systems = new Map();
     this.entityComponents = new Map();
@@ -37,6 +37,12 @@ export class ECSManager {
     this.availableIDs = [];
     this.events = [];
     this.listeners = new Map();
+    for (let i = 0; i < initialPoolSize; i++) {
+      this.createEntity();
+    }
+    for (let i = 0; i < initialPoolSize; i++) {
+      this.removeEntity(i);
+    }
   }
 
   public createEntity(
