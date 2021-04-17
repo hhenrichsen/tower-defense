@@ -4,6 +4,7 @@
     "noImplicitAny": true,
     "module": "none",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "target": "es6",
     "sourceMap": true,
     "allowJs": true,

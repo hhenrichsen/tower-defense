@@ -28,7 +28,9 @@ export class ClickableSystem extends BaseSystem {
       const targetEntity = entity as ClickableEntity;
       const { position, clickable } = targetEntity.data;
       const delta = getDynamic(clickable.delta);
-      const pos = getDynamic(position.position);
+      const pos = getDynamic(position.position).add(
+        getDynamic(clickable.offset)
+      );
       const northWest = pos.subtract(delta);
       const southEast = pos.add(delta);
       if (
@@ -37,6 +39,7 @@ export class ClickableSystem extends BaseSystem {
         mouse.x < southEast.x &&
         mouse.y < southEast.y
       ) {
+        console.debug(`Entity ${entity.id} clicked.`);
         clickable.action(entity, model, this.manager);
       }
     }

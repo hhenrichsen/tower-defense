@@ -10,6 +10,7 @@ import { PositionEntity } from "../data/Position";
 export interface ClickableData extends Record<string, unknown> {
   delta: DynamicConstant<Vector2>; // virtual coordinate units
   action: (entity: Entity, model: BaseGameModel, ecs: ECSManager) => void;
+  offset: DynamicConstant<Vector2>;
 }
 
 export type ClickableEntity = PositionEntity & {
@@ -24,6 +25,7 @@ export class Clickable extends Component {
   protected defaultData(): ClickableData {
     return {
       delta: Vector2.ZERO,
+      offset: Vector2.ZERO,
       action: () => {
         return;
       },

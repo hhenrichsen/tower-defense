@@ -8,9 +8,11 @@ import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { AnimatedSpriteRenderSystem } from "../systems/AnimatedSpriteRenderSystem";
 import { ClickableDisplaySystem } from "../systems/ClickableDisplaySystem";
 import { ClickableSystem } from "../systems/ClickableSystem";
+import { DraggableSystem } from "../systems/DraggableSystem";
 import { FootprintSystem } from "../systems/FootprintSystem";
 import { LifetimeRenderSystem } from "../systems/LifetimeRenderSystem";
 import { LifetimeSystem } from "../systems/LifetimeSystem";
+import { MagnetSystem } from "../systems/MagnetSystem";
 import { PathFollowerSystem } from "../systems/PathFollowerSystem";
 import { RangeDisplaySystem } from "../systems/RangeDisplaySystem";
 import { RegionRenderSystem } from "../systems/RegionRenderSystem";
@@ -52,7 +54,7 @@ export abstract class BaseGameModel {
 
   protected setSelection(id: number): void {
     this.selection = id;
-    const ids = this.ecs.getEntityIDsWithComponent(SelectedComponent.getName());
+    const ids = this.ecs.getEntityIDsWithComponent(SelectedComponent);
     console.log(this.ecs.getEntity(id));
 
     for (let i = 0; i < ids.length; i++) {
@@ -139,6 +141,8 @@ export abstract class BaseGameModel {
     this.ecs.createSystem(new PathFollowerSystem(), 0);
     this.ecs.createSystem(new VelocityTargetSystem(), 0);
     this.ecs.createSystem(new RotationTargetSystem(), 0);
+    this.ecs.createSystem(new MagnetSystem(), 0);
+    this.ecs.createSystem(new DraggableSystem(this.mouse.getMousePosition), 0);
     this.ecs.createSystem(new FootprintSystem(this.entityMap), 0);
 
     // Base components
