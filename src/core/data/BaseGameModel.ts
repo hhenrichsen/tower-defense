@@ -8,6 +8,7 @@ import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { AbstractClickSystem } from "../systems/AbstractClickSystem";
 import { AnimatedSpriteRenderSystem } from "../systems/AnimatedSpriteRenderSystem";
 import { ClickableDisplaySystem } from "../systems/ClickableDisplaySystem";
+import { ClickableSystem } from "../systems/ClickableSystem";
 import { ClickComponentAddSystem } from "../systems/ClickComponentAddSystem";
 import { ClickComponentToggleMultipleSystem } from "../systems/ClickComponentToggleMultipleSystem";
 import { ClickComponentToggleSystem } from "../systems/ClickComponentToggleSystem";
@@ -104,6 +105,10 @@ export abstract class BaseGameModel {
     this.keys.update();
   }
 
+  clearMouse(): void {
+    this.mouseAction = "none";
+  }
+
   public install(element: HTMLElement): void {
     this.virtualCanvas.install(element);
     this.lastTime = performance.now();
@@ -136,26 +141,12 @@ export abstract class BaseGameModel {
 
   private initSystems() {
     // Input-based modification
-    this.ecs.createSystem(
-      new ClickComponentAddSystem(this.mouse.getMousePosition),
-      -5
-    );
-    this.ecs.createSystem(
-      new AbstractClickSystem(this.mouse.getMousePosition),
-      -5
-    );
-    this.ecs.createSystem(
-      new ClickComponentToggleSystem(this.mouse.getMousePosition),
-      -5
-    );
-    this.ecs.createSystem(
-      new ClickComponentToggleMultipleSystem(this.mouse.getMousePosition),
-      -5
-    );
-    this.ecs.createSystem(
-      new ClickDataMutateSystem(this.mouse.getMousePosition),
-      -5
-    );
+    this.ecs.createSystem(new ClickableSystem(this.mouse.getMousePosition), -5);
+    this.ecs.createSystem(new ClickComponentAddSystem(), -5);
+    this.ecs.createSystem(new ClickComponentToggleSystem(), -5);
+    this.ecs.createSystem(new ClickComponentToggleMultipleSystem(), -5);
+    this.ecs.createSystem(new ClickDataMutateSystem(), -5);
+    this.ecs.createSystem(new AbstractClickSystem(), -5);
 
     // Entity creation/deletion
     this.ecs.createSystem(new SpawnerSystem(), -1);
