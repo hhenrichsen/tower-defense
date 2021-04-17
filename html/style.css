@@ -35,14 +35,15 @@ p {
 }
 
 a {
-    margin: 1.5em 0;
+    margin: 1.5em auto;
     font-size: 1.5em;
     text-decoration: none;
     color: #f69205;
+    max-width: fit-content;
 }
 
 main.home a {
-    margin: 0.5em 0;
+    margin: 0.5em auto;
 }
 
 a:visited {
@@ -50,7 +51,11 @@ a:visited {
     text-decoration: none;
 }
 
-a:hover {
+a.inactive {
+    color: #bbbbbb;
+}
+
+a:hover:not(.inactive) {
     animation: grow .25s;
     transform: scale(1.2);
 }
