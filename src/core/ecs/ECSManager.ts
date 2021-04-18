@@ -41,9 +41,7 @@ export class ECSManager {
     this.events = [];
     this.listeners = new Map();
     for (let i = 0; i < initialPoolSize; i++) {
-      this.createEntity();
-    }
-    for (let i = 0; i < initialPoolSize; i++) {
+      this.createEntity({}, false);
       this.removeEntity(i);
     }
   }
