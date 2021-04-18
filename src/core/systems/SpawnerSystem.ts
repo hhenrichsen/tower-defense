@@ -12,7 +12,7 @@ export class SpawnerSystem extends BaseSystem {
     const { spawner } = targetEntity.data;
     while (this.checkInterval(elapsedTime, spawner)) {
       for (let spawn = 0; spawn < spawner.count; spawn++) {
-        spawner.prefab(targetEntity);
+        spawner.producer(targetEntity, this.manager);
       }
     }
   }

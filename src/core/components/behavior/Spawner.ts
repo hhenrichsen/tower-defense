@@ -1,13 +1,12 @@
 import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
 import { Entity } from "../../ecs/Entity";
-import { PrefabSpawner } from "../../ecs/Prefab";
+import { EntityProducer } from "../../ecs/EntityProducer";
 import { IntervalStorage } from "../../ecs/System";
-import { testPrefab } from "../../prefabs/TestPrefab";
 import { PositionEntity } from "../data/Position";
 
 export interface SpawnerData extends Record<string, unknown>, IntervalStorage {
-  prefab: (parent: Entity) => void;
+  producer: EntityProducer;
   rate: number; // entities per second
   elapsed: number;
   count: number;
@@ -25,7 +24,7 @@ export class Spawner extends Component {
   }
 
   protected defaultData(): SpawnerData {
-    return { rate: 1, elapsed: 0, count: 1, prefab: testPrefab };
+    return { rate: 1, elapsed: 0, count: 1, producer: null };
   }
 }
 

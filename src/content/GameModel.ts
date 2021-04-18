@@ -16,9 +16,7 @@ import { PathFollowerComponent } from "../core/components/behavior/PathFollower"
 import { FootprintComponent } from "../core/components/data/Footprint";
 import SpriteComponent from "../core/components/rendering/Sprite";
 import { Pathfinder } from "../core/data/Pathfinder";
-import { Direction } from "../core/data/Direction";
 import { LifetimeComponent } from "../core/components/behavior/Lifetime";
-import { ClickableComponent } from "../core/components/ui/Clickable";
 import { Entity } from "../core/ecs/Entity";
 import { ECSManager } from "../core/ecs/ECSManager";
 import { DynamicConstant, getDynamic } from "../core/data/DynamicConstant";
@@ -35,6 +33,8 @@ import { ProjectileType } from "./types/ProjectileType";
 import { TurretBaseRenderSystem } from "./systems/BaseRenderSystem";
 import TurretBaseComponent, { TurretBase } from "./components/BaseComponent";
 import PositionDebugComponent from "../core/components/rendering/PositionDebug";
+import { ClickableComponent } from "../core/components/behavior/click/Clickable";
+import { Direction } from "../core/geometry/Direction";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;

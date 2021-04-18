@@ -1,11 +1,11 @@
 import { PositionEntity } from "../../core/components/data/Position";
 import { Component } from "../../core/ecs/Component";
 import { Entity } from "../../core/ecs/Entity";
-import { PrefabSpawner } from "../../core/ecs/Prefab";
+import { EntityProducer } from "../../core/ecs/EntityProducer";
 import { IntervalStorage } from "../../core/ecs/System";
 
 export interface SpawnerData extends Record<string, unknown>, IntervalStorage {
-  projectile: PrefabSpawner;
+  projectile: EntityProducer;
   rate: number; // entities per second
   elapsed: number;
 }
@@ -22,7 +22,7 @@ export class Spawner extends Component {
     return this.constructor.name.toLowerCase();
   }
   protected defaultData(): SpawnerData {
-    return { rate: 1, elapsed: 0, projectile: testPrefab };
+    return { rate: 1, elapsed: 0, projectile: null };
   }
 }
 
