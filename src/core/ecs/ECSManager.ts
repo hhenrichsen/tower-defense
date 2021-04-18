@@ -13,6 +13,8 @@ interface EntityEventListener {
   (event: EntityEvent): void;
 }
 
+export type EntityResolvable = Entity | number;
+
 export class ECSManager {
   private nextId = 0;
   private entities: Map<number, Entity>;
@@ -80,7 +82,7 @@ export class ECSManager {
     this.events.push({ event, entity, extra });
   }
 
-  private resolveId(entity: number | Entity): number {
+  private resolveId(entity: EntityResolvable): number {
     if (typeof entity === "number" || typeof entity === "bigint") {
       if (entity >= this.nextId || !this.entities.has(entity)) {
         console.warn(`Cannot resolve entity ${entity}; it does not exist.`);
@@ -91,7 +93,7 @@ export class ECSManager {
     return entity.id;
   }
 
-  private resolveEntity(entity: number | Entity): Entity | null {
+  private resolveEntity(entity: EntityResolvable): Entity | null {
     if (typeof entity === "number" || typeof entity === "bigint") {
       const entityID = entity;
       if (entityID >= this.nextId || !this.entities.has(entityID)) {
@@ -135,7 +137,7 @@ export class ECSManager {
     });
   }
 
-  public hasComponent(entity: number | Entity, component: Component): boolean {
+  public hasComponent(entity: EntityResolvable, component: Component): boolean {
     const e = this.resolveEntity(entity);
     if (!e.active) {
       return false;
@@ -144,7 +146,7 @@ export class ECSManager {
   }
 
   public addComponent(
-    entityID: number | Entity,
+    entityID: EntityResolvable,
     component: Component,
     initialData?: Record<string, unknown>
   ): void {
@@ -164,12 +166,8 @@ export class ECSManager {
     this.entityComponents.get(component.getName()).push(entity.id);
   }
 
-  public getEntity(entityID: number): Entity | null {
-    if (this.entities.has(entityID)) {
-      const entity = this.entities.get(entityID);
-      return entity.active ? entity : null;
-    }
-    return null;
+  public getEntity(entity: EntityResolvable): Entity | null {
+    return this.resolveEntity(entity);
   }
 
   public getEntityIDsWithComponent(component: Component): Array<number> {
@@ -251,7 +249,7 @@ export class ECSManager {
     }
   }
 
-  public removeEntity(entityID: number | Entity): void {
+  public removeEntity(entityID: EntityResolvable): void {
     const entity = this.resolveEntity(entityID);
     if (entity === null) return;
     for (const system of this.allSystems) {
