@@ -37,10 +37,10 @@ export class Vector2 {
    * @param angle The angle to create the vector from, in degrees.
    * @returns A unit vector pointing towards the given angle.
    */
-  static fromAngle(angle: number): Vector2 {
+  static fromAngle(angle: number, scalar?: number): Vector2 {
     return new Vector2(
-      Math.cos(angle * (Math.PI / 180)),
-      Math.sin(angle * (Math.PI / 180))
+      Math.cos(angle * (Math.PI / 180)) * (scalar || 1),
+      Math.sin(angle * (Math.PI / 180)) * (scalar || 1)
     );
   }
 
