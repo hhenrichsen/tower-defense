@@ -1,5 +1,9 @@
 import * as config from "./config.json";
+import { GlobalState } from "./core/menus/GlobalState";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+export let globalState: GlobalState;
 import("lodash").then((LodashModule) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore have to do this to work with dynamic imports.
@@ -9,10 +13,7 @@ import("lodash").then((LodashModule) => {
     import("./core/menus/GlobalState").then((GlobalStateModule) => {
       const customData = Object.assign(DEFAULT_PERSISTED_DATA, config);
       const { BaseGlobalState } = GlobalStateModule;
-      const globalState = new BaseGlobalState(
-        camelCase(config.gameName),
-        customData
-      );
+      globalState = new BaseGlobalState(camelCase(config.gameName), customData);
       import("./pages/MenuPage").then((MenuPageModule) => {
         const { HomePage } = MenuPageModule;
         const home = new HomePage(config.gameName);

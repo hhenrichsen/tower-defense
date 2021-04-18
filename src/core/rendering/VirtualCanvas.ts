@@ -96,7 +96,7 @@ export class VirtualCanvas {
     rotation = 0,
     opacity = 1
   ): void {
-    if (!texture.ready) {
+    if (!texture || !texture.ready) {
       return;
     }
     this.context.globalAlpha = opacity;

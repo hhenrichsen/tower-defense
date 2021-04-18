@@ -52,16 +52,16 @@ export abstract class BaseSystem implements System {
     entity: Entity,
     data?: Record<string, unknown>
   ): void {
-    if (notification === "__delete") {
+    if (notification === "__clear") {
+      this.entities.clear();
+    } else if (notification === "__delete") {
       this.entities.delete(entity.id);
-      return;
     } else if (notification === "__remove_component") {
       const { componentName } = data;
       const basis = this.getBasisComponent();
       if (basis.getName() === componentName) {
         this.entities.delete(entity.id);
       }
-      return;
     } else if (this.checkBasis(notification, entity)) {
       if (this.isInterested(notification, entity)) {
         this.entities.set(entity.id, entity);

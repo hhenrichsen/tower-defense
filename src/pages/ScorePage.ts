@@ -51,8 +51,8 @@ export class ScorePage implements Page<GlobalState<BasePersistedData>> {
       }
     }
 
-    const scoreList = scores.sort();
-    for (const score of scoreList) {
+    const scoreList = scores.sort((a, b) => a.score - b.score);
+    for (const score of scoreList.reverse()) {
       const scoreElement = document.createElement("p");
       scoreElement.innerText = `${score.score} - ${score.name}`;
       base.appendChild(scoreElement);

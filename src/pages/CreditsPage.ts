@@ -15,7 +15,7 @@ export class CreditsPage implements Page<GS> {
     header.innerText = "Credits";
     base.appendChild(header);
     const author = document.createElement("p");
-    author.innerText = "Lunar Lander Clone by Hunter Henrichsen";
+    author.innerText = "Warioware Minigame Clone by Hunter Henrichsen";
     const font = document.createElement("p");
     font.innerText = "Montserrat Font from Google Fonts";
     base.appendChild(author);

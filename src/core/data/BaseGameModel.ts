@@ -6,6 +6,7 @@ import { KeyboardInput, KeyboardInteraction } from "../input/KeyboardInput";
 import { MouseInput, MouseInteraction } from "../input/MouseInput";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { AbstractClickSystem } from "../systems/AbstractClickSystem";
+import { AccelerationSystem } from "../systems/AccelerationSystem";
 import { AnimatedSpriteRenderSystem } from "../systems/AnimatedSpriteRenderSystem";
 import { ClickableDisplaySystem } from "../systems/ClickableDisplaySystem";
 import { ClickableSystem } from "../systems/ClickableSystem";
@@ -48,6 +49,7 @@ export abstract class BaseGameModel {
   private clicksPerFrame: number;
   protected actionSet: Set<string>;
   private selection = -1;
+  private firstLoad = true;
 
   protected invalidateSelection(): void {
     this.selection = -1;
@@ -114,15 +116,22 @@ export abstract class BaseGameModel {
     this.virtualCanvas.install(element);
     this.lastTime = performance.now();
     this.parentElement = element;
-    this.initSystems();
     this.mouse.install(element, this.virtualCanvas);
+    this.keys.install();
+    if (this.firstLoad) {
+      this.firstInit();
+    }
+  }
+
+  public firstInit(): void {
+    this.firstLoad = false;
+    this.initSystems();
     this.mouse.addListener((interaction: MouseInteraction) => {
       if (interaction.leftDown) {
         this.mouseAction = "click";
         this.clicksPerFrame++;
       }
     });
-    this.keys.install();
     this.keys.addListener((interaction: KeyboardInteraction) => {
       if (interaction.down) {
         this.keySet.add(interaction.key);
@@ -163,6 +172,7 @@ export abstract class BaseGameModel {
     this.ecs.createSystem(new FootprintSystem(this.entityMap), 0);
 
     // Base components
+    this.ecs.createSystem(new AccelerationSystem());
     this.ecs.createSystem(new VelocitySystem());
 
     // Rendering

@@ -11,9 +11,8 @@ export class SpawnerSystem extends BaseSystem {
     const targetEntity = entity as SpawnerEntity;
     const { spawner } = targetEntity.data;
     while (this.checkInterval(elapsedTime, spawner)) {
-      for (let spawn = 0; spawn < spawner.spawnCount; spawn++) {
-        const spawn = spawner.prefab(targetEntity);
-        spawn.create(this.manager);
+      for (let spawn = 0; spawn < spawner.count; spawn++) {
+        spawner.prefab(targetEntity);
       }
     }
   }

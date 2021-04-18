@@ -189,7 +189,10 @@ export class ECSManager {
     if (this.entityComponents.has(componentName)) {
       const res: Array<Entity> = [];
       for (const id of this.entityComponents.get(componentName)) {
-        res.push(this.getEntity(id));
+        const entity = this.getEntity(id);
+        if (entity !== null && entity.active) {
+          res.push(entity);
+        }
       }
       return res;
     }
@@ -261,15 +264,15 @@ export class ECSManager {
 
   clear(): void {
     // Notify all systems that we're done with this.
-    for (const entityID of this.entities.keys()) {
-      for (const system of this.allSystems) {
-        system.notify("__delete", this.entities.get(entityID));
-      }
+    for (const system of this.allSystems) {
+      system.notify("__clear", null);
     }
     // Actually remove the entity.
     for (const entityID of this.entities.keys()) {
       this.entities.delete(entityID);
     }
+    this.availableIDs = [];
+    this.nextId = 0;
   }
 }
 

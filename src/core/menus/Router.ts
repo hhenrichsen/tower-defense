@@ -53,6 +53,7 @@ export class SimpleRouter<T> implements Router<T> {
       purge = false,
       data?: Record<string, unknown>
     ) {
+      console.log(`[ROUTER] Moving to ${id}`);
       if (this._pages[id] === undefined || this._pages[id] === null) {
         return;
       }

@@ -7,18 +7,17 @@ import { testPrefab } from "../../prefabs/TestPrefab";
 import { PositionEntity } from "../data/Position";
 
 export interface SpawnerData extends Record<string, unknown>, IntervalStorage {
-  prefab: PrefabSpawner;
+  prefab: (parent: Entity) => void;
   rate: number; // entities per second
   elapsed: number;
-  spawnCount: number;
+  count: number;
 }
 
 export interface ChildDataGenerator {
   (componentName: string, parent: Entity): Record<string, unknown>;
 }
 
-export type SpawnerEntity = Entity &
-  PositionEntity & { data: { spawner: SpawnerData } };
+export type SpawnerEntity = PositionEntity & { data: { spawner: SpawnerData } };
 
 export class Spawner extends Component {
   public getName(): string {
@@ -26,7 +25,7 @@ export class Spawner extends Component {
   }
 
   protected defaultData(): SpawnerData {
-    return { rate: 1, elapsed: 0, spawnCount: 1, prefab: testPrefab };
+    return { rate: 1, elapsed: 0, count: 1, prefab: testPrefab };
   }
 }
 
