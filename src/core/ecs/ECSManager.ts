@@ -58,11 +58,13 @@ export class ECSManager {
       const entity = this.entities.get(id);
       entity.data = initialData || {};
       entity.active = true;
+      this.emitEvent("ecs:create", entity);
       return id;
     } else {
       const id = this.nextId++;
       const entity = new Entity(id, initialData);
       this.entities.set(id, entity);
+      this.emitEvent("ecs:create", entity);
       return id;
     }
   }
@@ -159,6 +161,7 @@ export class ECSManager {
         system.notify(component.getName(), entity);
       }
     }
+    this.emitEvent("ecs:addComponent", entity, { component });
 
     if (!this.entityComponents.has(component.getName())) {
       this.entityComponents.set(component.getName(), []);
@@ -207,6 +210,7 @@ export class ECSManager {
     if (!this.entityComponents.has(component.getName())) {
       this.entityComponents.set(component.getName(), []);
     }
+    this.emitEvent("ecs:removeComponent", entity, { component });
 
     this.entityComponents.set(
       component.getName(),
@@ -255,6 +259,7 @@ export class ECSManager {
     for (const system of this.allSystems) {
       system.notify("__delete", this.entities.get(entity.id));
     }
+    this.emitEvent("ecs:delete", entity);
     entity.data = {};
     entity.active = false;
     this.availableIDs.push(entity.id);
