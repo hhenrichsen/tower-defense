@@ -20,8 +20,27 @@ export class PathFollowerSystem extends BaseSystem {
       rotationTarget,
       pathFollower,
     } = targetEntity.data;
+    const pos = getDynamic(position.position);
     const target = getDynamic(velocityTarget.target);
     const path = getDynamic(pathFollower.path);
+    if (pathFollower.invalidated) {
+      if (path.length === 0) {
+        velocityTarget.target = pos;
+        pathFollower.point = 0;
+      }
+      let md = Vector2.squareDistance(pos, getDynamic(path[0]));
+      let idx = 0;
+      for (let i = 1; i < path.length; i++) {
+        const el = getDynamic(path[i]);
+        const dist = Vector2.distance(pos, el);
+        if (dist < md) {
+          md = dist;
+          idx = i;
+        }
+      }
+      pathFollower.point = idx;
+      pathFollower.invalidated = false;
+    }
 
     if (
       this.checkRelativeThreshold(

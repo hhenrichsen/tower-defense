@@ -23,9 +23,7 @@ export class TurretBaseRenderSystem extends BaseSystem {
     const { turretBase, footprint, position } = spriteEntity.data;
     this.virtualCanvas.drawImage(
       turretBase.source,
-      getDynamic(position.position)
-        .add(turretBase.offset)
-        .addConstant(0.5, 0.5),
+      getDynamic(position.position).addConstant(0.5, 0.5),
       Vector2.matching(footprint.size)
     );
   }

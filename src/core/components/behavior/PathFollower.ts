@@ -7,6 +7,7 @@ import { RotationTargetEntity } from "./RotationTarget";
 
 export interface PathFollowerData extends Record<string, unknown> {
   path: DynamicConstant<Array<DynamicConstant<Vector2>>>; // virtual coordinate units
+  invalidated: boolean;
   point: number;
 }
 
@@ -19,7 +20,7 @@ export class PathFollower extends Component {
   }
 
   protected defaultData(): PathFollowerData {
-    return { path: [], point: 0 };
+    return { path: [], point: 0, invalidated: false };
   }
 }
 

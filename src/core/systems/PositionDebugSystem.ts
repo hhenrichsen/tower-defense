@@ -2,13 +2,11 @@ import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import { Component } from "../ecs/Component";
 import { PositionComponent, PositionEntity } from "../components/data/Position";
-import { RotationComponent, RotationEntity } from "../components/data/Rotation";
-import RotationDebugComponent from "../components/rendering/RotationDebug";
-import Vector2 from "../geometry/Vector2";
+import PositionDebugComponent from "../components/rendering/PositionDebug";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { getDynamic } from "../data/DynamicConstant";
 
-export class RotationDebugSystem extends BaseSystem {
+export class PositionDebugSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
 
   constructor(virtualCanvas: VirtualCanvas) {
@@ -17,22 +15,28 @@ export class RotationDebugSystem extends BaseSystem {
   }
 
   protected updateEntity(deltaTime: number, entity: Entity): void {
-    const targetEntity = entity as RotationEntity & PositionEntity;
-    const { rotation } = targetEntity.data.rotation;
+    const targetEntity = entity as PositionEntity & PositionEntity;
     const { position } = targetEntity.data.position;
-    const rotVec = Vector2.fromAngle(getDynamic(rotation)).scale(2);
-    const vecTarget = getDynamic(position).add(rotVec);
-    this.virtualCanvas.line(getDynamic(position), vecTarget, "#ff0000");
+    const pos = getDynamic(position);
+    this.virtualCanvas.line(
+      pos.addConstant(-1, 0),
+      pos.addConstant(1, 0),
+      "#ff0000"
+    );
+    this.virtualCanvas.line(
+      pos.addConstant(0, -1),
+      pos.addConstant(0, 1),
+      "#ff0000"
+    );
   }
 
   getBasisComponent(): Component | null {
-    return RotationDebugComponent;
+    return PositionDebugComponent;
   }
 
   getRequiredComponents(): Set<Component> {
     const set = new Set<Component>();
     set.add(PositionComponent);
-    set.add(RotationComponent);
     return set;
   }
 }

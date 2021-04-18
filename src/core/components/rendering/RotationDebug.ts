@@ -1,7 +1,7 @@
 import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
 
-export class RotationDebugger extends Component {
+export class RotationDebug extends Component {
   protected defaultData(): Record<string, unknown> {
     return {};
   }
@@ -11,5 +11,5 @@ export class RotationDebugger extends Component {
   }
 }
 
-export const RotationDebuggerComponent = new RotationDebugger();
-export default RotationDebuggerComponent;
+export const RotationDebugComponent = new RotationDebug();
+export default RotationDebugComponent;
