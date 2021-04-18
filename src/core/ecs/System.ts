@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BaseGameModel } from "../data/BaseGameModel";
 import { Component } from "./Component";
-import { ECSManager } from "./ECSManager";
+import { ECSManager, EntityEvent } from "./ECSManager";
 import { Entity } from "./Entity";
 
 export interface System {
@@ -34,7 +35,7 @@ export interface IntervalStorage {
 }
 
 export abstract class BaseSystem implements System {
-  private entities: Map<number, Entity> = new Map();
+  protected entities: Map<number, Entity> = new Map();
   protected manager: ECSManager;
 
   protected checkInterval(deltaTime: number, data: IntervalStorage): boolean {
@@ -51,16 +52,16 @@ export abstract class BaseSystem implements System {
     entity: Entity,
     data?: Record<string, unknown>
   ): void {
-    if (notification === "__delete") {
+    if (notification === "__clear") {
+      this.entities.clear();
+    } else if (notification === "__delete") {
       this.entities.delete(entity.id);
-      return;
     } else if (notification === "__remove_component") {
       const { componentName } = data;
       const basis = this.getBasisComponent();
       if (basis.getName() === componentName) {
         this.entities.delete(entity.id);
       }
-      return;
     } else if (this.checkBasis(notification, entity)) {
       if (this.isInterested(notification, entity)) {
         this.entities.set(entity.id, entity);
@@ -71,8 +72,13 @@ export abstract class BaseSystem implements System {
     }
   }
 
+  protected onManagerAwake(): void {
+    return;
+  }
+
   public setManager(manager: ECSManager): void {
     this.manager = manager;
+    this.onManagerAwake();
   }
 
   protected checkBasis(componentName: string, entity: Entity): boolean {
@@ -123,7 +129,36 @@ export abstract class BaseSystem implements System {
     }
   }
 
-  protected systemUpdate(_deltaTime: number, _model: BaseGameModel): void {
+  protected systemUpdate(deltaTime: number, model: BaseGameModel): void {
+    return;
+  }
+
+  private listener(entityEvent: EntityEvent) {
+    const { event, entity, extra } = entityEvent;
+    if (!this.entities.has(entity.id)) {
+      return;
+    }
+    this.onEvent(event, entity, extra);
+  }
+
+  private listenerNoCheck(entityEvent: EntityEvent) {
+    const { event, entity, extra } = entityEvent;
+    this.onEvent(event, entity, extra);
+  }
+
+  protected listen(event: string, requireComponent = true): void {
+    if (requireComponent) {
+      this.manager.listenEvent(event, this.listener.bind(this));
+    } else {
+      this.manager.listenEvent(event, this.listenerNoCheck.bind(this));
+    }
+  }
+
+  protected onEvent(
+    event: string,
+    entity: Entity,
+    extra?: Record<string, unknown>
+  ): void {
     return;
   }
 
@@ -152,9 +187,11 @@ export abstract class BaseSystem implements System {
     return true;
   }
 
-  protected abstract updateEntity(
+  protected updateEntity(
     deltaTime: number,
     entity: Entity,
     mode: BaseGameModel
-  ): void;
+  ): void {
+    return;
+  }
 }

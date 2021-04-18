@@ -5,12 +5,20 @@ import Vector2 from "../geometry/Vector2";
 import { KeyboardInput, KeyboardInteraction } from "../input/KeyboardInput";
 import { MouseInput, MouseInteraction } from "../input/MouseInput";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
+import { AbstractClickSystem } from "../systems/AbstractClickSystem";
+import { AccelerationSystem } from "../systems/AccelerationSystem";
 import { AnimatedSpriteRenderSystem } from "../systems/AnimatedSpriteRenderSystem";
 import { ClickableDisplaySystem } from "../systems/ClickableDisplaySystem";
 import { ClickableSystem } from "../systems/ClickableSystem";
+import { ClickComponentAddSystem } from "../systems/ClickComponentAddSystem";
+import { ClickComponentToggleMultipleSystem } from "../systems/ClickComponentToggleMultipleSystem";
+import { ClickComponentToggleSystem } from "../systems/ClickComponentToggleSystem";
+import { ClickDataMutateSystem } from "../systems/ClickDataMutationSystem";
+import { DraggableSystem } from "../systems/DraggableSystem";
 import { FootprintSystem } from "../systems/FootprintSystem";
 import { LifetimeRenderSystem } from "../systems/LifetimeRenderSystem";
 import { LifetimeSystem } from "../systems/LifetimeSystem";
+import { MagnetSystem } from "../systems/MagnetSystem";
 import { PathFollowerSystem } from "../systems/PathFollowerSystem";
 import { PositionDebugSystem } from "../systems/PositionDebugSystem";
 import { RangeDisplaySystem } from "../systems/RangeDisplaySystem";
@@ -20,6 +28,7 @@ import { RotationTargetSystem } from "../systems/RotationTargetSystem";
 import { SelectionSystem } from "../systems/SelectionRenderSystem";
 import { SpawnerSystem } from "../systems/SpawnerSystem";
 import { SpriteRenderSystem } from "../systems/SpriteRenderSystem";
+import { StackSystem } from "../systems/StackSystem";
 import { TextRenderSystem } from "../systems/TextRenderSystem";
 import { VelocitySystem } from "../systems/VelocitySystem";
 import { VelocityTargetSystem } from "../systems/VelocityTargetSystem";
@@ -41,6 +50,7 @@ export abstract class BaseGameModel {
   private clicksPerFrame: number;
   protected actionSet: Set<string>;
   private selection = -1;
+  private firstLoad = true;
 
   protected invalidateSelection(): void {
     this.selection = -1;
@@ -53,7 +63,7 @@ export abstract class BaseGameModel {
 
   protected setSelection(id: number): void {
     this.selection = id;
-    const ids = this.ecs.getEntityIDsWithComponent(SelectedComponent.getName());
+    const ids = this.ecs.getEntityIDsWithComponent(SelectedComponent);
     console.log(this.ecs.getEntity(id));
 
     for (let i = 0; i < ids.length; i++) {
@@ -99,19 +109,30 @@ export abstract class BaseGameModel {
     this.keys.update();
   }
 
+  clearMouse(): void {
+    this.mouseAction = "none";
+  }
+
   public install(element: HTMLElement): void {
     this.virtualCanvas.install(element);
     this.lastTime = performance.now();
     this.parentElement = element;
-    this.initSystems();
     this.mouse.install(element, this.virtualCanvas);
+    this.keys.install();
+    if (this.firstLoad) {
+      this.firstInit();
+    }
+  }
+
+  public firstInit(): void {
+    this.firstLoad = false;
+    this.initSystems();
     this.mouse.addListener((interaction: MouseInteraction) => {
       if (interaction.leftDown) {
         this.mouseAction = "click";
         this.clicksPerFrame++;
       }
     });
-    this.keys.install();
     this.keys.addListener((interaction: KeyboardInteraction) => {
       if (interaction.down) {
         this.keySet.add(interaction.key);
@@ -130,19 +151,29 @@ export abstract class BaseGameModel {
   }
 
   private initSystems() {
-    // Entity creation/deletion
+    // Input-based modification
     this.ecs.createSystem(new ClickableSystem(this.mouse.getMousePosition), -5);
+    this.ecs.createSystem(new ClickComponentAddSystem(), -5);
+    this.ecs.createSystem(new ClickComponentToggleSystem(), -5);
+    this.ecs.createSystem(new ClickComponentToggleMultipleSystem(), -5);
+    this.ecs.createSystem(new ClickDataMutateSystem(), -5);
+    this.ecs.createSystem(new AbstractClickSystem(), -5);
 
+    // Entity creation/deletion
     this.ecs.createSystem(new SpawnerSystem(), -1);
     this.ecs.createSystem(new LifetimeSystem(), -1);
 
     // Modifying "base" components
     this.ecs.createSystem(new PathFollowerSystem(), 0);
+    this.ecs.createSystem(new StackSystem(), 0);
     this.ecs.createSystem(new VelocityTargetSystem(), 0);
     this.ecs.createSystem(new RotationTargetSystem(), 0);
+    this.ecs.createSystem(new MagnetSystem(), 0);
+    this.ecs.createSystem(new DraggableSystem(this.mouse.getMousePosition), 0);
     this.ecs.createSystem(new FootprintSystem(this.entityMap), 0);
 
     // Base components
+    this.ecs.createSystem(new AccelerationSystem());
     this.ecs.createSystem(new VelocitySystem());
 
     // Rendering

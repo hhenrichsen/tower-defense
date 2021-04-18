@@ -1,8 +1,8 @@
 import { GamePage } from "../core/menus/GamePage";
-import { GameModel } from "../content/GameModel";
+import { BaseGameModel } from "../core/data/BaseGameModel";
 
-export class MainPage extends GamePage<GameModel> {
-  constructor() {
-    super(new GameModel());
+export class MainPage<T extends BaseGameModel> extends GamePage<T> {
+  constructor(gameModel: T) {
+    super(gameModel);
   }
 }

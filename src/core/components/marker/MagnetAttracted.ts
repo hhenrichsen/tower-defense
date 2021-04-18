@@ -1,7 +1,7 @@
 import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
 
-export class Creep extends Component {
+export class MagnetAttracted extends Component {
   protected defaultData(): Record<string, unknown> {
     return {};
   }
@@ -11,5 +11,5 @@ export class Creep extends Component {
   }
 }
 
-export const CreepComponent = new Creep();
-export default CreepComponent;
+export const MagnetAttractedComponent = new MagnetAttracted();
+export default MagnetAttractedComponent;

@@ -1,5 +1,5 @@
 import Vector2 from "../geometry/Vector2";
-import { Direction } from "./Direction";
+import { Direction } from "../geometry/Direction";
 import { Pathable } from "./Pathable";
 
 class PathNode {
