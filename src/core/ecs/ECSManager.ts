@@ -200,7 +200,10 @@ export class ECSManager {
     return [];
   }
 
-  public removeComponent(entityID: number, component: Component): void {
+  public removeComponent(
+    entityID: EntityResolvable,
+    component: Component
+  ): void {
     const entity = this.resolveEntity(entityID);
     if (entity === null) return;
     if (component.getName() in entity.data) {
@@ -222,7 +225,7 @@ export class ECSManager {
     if (this.interestedSystems.has(component.getName())) {
       const systems = this.interestedSystems.get(component.getName());
       for (const system of systems) {
-        system.notify("__delete", this.entities.get(entityID));
+        system.notify("__delete", this.entities.get(entity.id));
       }
     }
   }
