@@ -34,6 +34,7 @@ import { RangeDisplayComponent } from "../core/components/rendering/RangeDisplay
 import { ProjectileType } from "./types/ProjectileType";
 import { TurretBaseRenderSystem } from "./systems/BaseRenderSystem";
 import TurretBaseComponent, { TurretBase } from "./components/BaseComponent";
+import PositionDebugComponent from "../core/components/rendering/PositionDebug";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
@@ -256,6 +257,7 @@ export class GameModel extends BaseGameModel {
       range: tower.range,
     });
     this.ecs.addComponent(id, RotationComponent);
+    this.ecs.addComponent(id, PositionDebugComponent);
     const offset = tower.size % 2 === 0 ? Vector2.matching(-0.5) : Vector2.ZERO;
     this.ecs.addComponent(id, RangeDisplayComponent, {
       // strokeStyle: "#ffff"
@@ -395,7 +397,6 @@ export class GameModel extends BaseGameModel {
       return;
     }
     const id = this.ecs.createEntity();
-    this.mouseEntity = this.ecs.getEntity(id);
     this.ecs.addComponent(id, PositionComponent, {
       position: getDynamic(position)
         .ceil()
@@ -421,8 +422,8 @@ export class GameModel extends BaseGameModel {
     this.ecs.addComponent(id, FootprintComponent, {
       source: this.towerTextures[tower.levelSprites[0]],
       size: Vector2.matching(tower.size),
-      offset,
     });
+    this.ecs.addComponent(id, PositionDebugComponent);
   }
 
   public createBlocker(position: Vector2): void {
@@ -480,6 +481,7 @@ export class GameModel extends BaseGameModel {
     });
     this.ecs.addComponent(entityID, ClickableComponent, {
       delta: Vector2.matching(0.5),
+      offset: Vector2.matching(0.5),
       action: (entity: Entity, _model: BaseGameModel, ecs: ECSManager) =>
         this.setSelection(entityID),
     });

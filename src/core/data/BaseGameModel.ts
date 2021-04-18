@@ -12,6 +12,7 @@ import { FootprintSystem } from "../systems/FootprintSystem";
 import { LifetimeRenderSystem } from "../systems/LifetimeRenderSystem";
 import { LifetimeSystem } from "../systems/LifetimeSystem";
 import { PathFollowerSystem } from "../systems/PathFollowerSystem";
+import { PositionDebugSystem } from "../systems/PositionDebugSystem";
 import { RangeDisplaySystem } from "../systems/RangeDisplaySystem";
 import { RegionRenderSystem } from "../systems/RegionRenderSystem";
 import { RotationDebugSystem } from "../systems/RotationDebugSystem";
@@ -165,6 +166,7 @@ export abstract class BaseGameModel {
 
     // Debug
     this.ecs.createSystem(new RotationDebugSystem(this.virtualCanvas), 60);
+    this.ecs.createSystem(new PositionDebugSystem(this.virtualCanvas), 60);
 
     // User-defined
     this.addSystems();
