@@ -77,7 +77,7 @@ export abstract class BaseGameModel {
     this.virtualSize = virtualSize;
     this.ecs = new ECSManager();
     this.virtualCanvas = new VirtualCanvas(virtualSize);
-    this.entityMap = new GameMap(Vector2.ZERO, virtualSize);
+    this.entityMap = new GameMap(Vector2.ZERO, virtualSize, this.ecs);
     this.running = true;
     this.keySet = new Set();
 

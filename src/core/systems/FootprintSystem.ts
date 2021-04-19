@@ -26,15 +26,21 @@ export class FootprintSystem extends BaseSystem {
   protected updateEntity(deltaTime: number, entity: Entity): void {
     const targetEntity = entity as FootprintEntity;
     const { position, footprint } = targetEntity.data;
-    const pos = getDynamic(position.position);
+    if (!footprint.tracked) {
+      footprint.tracked = true;
+      const pos = getDynamic(position.position).floor();
 
-    const nwOffset = Math.floor(footprint.size / 2 - 1);
-    const northWest = new Vector2(pos.x + nwOffset, pos.y + nwOffset);
-    const swOffset = Math.floor(footprint.size / 2);
-    const southEast = new Vector2(pos.x + swOffset, pos.y + swOffset);
-    for (let x = northWest.x; x <= southEast.x; x++) {
-      for (let y = northWest.y; y <= southEast.y; y++) {
-        this.map.createEntityLink(new Vector2(x, y), entity);
+      const nwOffset = Math.floor((footprint.size - 1) / 2);
+      const northWest = new Vector2(pos.x - nwOffset, pos.y - nwOffset);
+      const swOffset = Math.floor(footprint.size / 2);
+      const southEast = new Vector2(pos.x + swOffset, pos.y + swOffset);
+      console.log("NW: " + northWest.toString());
+      console.log("SE: " + southEast.toString());
+      for (let x = northWest.x; x <= southEast.x; x++) {
+        for (let y = northWest.y; y <= southEast.y; y++) {
+          console.log(`Blocking ${x},${y}`);
+          this.map.createEntityLink(new Vector2(x, y), entity);
+        }
       }
     }
   }
