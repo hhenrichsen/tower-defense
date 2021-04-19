@@ -77,28 +77,19 @@ export class Pathfinder {
       res = [current.position, ...res];
       current = current.parent;
     }
-    console.debug("Original Solution:");
-    console.debug(res);
     const newSolution = [res[0]];
     for (let i = 1; i < res.length - 1; i++) {
       const prev = newSolution[newSolution.length - 1];
       const curr = res[i];
       const next = res[i + 1];
-      console.log("Prev: " + prev.toString());
-      console.log("Curr: " + curr.toString());
-      console.log("Next: " + next.toString());
       const prevDelta = curr.subtract(prev).normalize();
       const newDelta = next.subtract(curr).normalize();
-      console.debug("PD: " + prevDelta.toString());
-      console.debug("ND: " + newDelta.toString());
       // Same direction?
       if (!prevDelta.equals(newDelta)) {
-        console.debug("Direction change, adding.");
         newSolution.push(curr);
         i++;
       }
     }
-    console.debug(newSolution);
     newSolution.push(res[res.length - 1]);
     return newSolution;
   }
