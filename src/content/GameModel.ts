@@ -35,6 +35,7 @@ import TurretBaseComponent, { TurretBase } from "./components/BaseComponent";
 import PositionDebugComponent from "../core/components/rendering/PositionDebug";
 import { ClickableComponent } from "../core/components/behavior/click/Clickable";
 import { Direction } from "../core/geometry/Direction";
+import { AbstractClickComponent } from "../core/components/behavior/click/AbstractClick";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
@@ -107,7 +108,7 @@ export class GameModel extends BaseGameModel {
       name: "Basic Tower",
       description: "A really basic tower",
       rotationRate: 30,
-      range: 5,
+      range: 8,
       fireRate: 1,
       projectile: ProjectileType.DEFAULT,
       levelSprites: ["tower-2-1"],
@@ -132,7 +133,8 @@ export class GameModel extends BaseGameModel {
     this.createDrone(new Vector2(5, 7));
     this.createDrone(new Vector2(6, 7));
     this.createDrone(new Vector2(7, 7));
-    this.buildTower(Vector2.matching(15), this.towers.get("tower-1"));
+    this.buildTower(new Vector2(17, 16), this.towers.get("tower-1"));
+    this.buildTower(Vector2.matching(15), this.towers.get("tower-2"));
     // for (let i = 0; i <= 12; i++) {
     //   this.createBlocker(new Vector2(8, i + 3));
     // }
@@ -326,6 +328,8 @@ export class GameModel extends BaseGameModel {
     } else {
       this.ecs.addComponent(el, ClickableComponent, {
         delta,
+      });
+      this.ecs.addComponent(el, AbstractClickComponent, {
         action,
       });
       this.ecs.addComponent(el, ClickableDisplayComponent, {});
@@ -409,7 +413,6 @@ export class GameModel extends BaseGameModel {
     const offset = tower.size % 2 === 0 ? Vector2.matching(-0.5) : Vector2.ZERO;
     this.ecs.addComponent(id, RangeDisplayComponent, {
       // strokeStyle: "#ffff"
-      offset: offset.addConstant(0.5, 0.5),
     });
     this.ecs.addComponent(id, SpriteComponent, {
       source: this.towerTextures[tower.levelSprites[0]],
@@ -421,7 +424,7 @@ export class GameModel extends BaseGameModel {
     });
     this.ecs.addComponent(id, FootprintComponent, {
       source: this.towerTextures[tower.levelSprites[0]],
-      size: Vector2.matching(tower.size),
+      size: tower.size,
     });
     this.ecs.addComponent(id, PositionDebugComponent);
   }
@@ -481,9 +484,10 @@ export class GameModel extends BaseGameModel {
     });
     this.ecs.addComponent(entityID, ClickableComponent, {
       delta: Vector2.matching(0.5),
-      offset: Vector2.matching(0.5),
-      action: (entity: Entity, _model: BaseGameModel, ecs: ECSManager) =>
-        this.setSelection(entityID),
+      offset: Vector2.matching(-0.5),
+    });
+    this.ecs.addComponent(entityID, AbstractClickComponent, {
+      action: (entity: Entity) => this.setSelection(entity.id),
     });
     this.ecs.addComponent(entityID, AnimatedSpriteComponent, {
       source: new Texture("assets/testAnim.png", new Vector2(768, 32)),
