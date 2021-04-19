@@ -100,7 +100,7 @@ export class ECSManager {
         console.warn(`Cannot resolve entity ${entity}; it does not exist.`);
         return null;
       }
-      const e = this.getEntity(entity);
+      const e = this.entities.get(entity);
       if (!e.active) {
         console.warn(`Cannot resolve entity ${entity}; it has been deleted.`);
         return null;
@@ -230,10 +230,8 @@ export class ECSManager {
 
   public update(elapsedTime: number, model: BaseGameModel): void {
     for (let eventIdx = 0; eventIdx < this.events.length; eventIdx++) {
-      const { event, entity } = this.events[eventIdx];
-      console.debug(`Running event ${event}`);
+      const { event } = this.events[eventIdx];
       if (this.listeners.has(event)) {
-        console.debug(`Found a listener for event ${event}`);
         const listeners = this.listeners.get(event);
         for (
           let listenerIdx = 0;
