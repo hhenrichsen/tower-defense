@@ -1,5 +1,5 @@
 {
-    "gameName": "Engine Game",
+    "gameName": "Tower Defense",
     "actions": ["pause"],
     "keyMap": {
         "pause": "p"
