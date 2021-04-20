@@ -42,13 +42,13 @@ export class RotationTargetSystem extends BaseSystem {
       rotationTarget.turnRate * deltaTime,
       desiredRotation
     );
+    rotation.rotation =
+      getDynamic(rotation.rotation) + deltaRotation * rotationDirection;
 
     if (Math.abs(desiredRotation) < rotationTarget.strictness) {
       console.log("Within threshold");
       this.manager.emitEvent("rotationTarget:reached", targetEntity);
     } else {
-      rotation.rotation =
-        getDynamic(rotation.rotation) + deltaRotation * rotationDirection;
       console.log(`Delta ${Math.abs(targetRotation - rotation.rotation)}`);
     }
   }
