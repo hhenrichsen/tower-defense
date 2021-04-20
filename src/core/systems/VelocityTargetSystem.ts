@@ -15,6 +15,11 @@ export class VelocityTargetSystem extends BaseSystem {
     const targetEntity = entity as VelocityTargetEntity;
     const { position, velocity, velocityTarget } = targetEntity.data;
     const target = getDynamic(velocityTarget.target);
+
+    if (target === undefined) {
+      return;
+    }
+
     const relativePosition = target.subtract(getDynamic(position.position));
     const direction = relativePosition.normalize();
     const perSecond = direction.normalize().scale(velocityTarget.velocity);
@@ -26,6 +31,7 @@ export class VelocityTargetSystem extends BaseSystem {
         perSecond.magnitude() * deltaTime
       )
     ) {
+      this.manager.emitEvent("velocityTarget:reached", targetEntity);
       position.position = target;
       velocity.velocity = Vector2.ZERO;
       return;

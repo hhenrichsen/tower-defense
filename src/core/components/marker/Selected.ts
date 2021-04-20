@@ -1,15 +1,8 @@
-import { lowerFirst } from "lodash";
 import { Component } from "../../ecs/Component";
+import { AutoName } from "../../ecs/decorators/AutoName";
 
-export class Selected extends Component {
-  protected defaultData(): Record<string, unknown> {
-    return {};
-  }
-
-  getName(): string {
-    return lowerFirst(this.constructor.name);
-  }
-}
+@AutoName
+export class Selected extends Component {}
 
 export const SelectedComponent = new Selected();
 export default SelectedComponent;

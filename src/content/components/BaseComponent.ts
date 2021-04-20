@@ -4,6 +4,7 @@ import { PositionEntity } from "../../core/components/data/Position";
 import { RotationEntity } from "../../core/components/data/Rotation";
 import { DynamicConstant } from "../../core/data/DynamicConstant";
 import { Component } from "../../core/ecs/Component";
+import { AutoName } from "../../core/ecs/decorators/AutoName";
 import { Entity } from "../../core/ecs/Entity";
 import Vector2 from "../../core/geometry/Vector2";
 import { Texture } from "../../core/rendering/Texture";
@@ -16,6 +17,7 @@ export type TurretBaseEntity = Entity &
   PositionEntity &
   FootprintEntity & { data: { turretBase: TurretBaseData } };
 
+@AutoName
 export class TurretBase extends Component {
   private static NO_TEXTURE: Texture = undefined;
 
@@ -27,10 +29,6 @@ export class TurretBase extends Component {
         Vector2.matching(32)
       );
     }
-  }
-
-  public getName(): string {
-    return lowerFirst(this.constructor.name);
   }
 
   protected defaultData(): TurretBaseData {

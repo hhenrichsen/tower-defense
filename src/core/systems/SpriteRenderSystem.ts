@@ -1,12 +1,15 @@
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import SpriteComponent, { SpriteEntity } from "../components/rendering/Sprite";
-import { Component } from "../ecs/Component";
 import { PositionComponent } from "../components/data/Position";
 import { RotationComponent } from "../components/data/Rotation";
 import { VirtualCanvas } from "../rendering/VirtualCanvas";
 import { getDynamic } from "../data/DynamicConstant";
+import { Basis } from "../ecs/decorators/Basis";
+import { Required } from "../ecs/decorators/Required";
 
+@Basis(SpriteComponent)
+@Required([PositionComponent, RotationComponent])
 export class SpriteRenderSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
 
@@ -20,21 +23,10 @@ export class SpriteRenderSystem extends BaseSystem {
     const { sprite, rotation, position } = spriteEntity.data;
     this.virtualCanvas.drawImage(
       sprite.source,
-      getDynamic(position.position),
+      getDynamic(position.position).add(getDynamic(sprite.offset)),
       sprite.size,
-      getDynamic(rotation.rotation),
+      getDynamic(rotation.rotation) + getDynamic(sprite.rotationOffset),
       getDynamic(sprite.opacity)
     );
-  }
-
-  getBasisComponent(): Component | null {
-    return SpriteComponent;
-  }
-
-  getRequiredComponents(): Set<Component> {
-    const set = new Set<Component>();
-    set.add(PositionComponent);
-    set.add(RotationComponent);
-    return set;
   }
 }

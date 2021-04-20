@@ -45,6 +45,8 @@ export abstract class BaseGameModel {
   protected readonly virtualSize: Vector2;
   protected keys: KeyboardInput;
   protected mouse: MouseInput;
+  protected paused = false;
+  protected timeScale = 1;
   private keySet: Set<string>;
   private mouseAction: string;
   private clicksPerFrame: number;
@@ -216,8 +218,12 @@ export abstract class BaseGameModel {
   private update(deltaTime: number): void {
     this.updateInput(deltaTime);
     this.virtualCanvas.clear();
-    this.ecs.update(deltaTime, this);
-    this.onUpdate(deltaTime);
+    if (this.paused) {
+      this.ecs.update(0, this);
+    } else {
+      this.ecs.update(deltaTime * this.timeScale, this);
+    }
+    this.onUpdate(deltaTime * this.timeScale);
   }
 
   protected onUpdate(_deltaTime: number): void {

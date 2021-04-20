@@ -1,30 +1,51 @@
+import { RotationTargetEntity } from "../../core/components/behavior/RotationTarget";
 import { PositionEntity } from "../../core/components/data/Position";
+import { RangeEntity } from "../../core/components/data/Range";
 import { Component } from "../../core/ecs/Component";
+import { AutoName } from "../../core/ecs/decorators/AutoName";
 import { Entity } from "../../core/ecs/Entity";
 import { EntityProducer } from "../../core/ecs/EntityProducer";
 import { IntervalStorage } from "../../core/ecs/System";
+import Vector2 from "../../core/geometry/Vector2";
+import { CreepEntity } from "./Creep";
 
-export interface SpawnerData extends Record<string, unknown>, IntervalStorage {
+export interface WeaponData extends Record<string, unknown>, IntervalStorage {
   projectile: EntityProducer;
   rate: number; // entities per second
   elapsed: number;
+  target: CreepEntity;
+  canFire: boolean;
+  barrelOffsets: Array<Vector2>;
+  barrel: number;
+  fireStrictness: number;
+  arcReached: boolean;
+  damage: number;
 }
 
 export interface ChildDataGenerator {
   (componentName: string, parent: Entity): Record<string, unknown>;
 }
 
-export type SpawnerEntity = Entity &
-  PositionEntity & { data: { spawner: SpawnerData } };
+export type WeaponEntity = RangeEntity &
+  RotationTargetEntity & { data: { weapon: WeaponData } };
 
-export class Spawner extends Component {
-  public getName(): string {
-    return this.constructor.name.toLowerCase();
-  }
-  protected defaultData(): SpawnerData {
-    return { rate: 1, elapsed: 0, projectile: null };
+@AutoName
+export class Weapon extends Component {
+  protected defaultData(): WeaponData {
+    return {
+      rate: 1,
+      elapsed: 0,
+      projectile: null,
+      target: null,
+      canFire: true,
+      barrelOffsets: [Vector2.ZERO],
+      barrel: 0,
+      fireStrictness: 1,
+      arcReached: false,
+      damage: 1,
+    };
   }
 }
 
-export const SpawnerComponent = new Spawner();
-export default SpawnerComponent;
+export const WeaponComponent = new Weapon();
+export default WeaponComponent;

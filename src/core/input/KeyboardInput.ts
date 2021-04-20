@@ -2,6 +2,7 @@ export class KeyboardInput {
   private listeners: Array<KeyboardListener> = [];
   private events: Array<KeyboardInteraction> = [];
   private keyListeners: Map<string, Array<KeyboardListener>> = new Map();
+  private keyPushed: Map<string, boolean> = new Map();
 
   constructor() {
     this.keyDown = this.keyDown.bind(this);
@@ -15,6 +16,7 @@ export class KeyboardInput {
 
   private keyDown(evt: KeyboardEvent) {
     this.events.push({ key: evt.key, down: true });
+    this.keyPushed.set(evt.key, false);
   }
 
   private keyUp(evt: KeyboardEvent) {
@@ -35,14 +37,17 @@ export class KeyboardInput {
   public update(): void {
     for (let i = 0; i < this.events.length; i++) {
       const event = this.events[i];
-      if (this.keyListeners.has(event.key.toLowerCase())) {
-        const keyListeners = this.keyListeners.get(event.key.toLowerCase());
-        for (let listener = 0; listener < keyListeners.length; listener++) {
-          keyListeners[listener](event);
+      if (this.keyPushed.get(event.key) !== event.down) {
+        this.keyPushed.set(event.key, event.down);
+        if (this.keyListeners.has(event.key.toLowerCase())) {
+          const keyListeners = this.keyListeners.get(event.key.toLowerCase());
+          for (let listener = 0; listener < keyListeners.length; listener++) {
+            keyListeners[listener](event);
+          }
         }
-      }
-      for (let listener = 0; listener < this.listeners.length; listener++) {
-        this.listeners[listener](event);
+        for (let listener = 0; listener < this.listeners.length; listener++) {
+          this.listeners[listener](event);
+        }
       }
     }
     this.events.length = 0;

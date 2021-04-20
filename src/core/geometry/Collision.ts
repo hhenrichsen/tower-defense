@@ -40,7 +40,15 @@ export function circleLineCollision(
 }
 
 export function circlePointCollision(circle: Circle, point: Vector2): boolean {
-  return Vector2.distance(point, circle.center) <= circle.radius;
+  return PointRadiusPointCollision(circle.center, circle.radius, point);
+}
+
+export function PointRadiusPointCollision(
+  point1: Vector2,
+  radius: number,
+  point2: Vector2
+): boolean {
+  return Vector2.distance(point1, point2) <= radius;
 }
 
 export function rectPointCollision(

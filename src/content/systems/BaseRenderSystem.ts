@@ -1,6 +1,5 @@
 import { PositionComponent } from "../../core/components/data/Position";
 import { getDynamic } from "../../core/data/DynamicConstant";
-import { Component } from "../../core/ecs/Component";
 import { Entity } from "../../core/ecs/Entity";
 import { BaseSystem } from "../../core/ecs/System";
 import { VirtualCanvas } from "../../core/rendering/VirtualCanvas";
@@ -9,7 +8,11 @@ import TurretBaseComponent, {
 } from "../components/BaseComponent";
 import Vector2 from "../../core/geometry/Vector2";
 import { FootprintComponent } from "../../core/components/data/Footprint";
+import { Basis } from "../../core/ecs/decorators/Basis";
+import { Required } from "../../core/ecs/decorators/Required";
 
+@Basis(TurretBaseComponent)
+@Required([FootprintComponent, PositionComponent])
 export class TurretBaseRenderSystem extends BaseSystem {
   private readonly virtualCanvas: VirtualCanvas;
 
@@ -23,19 +26,8 @@ export class TurretBaseRenderSystem extends BaseSystem {
     const { turretBase, footprint, position } = spriteEntity.data;
     this.virtualCanvas.drawImage(
       turretBase.source,
-      getDynamic(position.position).addConstant(0.5, 0.5),
-      Vector2.matching(footprint.size)
+      getDynamic(position.position),
+      Vector2.matching(footprint.size * 1.5)
     );
-  }
-
-  getBasisComponent(): Component | null {
-    return TurretBaseComponent;
-  }
-
-  getRequiredComponents(): Set<Component> {
-    const set = new Set<Component>();
-    set.add(PositionComponent);
-    set.add(FootprintComponent);
-    return set;
   }
 }

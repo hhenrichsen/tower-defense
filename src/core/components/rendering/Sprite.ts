@@ -5,18 +5,21 @@ import { PositionEntity } from "../data/Position";
 import { RotationEntity } from "../data/Rotation";
 import { Texture } from "../../rendering/Texture";
 import { DynamicConstant } from "../../data/DynamicConstant";
-import { lowerFirst } from "lodash";
+import { AutoName } from "../../ecs/decorators/AutoName";
 
 export interface SpriteData extends Record<string, unknown> {
   size: Vector2; // in virtual coordinates
   source: Texture;
-  opacity: DynamicConstant<number>;
+  opacity: DynamicConstant<number>; // percent
+  offset: DynamicConstant<Vector2>; // in virtual coordinates, added to position
+  rotationOffset: DynamicConstant<number>; // degrees, added to rotation
 }
 
 export type SpriteEntity = Entity &
   PositionEntity &
   RotationEntity & { data: { sprite: SpriteData } };
 
+@AutoName
 export class Sprite extends Component {
   private static NO_TEXTURE: Texture = undefined;
   private static DEFAULT_SIZE = Vector2.ONES;
@@ -28,16 +31,13 @@ export class Sprite extends Component {
     }
   }
 
-  public getName(): string {
-    return lowerFirst(this.constructor.name);
-  }
-
   protected defaultData(): SpriteData {
     return {
       source: Sprite.NO_TEXTURE,
       size: Sprite.DEFAULT_SIZE,
       opacity: 1,
       offset: Vector2.ZERO,
+      rotationOffset: 0,
     };
   }
 }

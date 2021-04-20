@@ -53,7 +53,6 @@ export class Pathfinder {
         }
 
         if (pathable.isBlocked(child)) {
-          console.log(child.toString() + " is blocked.");
           continue;
         }
 

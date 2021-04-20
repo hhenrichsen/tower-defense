@@ -73,6 +73,10 @@ a:hover:not(.inactive) {
 canvas {
     margin: auto;
     background-color: white;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
 }
 
 @keyframes grow {

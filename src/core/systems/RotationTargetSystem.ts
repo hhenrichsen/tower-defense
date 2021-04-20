@@ -9,19 +9,27 @@ import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import Vector2 from "../geometry/Vector2";
+import { Basis } from "../ecs/decorators/Basis";
+import { Required } from "../ecs/decorators/Required";
 
+@Basis(RotationTargetComponent)
+@Required([RotationComponent, PositionComponent])
 export class RotationTargetSystem extends BaseSystem {
   protected updateEntity(deltaTime: number, entity: Entity): void {
-    const rotationEntity = entity as RotationTargetEntity;
-    const position = rotationEntity.data.position;
-    const rotationTarget = rotationEntity.data.rotationTarget;
-    const rotation = rotationEntity.data.rotation;
+    const targetEntity = entity as RotationTargetEntity;
+    const position = targetEntity.data.position;
+    const rotationTarget = targetEntity.data.rotationTarget;
+    const rotation = targetEntity.data.rotation;
+
+    if (rotationTarget === undefined) {
+      return;
+    }
 
     // Getting some important values
     const relativeTarget = getDynamic(rotationTarget.target).subtract(
       getDynamic(position.position)
     );
-    const currentRotation = getDynamic(rotation.rotation);
+    const currentRotation = ((getDynamic(rotation.rotation) % 360) + 360) % 360;
     const currentRotationVector = Vector2.fromAngle(currentRotation);
     const targetRotation = relativeTarget.toAngle();
 
@@ -29,20 +37,19 @@ export class RotationTargetSystem extends BaseSystem {
     const rotationDirection = Math.sign(
       currentRotationVector.determinant(relativeTarget)
     );
-    const desiredRotation = Math.abs(currentRotation - targetRotation) % 360;
+    const desiredRotation = Math.abs(currentRotation - targetRotation);
+    const deltaRotation = Math.min(
+      rotationTarget.turnRate * deltaTime,
+      desiredRotation
+    );
 
-    if (
-      !this.checkRelativeThreshold(
-        currentRotation,
-        targetRotation,
-        rotationTarget.strictness
-      )
-    ) {
-      const deltaRotation =
-        Math.min(rotationTarget.turnRate * deltaTime, desiredRotation) *
-        rotationDirection;
-      rotationEntity.data.rotation.rotation =
-        (getDynamic(rotation.rotation) + deltaRotation) % 360;
+    if (Math.abs(desiredRotation) < rotationTarget.strictness) {
+      console.log("Within threshold");
+      this.manager.emitEvent("rotationTarget:reached", targetEntity);
+    } else {
+      rotation.rotation =
+        getDynamic(rotation.rotation) + deltaRotation * rotationDirection;
+      console.log(`Delta ${Math.abs(targetRotation - rotation.rotation)}`);
     }
   }
 
@@ -52,16 +59,5 @@ export class RotationTargetSystem extends BaseSystem {
     threshold: number
   ): boolean {
     return Math.abs(a - b) < threshold;
-  }
-
-  getBasisComponent(): Component {
-    return RotationTargetComponent;
-  }
-
-  getRequiredComponents(): Set<Component> {
-    const set = new Set<Component>();
-    set.add(PositionComponent);
-    set.add(RotationComponent);
-    return set;
   }
 }

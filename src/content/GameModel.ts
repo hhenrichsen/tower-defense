@@ -18,7 +18,6 @@ import SpriteComponent from "../core/components/rendering/Sprite";
 import { Pathfinder } from "../core/data/Pathfinder";
 import { LifetimeComponent } from "../core/components/behavior/Lifetime";
 import { Entity } from "../core/ecs/Entity";
-import { ECSManager } from "../core/ecs/ECSManager";
 import { DynamicConstant, getDynamic } from "../core/data/DynamicConstant";
 import { ClickableDisplayComponent } from "../core/components/ui/ClickableDisplay";
 import { RegionComponent } from "../core/components/ui/RegionRender";
@@ -31,11 +30,21 @@ import { RangeComponent } from "../core/components/data/Range";
 import { RangeDisplayComponent } from "../core/components/rendering/RangeDisplay";
 import { ProjectileType } from "./types/ProjectileType";
 import { TurretBaseRenderSystem } from "./systems/BaseRenderSystem";
-import TurretBaseComponent, { TurretBase } from "./components/BaseComponent";
+import TurretBaseComponent from "./components/BaseComponent";
 import PositionDebugComponent from "../core/components/rendering/PositionDebug";
 import { ClickableComponent } from "../core/components/behavior/click/Clickable";
 import { Direction } from "../core/geometry/Direction";
 import { AbstractClickComponent } from "../core/components/behavior/click/AbstractClick";
+import { ClickComponentToggleMultipleComponent } from "../core/components/behavior/click/ClickComponentToggleMultiple";
+import SelectedComponent from "../core/components/marker/Selected";
+import { WeaponSystem } from "./systems/WeaponSystem";
+import WeaponComponent from "./components/Weapon";
+import CreepComponent from "./components/Creep";
+import { HealthComponent } from "../core/components/data/Health";
+import { bullet } from "./prefabs/Bullet";
+import { MouseInteraction } from "../core/input/MouseInput";
+import { DamageTargetSystem } from "./systems/DamageTargetSystem";
+import { SplashDamageSystem } from "./systems/SplashDamageSystem";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
@@ -57,7 +66,8 @@ export class GameModel extends BaseGameModel {
     "tower-1-3": new Texture("assets/turret-1-3.png"),
     "tower-2-1": new Texture("assets/turret-2-1.png"),
   };
-  baseSprite: unknown;
+  baseSprite = new Texture("assets/turret-base.gif");
+  activeTower: TowerType = null;
 
   constructor() {
     super(new Vector2(40, 30));
@@ -84,11 +94,26 @@ export class GameModel extends BaseGameModel {
     this.keys.addKeyListener("escape", () => {
       this._actionMap.invoke("clear");
     });
+    this.keys.addKeyListener("]", (evt) => {
+      if (!evt.down) return;
+      this.paused = !this.paused;
+    });
+    this.timeScale = 0.01;
+    this.keys.addKeyListener("[", (evt) => {
+      if (!evt.down) return;
+      if (Math.abs(this.timeScale - 0.01) < 0.01) {
+        this.timeScale = 1;
+      } else {
+        this.timeScale = 0.01;
+      }
+    });
 
     this._actionMap.addHandler("sell", this.attemptSell.bind(this));
     this._actionMap.addHandler("upgrade", this.attemptUpgrade.bind(this));
     this._actionMap.addHandler("clear", this.clearMouseMode.bind(this));
     this._actionMap.addHandler("setTower", this.setMouseMode.bind(this));
+
+    this.mouse.addListener(this.handleClick.bind(this));
 
     this.towers = new Map();
     this.towers.set("tower-1", {
@@ -96,9 +121,9 @@ export class GameModel extends BaseGameModel {
       size: 2,
       name: "Basic Tower",
       description: "A really basic tower",
-      rotationRate: 30,
+      rotationRate: 360,
       range: 5,
-      fireRate: 1,
+      fireRate: 0.2,
       projectile: ProjectileType.DEFAULT,
       levelSprites: ["tower-1-1"],
     });
@@ -107,12 +132,17 @@ export class GameModel extends BaseGameModel {
       size: 3,
       name: "Basic Tower",
       description: "A really basic tower",
-      rotationRate: 30,
+      rotationRate: 90,
       range: 8,
-      fireRate: 1,
+      fireRate: 3,
       projectile: ProjectileType.DEFAULT,
       levelSprites: ["tower-2-1"],
     });
+  }
+
+  private handleClick(interaction: MouseInteraction): void {
+    if (this.activeTower === null || !interaction.leftDown) return;
+    this.buildTower(interaction.coordinate, this.activeTower);
   }
 
   private initActions() {
@@ -143,7 +173,10 @@ export class GameModel extends BaseGameModel {
   }
 
   public addSystems(): void {
+    this.ecs.createSystem(new WeaponSystem(), -1);
     this.ecs.createSystem(new TurretBaseRenderSystem(this.virtualCanvas), 40);
+    this.ecs.createSystem(new DamageTargetSystem());
+    this.ecs.createSystem(new SplashDamageSystem());
   }
 
   private createUI(): void {
@@ -235,11 +268,13 @@ export class GameModel extends BaseGameModel {
     }
     this.ecs.removeEntity(this.mouseEntity.id);
     this.mouseEntity = null;
+    this.activeTower = null;
   }
 
   private setMouseMode(_action: string, data: Record<string, unknown>) {
     const towerName = data["tower"] as string;
     const tower = this.towers.get(towerName);
+    this.activeTower = tower;
     if (this.money < tower.cost) {
       return;
     }
@@ -339,7 +374,7 @@ export class GameModel extends BaseGameModel {
 
   public onUpdate(): void {
     // this.findPath();
-    this.virtualCanvas.drawGrid();
+    // this.virtualCanvas.drawGrid();
   }
 
   private findPath(): void {
@@ -393,7 +428,7 @@ export class GameModel extends BaseGameModel {
     tower: TowerType
   ): void {
     const { size } = tower;
-    const pos = getDynamic(position);
+    const pos = getDynamic(position).floor();
     if (!this.entityMap.checkArea(pos, pos.addConstant(size, size))) {
       return;
     }
@@ -410,23 +445,34 @@ export class GameModel extends BaseGameModel {
       range: tower.range,
     });
     this.ecs.addComponent(id, RotationComponent);
-    const offset = tower.size % 2 === 0 ? Vector2.matching(-0.5) : Vector2.ZERO;
-    this.ecs.addComponent(id, RangeDisplayComponent, {
-      // strokeStyle: "#ffff"
+    this.ecs.addComponent(id, RotationTargetComponent, {
+      turnRate: tower.rotationRate,
+      strictness: 4,
+    });
+
+    this.ecs.addComponent(id, ClickableComponent, {
+      delta: Vector2.matching(tower.size / 2),
+      offset: Vector2.matching(-0.5),
+    });
+    this.ecs.addComponent(id, ClickComponentToggleMultipleComponent, {
+      components: [SelectedComponent, RangeDisplayComponent],
     });
     this.ecs.addComponent(id, SpriteComponent, {
       source: this.towerTextures[tower.levelSprites[0]],
       size: Vector2.matching(tower.size),
-      offset,
-    });
-    this.ecs.addComponent(id, TurretBaseComponent, {
-      source: this.baseSprite,
+      rotationOffset: 90,
     });
     this.ecs.addComponent(id, FootprintComponent, {
       source: this.towerTextures[tower.levelSprites[0]],
       size: tower.size,
     });
-    this.ecs.addComponent(id, PositionDebugComponent);
+    this.ecs.addComponent(id, TurretBaseComponent, {
+      source: this.baseSprite,
+    });
+    this.ecs.addComponent(id, WeaponComponent, {
+      projectile: bullet,
+      rate: tower.fireRate,
+    });
   }
 
   public createBlocker(position: Vector2): void {
@@ -474,7 +520,7 @@ export class GameModel extends BaseGameModel {
     this.ecs.addComponent(entityID, VelocityTargetComponent, {
       target: this.mouse.getMousePosition,
       strictness: 0.01,
-      velocity: 5,
+      velocity: 2,
     });
     this.ecs.addComponent(entityID, RotationTargetComponent, {
       target: this.mouse.getMousePosition,
@@ -523,6 +569,8 @@ export class GameModel extends BaseGameModel {
       value: 5,
     });
     this.ecs.addComponent(entityID, SellableComponent);
+    this.ecs.addComponent(entityID, HealthComponent);
+    this.ecs.addComponent(entityID, CreepComponent);
     this.ecs.addComponent(entityID, NameComponent, {
       name: `Drone ${entityID}`,
     });
