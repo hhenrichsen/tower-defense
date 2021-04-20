@@ -29,16 +29,12 @@ export class StackSystem extends BaseSystem {
   }
 
   private handleAttach(entity: Entity, extra?: Record<string, unknown>): void {
-    console.debug("Attempting attach");
-    console.debug(entity);
-    console.debug(extra);
     const indexOffset = (extra["indexOffset"] as number) || 0;
     let parent = this.manager.getEntity(
       extra["parent"] as number
     ) as StackEntity;
     const originalParent = parent;
     if (parent === undefined || parent === null) {
-      console.debug("Original parent is null.");
       return;
     }
     // Find lowest.
@@ -54,7 +50,6 @@ export class StackSystem extends BaseSystem {
 
     if (parent === null) {
       if (originalParent !== null) {
-        console.debug("Requested parent is null; trying original.");
         this.manager.emitEvent("stack:attach", entity, {
           parent: originalParent,
         });
@@ -62,7 +57,6 @@ export class StackSystem extends BaseSystem {
       return;
     }
 
-    console.debug(`Attaching ${entity.id} to ${parent.id}`);
     const { position: parentPosition, stack: parentStack } = parent.data;
     if (!("stack" in entity.data)) {
       this.manager.addComponent(entity, StackComponent, {
@@ -80,12 +74,10 @@ export class StackSystem extends BaseSystem {
   }
 
   private handleSwap(entity: Entity): void {
-    console.debug("Handling swap.");
     const targetEntity = entity as StackEntity;
     const { stack } = targetEntity.data;
     const parent = stack.parent;
     if (parent === null) {
-      console.debug("Swap aborted; parent is null.");
       return;
     }
     const { stack: parentStack } = parent.data;

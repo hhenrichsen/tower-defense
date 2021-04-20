@@ -61,7 +61,7 @@ export class WeaponSystem extends BaseSystem {
     }
 
     weapon.target = best;
-    if (best === null) {
+    if (best === null || !best.active) {
       return;
     }
 
@@ -70,14 +70,9 @@ export class WeaponSystem extends BaseSystem {
     if (weapon.canFire && this.creepInRange(targetEntity, best)) {
       // Fire
       if (weapon.arcReached) {
-        console.log(`${entity.id} is firing.`);
         weapon.projectile(targetEntity, this.manager);
         weapon.canFire = false;
         weapon.barrel = (weapon.barrel + 1) % weapon.barrelOffsets.length;
-      } else {
-        console.log(
-          `${entity.id} is not firing because it is not close enough to the rotation.`
-        );
       }
     }
     weapon.arcReached = false;

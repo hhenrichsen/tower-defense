@@ -52,7 +52,6 @@ export class ECSManager {
   ): number {
     if (this.availableIDs.length > 0 && allowReuse) {
       const id = this.availableIDs.splice(0, 1)[0];
-      console.debug(`Reusing ID ${id}`);
       const entity = this.entities.get(id);
       entity.data = initialData || {};
       entity.active = true;

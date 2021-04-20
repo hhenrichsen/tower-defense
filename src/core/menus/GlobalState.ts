@@ -29,8 +29,6 @@ export class BaseGlobalState<T extends BasePersistedData>
   public addScore(score: Score): void {
     this.data.scores.push(score);
     this.data.scores.sort((a, b) => a.score - b.score).reverse();
-    console.log("Scores");
-    console.log(this.data.scores);
     this.data.scores = this.data.scores.slice(0, 5);
     this.persistence.put(this.data);
   }

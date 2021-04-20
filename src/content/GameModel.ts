@@ -39,7 +39,7 @@ import { ClickComponentToggleMultipleComponent } from "../core/components/behavi
 import SelectedComponent from "../core/components/marker/Selected";
 import { WeaponSystem } from "./systems/WeaponSystem";
 import WeaponComponent from "./components/Weapon";
-import CreepComponent from "./components/Creep";
+import CreepComponent, { CreepEntity } from "./components/Creep";
 import { HealthComponent } from "../core/components/data/Health";
 import { bullet } from "./prefabs/Bullet";
 import { MouseInteraction } from "../core/input/MouseInput";
@@ -117,7 +117,7 @@ export class GameModel extends BaseGameModel {
 
     this.towers = new Map();
     this.towers.set("tower-1", {
-      cost: 0,
+      cost: 5,
       size: 2,
       name: "Basic Tower",
       description: "A really basic tower",
@@ -128,7 +128,7 @@ export class GameModel extends BaseGameModel {
       levelSprites: ["tower-1-1"],
     });
     this.towers.set("tower-2", {
-      cost: 0,
+      cost: 10,
       size: 3,
       name: "Basic Tower",
       description: "A really basic tower",
@@ -163,8 +163,6 @@ export class GameModel extends BaseGameModel {
     this.createDrone(new Vector2(5, 7));
     this.createDrone(new Vector2(6, 7));
     this.createDrone(new Vector2(7, 7));
-    this.buildTower(new Vector2(17, 16), this.towers.get("tower-1"));
-    this.buildTower(Vector2.matching(15), this.towers.get("tower-2"));
     // for (let i = 0; i <= 12; i++) {
     //   this.createBlocker(new Vector2(8, i + 3));
     // }
@@ -194,7 +192,7 @@ export class GameModel extends BaseGameModel {
     );
     this.createUIText(new Vector2(5, 4), "Towers", "#ffffff");
     const sellButton = this.createUIRegion(
-      new Vector2(2.5, 25),
+      new Vector2(2.5, 24),
       new Vector2(2, 1),
       true,
       () => this.actionMap.invoke("sell")
@@ -230,13 +228,33 @@ export class GameModel extends BaseGameModel {
       "left"
     );
     const upgradeButton = this.createUIRegion(
-      new Vector2(7.5, 25),
+      new Vector2(7.5, 24),
       new Vector2(2, 1),
       true,
       () => this.actionMap.invoke("upgrade")
     );
     this.ecs.addComponent(upgradeButton, TextRenderComponent, {
       text: "Upgrade",
+      style: "#ffffff",
+    });
+    const nextWave = this.createUIRegion(
+      new Vector2(5, 26.5),
+      new Vector2(5, 1),
+      true,
+      () => this.actionMap.invoke("exit")
+    );
+    this.ecs.addComponent(nextWave, TextRenderComponent, {
+      text: "Send Next Wave",
+      style: "#ffffff",
+    });
+    const exitButton = this.createUIRegion(
+      new Vector2(5, 29),
+      new Vector2(5, 1),
+      true,
+      () => this.actionMap.invoke("exit")
+    );
+    this.ecs.addComponent(exitButton, TextRenderComponent, {
+      text: "Exit",
       style: "#ffffff",
     });
     const tower1 = this.createUIRegion(
@@ -262,7 +280,6 @@ export class GameModel extends BaseGameModel {
   }
 
   private clearMouseMode() {
-    console.log("Clearing mouse mode.");
     if (this.mouseEntity === null) {
       return;
     }
@@ -311,7 +328,6 @@ export class GameModel extends BaseGameModel {
     if (entity === null) {
       return;
     }
-    console.log("Selling " + entity);
     if (this.ecs.hasComponent(entity.id, SellableComponent)) {
       const value = (entity as ValueEntity).data.value.value;
       this.money += getDynamic(value);
@@ -401,7 +417,7 @@ export class GameModel extends BaseGameModel {
     this.northSouthPath = Pathfinder.findPath(
       this.entityMap,
       new Vector2(1, 30),
-      eastLocations,
+      southLocations,
       Direction.getAllCardinal(),
       Vector2.ZERO,
       this.virtualSize
@@ -435,6 +451,7 @@ export class GameModel extends BaseGameModel {
     if (this.money < tower.cost) {
       return;
     }
+    this.money -= tower.cost;
     const id = this.ecs.createEntity();
     this.ecs.addComponent(id, PositionComponent, {
       position: getDynamic(position)
@@ -466,6 +483,24 @@ export class GameModel extends BaseGameModel {
       source: this.towerTextures[tower.levelSprites[0]],
       size: tower.size,
     });
+    // Proabbly bad but whatever
+    this.ecs.update(0, this);
+
+    this.findPath();
+
+    if (this.eastWestPath.length === 0 || this.northSouthPath.length === 0) {
+      this.money += tower.cost;
+      this.ecs.removeEntity(id);
+      return;
+    }
+
+    const creeps = this.ecs.getEntitiesWithComponent(
+      CreepComponent
+    ) as Array<CreepEntity>;
+    for (const creep of creeps) {
+      creep.data.pathFollower.invalidated = true;
+    }
+
     this.ecs.addComponent(id, TurretBaseComponent, {
       source: this.baseSprite,
     });

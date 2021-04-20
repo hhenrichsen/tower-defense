@@ -17,7 +17,6 @@ export function makeSmokeTrail(
   parent: PositionEntity,
   manager: ECSManager
 ): Entity {
-  console.log("Making smoke particle...");
   let baseVelocity = Vector2.ZERO;
   if ("rotation" in parent.data) {
     baseVelocity = Vector2.fromAngle(

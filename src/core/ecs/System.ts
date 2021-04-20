@@ -65,9 +65,6 @@ export abstract class BaseSystem implements System {
     } else if (this.checkBasis(notification, entity)) {
       if (this.isInterested(notification, entity)) {
         this.entities.set(entity.id, entity);
-        console.debug(
-          `Adding ${notification} on entity ${entity.id} to tracking.`
-        );
       }
     }
   }

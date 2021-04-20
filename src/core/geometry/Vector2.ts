@@ -169,7 +169,7 @@ export class Vector2 {
   }
 
   toString(): string {
-    return `Vector2(x: ${this.x}, y: ${this.y})`;
+    return `${this.x},${this.y}`;
   }
 
   public equals(other: unknown): boolean {

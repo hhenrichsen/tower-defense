@@ -15,7 +15,6 @@ import DamageTargetComponent from "../components/DamageTarget";
 import { Weapon, WeaponEntity } from "../components/Weapon";
 
 export function bullet(parent: WeaponEntity, manager: ECSManager): Entity {
-  console.log("Creating bullet...");
   const id = manager.createEntity();
   const entity = manager.getEntity(id);
   let position = Vector2.ZERO;

@@ -43,6 +43,7 @@ export class Pathfinder {
         if (visited.has(child.toString())) {
           continue;
         }
+        visited.add(child.toString());
 
         if ((nwBound && child.x < nwBound.x) || child.y < nwBound.y) {
           continue;

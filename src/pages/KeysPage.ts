@@ -100,8 +100,6 @@ export class KeysPage implements Page<GlobalState<BasePersistedData>> {
         return;
       }
       const action = this.listeningEvent;
-      console.log(action);
-      console.log(keyMap[action]);
       this.state.remapControl(action, event.key);
       const btn = document.getElementById(action);
       btn.innerText = `${action.replace(/([a-z](?=[A-Z]))/g, "$1 ")} (${

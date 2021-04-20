@@ -20,7 +20,6 @@ export class ClickComponentToggleMultipleSystem extends BaseSystem {
     const data = getDynamic(clickComponentToggleMultiple.data);
     for (let compIdx = 0; compIdx < components.length; compIdx++) {
       const comp = components[compIdx];
-      console.debug(`Toggling ${comp.getName()} on ${entity.id}`);
       if (this.manager.hasComponent(targetEntity.id, comp)) {
         this.manager.removeComponent(targetEntity.id, comp);
       } else {

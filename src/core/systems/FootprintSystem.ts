@@ -3,24 +3,22 @@ import {
   FootprintEntity,
 } from "../components/data/Footprint";
 import { PositionComponent } from "../components/data/Position";
-import { BaseGameModel } from "../data/BaseGameModel";
 import { getDynamic } from "../data/DynamicConstant";
 import { GameMap } from "../data/GameMap";
-import { Component } from "../ecs/Component";
+import { Basis } from "../ecs/decorators/Basis";
+import { Required } from "../ecs/decorators/Required";
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import Vector2 from "../geometry/Vector2";
 
+@Basis(FootprintComponent)
+@Required([PositionComponent])
 export class FootprintSystem extends BaseSystem {
   private map: GameMap;
 
   constructor(map: GameMap) {
     super();
     this.map = map;
-  }
-
-  protected systemUpdate(_deltaTime: number, _model: BaseGameModel): void {
-    this.map.clear();
   }
 
   protected updateEntity(deltaTime: number, entity: Entity): void {
@@ -30,9 +28,9 @@ export class FootprintSystem extends BaseSystem {
       footprint.tracked = true;
       const pos = getDynamic(position.position).floor();
 
-      const nwOffset = Math.floor((footprint.size - 1) / 2);
+      const nwOffset = Math.floor((footprint.size - 1) / 2) - 1;
       const northWest = new Vector2(pos.x - nwOffset, pos.y - nwOffset);
-      const swOffset = Math.floor(footprint.size / 2);
+      const swOffset = Math.floor(footprint.size / 2) + 1;
       const southEast = new Vector2(pos.x + swOffset, pos.y + swOffset);
       console.log("NW: " + northWest.toString());
       console.log("SE: " + southEast.toString());
@@ -43,23 +41,5 @@ export class FootprintSystem extends BaseSystem {
         }
       }
     }
-  }
-
-  private checkRelativeThreshold(
-    a: Vector2,
-    b: Vector2,
-    threshold: number
-  ): boolean {
-    return Math.abs(a.x - b.x) < threshold && Math.abs(a.y - b.y) < threshold;
-  }
-
-  getBasisComponent(): Component {
-    return FootprintComponent;
-  }
-
-  getRequiredComponents(): Set<Component> {
-    const set = new Set<Component>();
-    set.add(PositionComponent);
-    return set;
   }
 }

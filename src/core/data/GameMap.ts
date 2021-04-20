@@ -4,11 +4,12 @@ import { ECSManager, EntityEvent } from "../ecs/ECSManager";
 import { Pathable } from "./Pathable";
 
 export class GameMap implements Pathable {
-  private positions: Map<string, Entity>;
-  private owners: Map<number, Set<string>>;
+  private positions: Map<number, Entity>;
+  private owners: Map<number, Set<number>>;
   private entities: Set<number>;
   private minimumBound: Vector2;
   private maximumBound: Vector2;
+  private yScale: number;
 
   constructor(minimum: Vector2, maximum: Vector2, manager: ECSManager) {
     this.positions = new Map();
@@ -16,14 +17,21 @@ export class GameMap implements Pathable {
     this.entities = new Set();
     this.minimumBound = minimum;
     this.maximumBound = maximum;
+    this.yScale = this.maximumBound.x - this.minimumBound.x;
     manager.listenEvent("ecs:delete", this.listener.bind(this));
+  }
+
+  private getCoordinate(vector: Vector2): number {
+    const x = vector.x - this.minimumBound.x;
+    const y = vector.y - this.minimumBound.y;
+    return y * (this.maximumBound.x - this.minimumBound.x) + x;
   }
 
   private listener(entityEvent: EntityEvent) {
     const entityID = entityEvent.entity.id;
     if (this.entities.has(entityID)) {
       const spaces = this.owners.get(entityID);
-      for (const space in spaces) {
+      for (const space of spaces) {
         this.positions.delete(space);
       }
       this.owners.delete(entityID);
@@ -35,9 +43,9 @@ export class GameMap implements Pathable {
   }
 
   public checkArea(northWest: Vector2, southEast: Vector2): boolean {
-    for (let x = northWest.x; x < southEast.x; x++) {
-      for (let y = northWest.y; y < southEast.y; y++) {
-        if (this.hasEntityAt(northWest.addConstant(x, y))) {
+    for (let y = northWest.y; y < southEast.y; y++) {
+      for (let x = northWest.x; x < southEast.x; x++) {
+        if (this.hasEntityAt(new Vector2(x, y))) {
           return false;
         }
       }
@@ -46,23 +54,40 @@ export class GameMap implements Pathable {
   }
 
   public getEntityAt(position: Vector2): Entity | null {
-    if (this.positions.has(position.toString())) {
-      return this.positions.get(position.toString());
+    const coord = this.getCoordinate(position);
+    if (this.positions.has(coord)) {
+      return this.positions.get(coord);
     }
     return null;
   }
 
   public hasEntityAt(position: Vector2): boolean {
-    return this.positions.has(position.toString());
+    const coord = this.getCoordinate(position);
+    return this.positions.has(coord);
   }
 
   public createEntityLink(position: Vector2, entity: Entity): void {
-    this.positions.set(position.toString(), entity);
-    this.entities.add(entity.id);
-    if (!this.owners.has(entity.id)) {
-      this.owners.set(entity.id, new Set());
+    if (!this.hasEntityAt(position)) {
+      const coord = this.getCoordinate(position);
+      this.positions.set(coord, entity);
+      console.log(this.positions);
+      this.entities.add(entity.id);
+      if (!this.owners.has(entity.id)) {
+        this.owners.set(entity.id, new Set());
+      }
+      this.owners.get(entity.id).add(coord);
+    } else {
+      console.warn(`Overlapping entity at ${position.toString()}`);
     }
-    this.owners.get(entity.id).add(position.toString());
+  }
+
+  public region(northWest: Vector2, southEast: Vector2, entity: Entity): void {
+    for (let y = northWest.y; y < southEast.y; y++) {
+      for (let x = northWest.x; x < southEast.x; x++) {
+        const loc = northWest.addConstant(x, y);
+        this.createEntityLink(loc, entity);
+      }
+    }
   }
 
   public getNeighbors(position: Vector2): Array<Entity> {

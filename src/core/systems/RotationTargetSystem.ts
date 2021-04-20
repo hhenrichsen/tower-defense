@@ -5,7 +5,6 @@ import {
   RotationTargetEntity,
 } from "../components/behavior/RotationTarget";
 import { getDynamic } from "../data/DynamicConstant";
-import { Component } from "../ecs/Component";
 import { Entity } from "../ecs/Entity";
 import { BaseSystem } from "../ecs/System";
 import Vector2 from "../geometry/Vector2";
@@ -46,10 +45,7 @@ export class RotationTargetSystem extends BaseSystem {
       getDynamic(rotation.rotation) + deltaRotation * rotationDirection;
 
     if (Math.abs(desiredRotation) < rotationTarget.strictness) {
-      console.log("Within threshold");
       this.manager.emitEvent("rotationTarget:reached", targetEntity);
-    } else {
-      console.log(`Delta ${Math.abs(targetRotation - rotation.rotation)}`);
     }
   }
 

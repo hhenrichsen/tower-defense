@@ -66,7 +66,6 @@ export abstract class BaseGameModel {
   protected setSelection(id: number): void {
     this.selection = id;
     const ids = this.ecs.getEntityIDsWithComponent(SelectedComponent);
-    console.log(this.ecs.getEntity(id));
 
     for (let i = 0; i < ids.length; i++) {
       this.ecs.removeComponent(ids[i], SelectedComponent);
