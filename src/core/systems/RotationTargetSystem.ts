@@ -54,6 +54,10 @@ export class RotationTargetSystem extends BaseSystem {
     b: number,
     threshold: number
   ): boolean {
-    return Math.abs(a - b) < threshold;
+    return (
+      Math.abs(a - b) < threshold ||
+      Math.abs(a + 360 - b) < threshold ||
+      Math.abs(a - (b + 360)) < threshold
+    );
   }
 }

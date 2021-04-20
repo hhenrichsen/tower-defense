@@ -28,9 +28,9 @@ export class FootprintSystem extends BaseSystem {
       footprint.tracked = true;
       const pos = getDynamic(position.position).floor();
 
-      const nwOffset = Math.floor((footprint.size - 1) / 2) - 1;
+      const nwOffset = Math.floor((footprint.size - 1) / 2);
       const northWest = new Vector2(pos.x - nwOffset, pos.y - nwOffset);
-      const swOffset = Math.floor(footprint.size / 2) + 1;
+      const swOffset = Math.floor(footprint.size / 2);
       const southEast = new Vector2(pos.x + swOffset, pos.y + swOffset);
       for (let x = northWest.x; x <= southEast.x; x++) {
         for (let y = northWest.y; y <= southEast.y; y++) {

@@ -129,7 +129,7 @@ export class GameModel extends BaseGameModel {
     });
     this.towers.set("tower-2", {
       cost: 10,
-      size: 3,
+      size: 2,
       name: "Basic Tower",
       description: "A really basic tower",
       rotationRate: 90,
@@ -422,6 +422,8 @@ export class GameModel extends BaseGameModel {
       Vector2.ZERO,
       this.virtualSize
     );
+    console.log("New Path: ");
+    console.log(this.eastWestPath);
   }
 
   public getUnstructured<T>(flagName: string): T | null {

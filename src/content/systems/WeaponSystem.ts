@@ -32,6 +32,7 @@ export class WeaponSystem extends BaseSystem {
     const { weapon, rotationTarget } = targetEntity.data;
     if (!weapon.canFire && this.checkInterval(deltaTime, weapon)) {
       weapon.canFire = true;
+      console.log(`${entity.id} is ready to fire.`);
     }
 
     if (weapon.target === undefined) {
