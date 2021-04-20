@@ -20,7 +20,10 @@ export class RotationTargetSystem extends BaseSystem {
     const rotationTarget = targetEntity.data.rotationTarget;
     const rotation = targetEntity.data.rotation;
 
-    if (rotationTarget === undefined) {
+    if (
+      rotationTarget === undefined ||
+      getDynamic(rotationTarget.target) === undefined
+    ) {
       return;
     }
 
@@ -30,7 +33,8 @@ export class RotationTargetSystem extends BaseSystem {
     );
     const currentRotation = ((getDynamic(rotation.rotation) % 360) + 360) % 360;
     const currentRotationVector = Vector2.fromAngle(currentRotation);
-    const targetRotation = relativeTarget.toAngle();
+    const targetRotation = (relativeTarget.toAngle() + 360) % 360;
+    rotationTarget.targetRotation = targetRotation;
 
     // Figure out which direction we're rotating in, and how much we need to rotate by.
     const rotationDirection = Math.sign(
@@ -42,7 +46,10 @@ export class RotationTargetSystem extends BaseSystem {
       desiredRotation
     );
     rotation.rotation =
-      getDynamic(rotation.rotation) + deltaRotation * rotationDirection;
+      (((getDynamic(rotation.rotation) + deltaRotation * rotationDirection) %
+        360) +
+        360) %
+      360;
 
     if (Math.abs(desiredRotation) < rotationTarget.strictness) {
       this.manager.emitEvent("rotationTarget:reached", targetEntity);
