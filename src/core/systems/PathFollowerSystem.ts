@@ -51,7 +51,6 @@ export class PathFollowerSystem extends BaseSystem {
       pathFollower.point < path.length
     ) {
       pathFollower.point++;
-      console.log(`Moving to next point ${pathFollower.point}`);
     }
     if (pathFollower.point < path.length) {
       const pt = path[pathFollower.point];

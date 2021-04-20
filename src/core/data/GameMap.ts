@@ -70,7 +70,6 @@ export class GameMap implements Pathable {
     if (!this.hasEntityAt(position)) {
       const coord = this.getCoordinate(position);
       this.positions.set(coord, entity);
-      console.log(this.positions);
       this.entities.add(entity.id);
       if (!this.owners.has(entity.id)) {
         this.owners.set(entity.id, new Set());

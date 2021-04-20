@@ -32,11 +32,8 @@ export class FootprintSystem extends BaseSystem {
       const northWest = new Vector2(pos.x - nwOffset, pos.y - nwOffset);
       const swOffset = Math.floor(footprint.size / 2) + 1;
       const southEast = new Vector2(pos.x + swOffset, pos.y + swOffset);
-      console.log("NW: " + northWest.toString());
-      console.log("SE: " + southEast.toString());
       for (let x = northWest.x; x <= southEast.x; x++) {
         for (let y = northWest.y; y <= southEast.y; y++) {
-          console.log(`Blocking ${x},${y}`);
           this.map.createEntityLink(new Vector2(x, y), entity);
         }
       }

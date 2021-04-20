@@ -59,7 +59,6 @@ export class Pathfinder {
 
         const path = new PathNode(node, child);
         if (newEndingPositions.has(child.toString())) {
-          console.log();
           return Pathfinder.fromPath(path);
         }
         visited = visited.add(child.toString());
