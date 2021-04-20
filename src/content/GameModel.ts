@@ -34,7 +34,10 @@ import TurretBaseComponent from "./components/BaseComponent";
 import PositionDebugComponent from "../core/components/rendering/PositionDebug";
 import { ClickableComponent } from "../core/components/behavior/click/Clickable";
 import { Direction } from "../core/geometry/Direction";
-import { AbstractClickComponent } from "../core/components/behavior/click/AbstractClick";
+import {
+  AbstractClick,
+  AbstractClickComponent,
+} from "../core/components/behavior/click/AbstractClick";
 import { ClickComponentToggleMultipleComponent } from "../core/components/behavior/click/ClickComponentToggleMultiple";
 import SelectedComponent from "../core/components/marker/Selected";
 import { WeaponSystem } from "./systems/WeaponSystem";
@@ -121,7 +124,7 @@ export class GameModel extends BaseGameModel {
       size: 2,
       name: "Basic Tower",
       description: "A really basic tower",
-      rotationRate: 360,
+      rotationRate: 720,
       range: 5,
       fireRate: 0.2,
       projectile: ProjectileType.DEFAULT,
@@ -132,7 +135,7 @@ export class GameModel extends BaseGameModel {
       size: 2,
       name: "Basic Tower",
       description: "A really basic tower",
-      rotationRate: 90,
+      rotationRate: 180,
       range: 8,
       fireRate: 3,
       projectile: ProjectileType.DEFAULT,
@@ -214,6 +217,26 @@ export class GameModel extends BaseGameModel {
           if ("health" in sel.data) {
             val +=
               "Health: " + (sel.data.health.health as number).toFixed(0) + "\n";
+          }
+          if ("value" in sel.data) {
+            val +=
+              "Value: " + (sel.data.value.value as number).toFixed(0) + "\n";
+          }
+          if ("weapon" in sel.data) {
+            val += "Can Fire: " + sel.data.weapon.canFire + "\n";
+            val += "Proper Rotation: " + sel.data.weapon.arcReached + "\n";
+          }
+          if ("rotation" in sel.data) {
+            val +=
+              "Rotation: " +
+              (sel.data.rotation.rotation as number).toFixed(0) +
+              "\n";
+          }
+          if ("rotationTarget" in sel.data) {
+            val +=
+              "Target: " +
+              (sel.data.rotationTarget.targetRotation as number).toFixed(0) +
+              "\n";
           }
           if ("value" in sel.data) {
             val +=
@@ -468,13 +491,18 @@ export class GameModel extends BaseGameModel {
       turnRate: tower.rotationRate,
       strictness: 4,
     });
+    this.ecs.addComponent(id, NameComponent, {
+      name: tower.name,
+    });
 
     this.ecs.addComponent(id, ClickableComponent, {
       delta: Vector2.matching(tower.size / 2),
       offset: Vector2.matching(-0.5),
     });
-    this.ecs.addComponent(id, ClickComponentToggleMultipleComponent, {
-      components: [SelectedComponent, RangeDisplayComponent],
+    this.ecs.addComponent(id, AbstractClickComponent, {
+      action: () => {
+        this.setSelection(id);
+      },
     });
     this.ecs.addComponent(id, SpriteComponent, {
       source: this.towerTextures[tower.levelSprites[0]],

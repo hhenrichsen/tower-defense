@@ -1,4 +1,6 @@
+import { RangeComponent } from "../components/data/Range";
 import SelectedComponent from "../components/marker/Selected";
+import { RangeDisplayComponent } from "../components/rendering/RangeDisplay";
 import { ECSManager } from "../ecs/ECSManager";
 import { Entity } from "../ecs/Entity";
 import Vector2 from "../geometry/Vector2";
@@ -16,6 +18,7 @@ import { ClickComponentToggleSystem } from "../systems/ClickComponentToggleSyste
 import { ClickDataMutateSystem } from "../systems/ClickDataMutationSystem";
 import { DraggableSystem } from "../systems/DraggableSystem";
 import { FootprintSystem } from "../systems/FootprintSystem";
+import { HealthSystem } from "../systems/HealthSystem";
 import { LifetimeRenderSystem } from "../systems/LifetimeRenderSystem";
 import { LifetimeSystem } from "../systems/LifetimeSystem";
 import { MagnetSystem } from "../systems/MagnetSystem";
@@ -69,9 +72,16 @@ export abstract class BaseGameModel {
 
     for (let i = 0; i < ids.length; i++) {
       this.ecs.removeComponent(ids[i], SelectedComponent);
+      // TODO: Move to its own function
+      if (this.ecs.hasComponent(ids[i], RangeComponent)) {
+        this.ecs.removeComponent(ids[i], RangeDisplayComponent);
+      }
     }
 
     this.ecs.addComponent(id, SelectedComponent);
+    if (this.ecs.hasComponent(id, RangeComponent)) {
+      this.ecs.addComponent(id, RangeDisplayComponent);
+    }
   }
 
   constructor(virtualSize: Vector2) {
@@ -161,6 +171,7 @@ export abstract class BaseGameModel {
     this.ecs.createSystem(new AbstractClickSystem(), -5);
 
     // Entity creation/deletion
+    this.ecs.createSystem(new HealthSystem(), -2);
     this.ecs.createSystem(new SpawnerSystem(), -1);
     this.ecs.createSystem(new LifetimeSystem(), -1);
 

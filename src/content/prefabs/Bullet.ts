@@ -1,3 +1,4 @@
+import { LifetimeComponent } from "../../core/components/behavior/Lifetime";
 import { VelocityTargetComponent } from "../../core/components/behavior/PositionTarget";
 import { RotationTargetComponent } from "../../core/components/behavior/RotationTarget";
 import SpawnerComponent from "../../core/components/behavior/Spawner";
@@ -17,6 +18,7 @@ import { Weapon, WeaponEntity } from "../components/Weapon";
 export function bullet(parent: WeaponEntity, manager: ECSManager): Entity {
   const id = manager.createEntity();
   const entity = manager.getEntity(id);
+  const target = parent.data.weapon.target;
   let position = Vector2.ZERO;
   position = position.add(
     parent.data.weapon.barrelOffsets[parent.data.weapon.barrel]
@@ -28,11 +30,21 @@ export function bullet(parent: WeaponEntity, manager: ECSManager): Entity {
   });
   manager.addComponent(entity, RotationComponent);
   manager.addComponent(entity, RotationTargetComponent, {
-    target: () => parent.data.weapon.target.data.position.position,
+    target: () => {
+      if (!target.active) {
+        return entity.data.position.position;
+      }
+      return target.data.position.position;
+    },
   });
   manager.addComponent(entity, VelocityComponent);
   manager.addComponent(entity, VelocityTargetComponent, {
-    target: () => parent.data.weapon.target.data.position.position,
+    target: () => {
+      if (!target.active) {
+        return entity.data.position.position;
+      }
+      return target.data.position.position;
+    },
     velocity: 20,
   });
   manager.addComponent(entity, SpriteComponent);
@@ -46,6 +58,9 @@ export function bullet(parent: WeaponEntity, manager: ECSManager): Entity {
   });
   manager.addComponent(entity, DamageTargetComponent, {
     target: parent.data.weapon.target,
+  });
+  manager.addComponent(entity, LifetimeComponent, {
+    lifetime: 3,
   });
   return entity;
 }

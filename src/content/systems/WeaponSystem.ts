@@ -44,12 +44,12 @@ export class WeaponSystem extends BaseSystem {
       for (let creepIdx = 0; creepIdx < this.creeps.length; creepIdx++) {
         if (
           this.creeps[creepIdx] === undefined ||
-          this.creeps[creepIdx].active === false
+          !this.creeps[creepIdx].active
         ) {
           continue;
         }
         if (this.creepInRange(targetEntity, this.creeps[creepIdx], 1)) {
-          if (best === null) {
+          if (best === null || !best.active) {
             best = this.creeps[creepIdx];
           } else if (
             this.creeps[creepIdx].data.pathFollower.point >
