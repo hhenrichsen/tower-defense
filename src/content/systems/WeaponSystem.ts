@@ -40,30 +40,28 @@ export class WeaponSystem extends BaseSystem {
     }
 
     let best = weapon.target;
-    if (best === null || !this.creepInRange(targetEntity, best, 1)) {
-      for (let creepIdx = 0; creepIdx < this.creeps.length; creepIdx++) {
-        if (
-          this.creeps[creepIdx] === undefined ||
-          this.creeps[creepIdx].data.creep === undefined ||
-          !this.creeps[creepIdx].active
+
+    const bestInRange = this.creepInRange(targetEntity, best, 1);
+    for (let creepIdx = 0; creepIdx < this.creeps.length; creepIdx++) {
+      const creep = this.creeps[creepIdx];
+      if (!this.isValidCreep(creep)) {
+        continue;
+      }
+
+      const tagIntersection = intersection(
+        targetEntity.data.weapon.tags,
+        creep.data.creep.tags
+      );
+      if (
+        this.creepInRange(targetEntity, creep, 1) &&
+        tagIntersection.length > 0
+      ) {
+        if (!this.isValidCreep(best) || !bestInRange) {
+          best = creep;
+        } else if (
+          creep.data.pathFollower.point > best.data.pathFollower.point
         ) {
-          continue;
-        }
-        if (
-          this.creepInRange(targetEntity, this.creeps[creepIdx], 1) &&
-          intersection(
-            targetEntity.data.weapon.tags,
-            this.creeps[creepIdx].data.creep.tags
-          ).length > 0
-        ) {
-          if (best === null || !best.active) {
-            best = this.creeps[creepIdx];
-          } else if (
-            this.creeps[creepIdx].data.pathFollower.point >
-            best.data.pathFollower.point
-          ) {
-            best = this.creeps[creepIdx];
-          }
+          best = this.creeps[creepIdx];
         }
       }
     }
@@ -91,7 +89,7 @@ export class WeaponSystem extends BaseSystem {
     creep: CreepEntity,
     offset = 0
   ): boolean {
-    if (creep === undefined || creep.data.position === undefined) {
+    if (!this.isValidCreep(creep)) {
       return false;
     }
     const pos = getDynamic(weapon.data.position.position);
@@ -100,6 +98,15 @@ export class WeaponSystem extends BaseSystem {
       pos,
       weapon.data.range.range + offset,
       creepPos
+    );
+  }
+
+  private isValidCreep(entity: CreepEntity) {
+    return (
+      entity !== null &&
+      entity !== undefined &&
+      entity.active &&
+      entity.data.creep !== undefined
     );
   }
 }

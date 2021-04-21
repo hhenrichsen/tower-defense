@@ -12,7 +12,9 @@ import { WaveManifest } from "./types/WaveManifest";
 import { PersistenceManager } from "../core/data/Persistence";
 import { DEFAULT_PERSISTED_DATA, PersistedData } from "./PersistedData";
 import { FootprintComponent } from "../core/components/data/Footprint";
-import SpriteComponent from "../core/components/rendering/Sprite";
+import SpriteComponent, {
+  SpriteEntity,
+} from "../core/components/rendering/Sprite";
 import { LifetimeComponent } from "../core/components/behavior/Lifetime";
 import { Entity } from "../core/ecs/Entity";
 import { DynamicConstant, getDynamic } from "../core/data/DynamicConstant";
@@ -32,20 +34,23 @@ import UpgradeComponent, {
   UpgradeEntity,
 } from "../core/components/behavior/Upgrade";
 import { merge } from "lodash";
-import SpawnerComponent from "../core/components/behavior/Spawner";
+import SpawnerComponent, {
+  SpawnerEntity,
+} from "../core/components/behavior/Spawner";
 import { makeBlood } from "./particles/Blood";
-import { TowerManager } from "./TowerManager";
+import { TowerManager } from "./towers/TowerManager";
 import { GameMap } from "../core/data/GameMap";
 import { makeNormalCreepProducer } from "./creeps/Normal";
 import { PathChecker } from "./PathChecker";
-import { makeFlyingCreepProducer } from "./creeps/Flying";
 import LowSpriteComponent from "../core/components/rendering/LowSprite";
+import { CreepManager } from "./creeps/CreepManager";
+import { globalState } from "..";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
   private unstructured: Map<string, unknown>;
   public lives = 20;
-  public money = 20;
+  public money = 100;
   public wave: number;
   public waveSet: Array<WaveManifest>;
   public persistence: PersistenceManager<GameModel, PersistedData>;
@@ -57,12 +62,18 @@ export class GameModel extends BaseGameModel {
   private towerManager: TowerManager;
   private pathChecker: PathChecker;
   private floorTile: Texture = new Texture("assets/FloorTile.png");
+  private creepManager: CreepManager;
   activeTower: string = null;
+  private northSpawnerID = -1;
+  private eastSpawnerID = -1;
+  private arrow = new Texture("assets/Arrow.png");
+  public getEastWestPath: () => Vector2[];
+  public getNorthSouthPath: () => Vector2[];
 
   constructor() {
     super(new Vector2(40, 30));
     this.persistence = new PersistenceManager(
-      "towerDefenseData",
+      "towerDefense",
       () => DEFAULT_PERSISTED_DATA
     );
     const persistedData = this.persistence.get(this);
@@ -70,6 +81,14 @@ export class GameModel extends BaseGameModel {
     this.persistence.put(persistedData);
     this.towerManager = new TowerManager(this, this.ecs);
     this.pathChecker = new PathChecker(this);
+
+    this.getEastWestPath = this._getEastWestPath.bind(this);
+    this.getNorthSouthPath = this._getNorthSouthPath.bind(this);
+    this.creepManager = new CreepManager(this);
+    this.creepManager.nextWave();
+    this.creepManager.nextWave();
+    this.creepManager.nextWave();
+    this.creepManager.nextWave();
 
     this.particleManager = new ParticleManager();
     this.initParticleEffects();
@@ -100,13 +119,15 @@ export class GameModel extends BaseGameModel {
       }
     });
 
-    this.getEastWestPath = this.getEastWestPath.bind(this);
-    this.getNorthSouthPath = this.getNorthSouthPath.bind(this);
-
     this._actionMap.addHandler("sell", this.attemptSell.bind(this));
+    this._actionMap.addHandler("wave", this.sendWave.bind(this));
     this._actionMap.addHandler("upgrade", this.attemptUpgrade.bind(this));
     this._actionMap.addHandler("clear", this.clearMouseMode.bind(this));
     this._actionMap.addHandler("setTower", this.setMouseMode.bind(this));
+    this._actionMap.addHandler("exit", () => {
+      this.entityMap.clear();
+      globalState.router.requestTransition("home");
+    });
 
     this.mouse.addListener(this.handleClick.bind(this));
 
@@ -135,33 +156,85 @@ export class GameModel extends BaseGameModel {
     });
   }
 
+  private sendWave() {
+    const northSpawner = this.ecs.getEntity(
+      this.northSpawnerID
+    ) as SpawnerEntity & SpriteEntity;
+    const eastSpawner = this.ecs.getEntity(
+      this.eastSpawnerID
+    ) as SpawnerEntity & SpriteEntity;
+    const {
+      spawner: northSpawnerData,
+      sprite: northSprite,
+    } = northSpawner.data;
+    const { spawner: eastSpawnerData, sprite: eastSprite } = eastSpawner.data;
+    if (northSpawnerData.total < northSpawnerData.limit) {
+      return;
+    }
+    if (eastSpawnerData.total < eastSpawnerData.limit) {
+      return;
+    }
+
+    const {
+      count: eastCount,
+      entity: eastEntity,
+    } = this.creepManager.getEastWave();
+    eastSpawnerData.producer = eastEntity;
+    eastSpawnerData.total = 0;
+    eastSpawnerData.limit = eastCount;
+    if (this.creepManager.nextEast()) {
+      eastSprite.size = Vector2.ONES;
+    } else {
+      eastSprite.size = Vector2.ZERO;
+    }
+    console.log("East count " + eastCount);
+
+    const {
+      count: northCount,
+      entity: northEntity,
+    } = this.creepManager.getNorthWave();
+    northSpawnerData.producer = northEntity;
+    northSpawnerData.total = 0;
+    northSpawnerData.limit = northCount;
+    if (this.creepManager.nextNorth()) {
+      northSprite.size = Vector2.ONES;
+    } else {
+      northSprite.size = Vector2.ZERO;
+    }
+    console.log("North count " + northCount);
+    this.creepManager.nextWave();
+  }
+
   private initActions() {
     this._actionMap.createAction("upgrade", true);
     this._actionMap.createAction("sell", true);
-    this._actionMap.createAction("start", true);
+    this._actionMap.createAction("wave", true);
     this._actionMap.createAction("clear");
     this._actionMap.createAction("setTower");
+    this._actionMap.createAction("exit");
   }
 
   private initParticleEffects() {
     this.particleManager.addEffectManager;
   }
 
-  private createSpawner(position: Vector2, eastWest = true): void {
+  private createSpawner(position: Vector2, east: boolean): number {
     const eid = this.ecs.createEntity();
     this.ecs.addComponent(eid, PositionComponent, {
       position,
     });
-    const producer = eastWest
-      ? makeNormalCreepProducer(this.getEastWestPath, this)
-      : makeNormalCreepProducer(this.northSouthPath, this);
     this.ecs.addComponent(eid, SpawnerComponent, {
-      producer,
-      limit: 20,
+      limit: 0,
       rate: 1,
       count: 1,
     });
-    console.log(`Created spawner at ${position.toString()}`);
+    this.ecs.addComponent(eid, RotationComponent);
+    this.ecs.addComponent(eid, SpriteComponent, {
+      source: this.arrow,
+      size: east ? Vector2.ONES : Vector2.ZERO,
+      rotationOffset: east ? 0 : 90,
+    });
+    return eid;
   }
 
   public preStart(): void {
@@ -171,8 +244,11 @@ export class GameModel extends BaseGameModel {
     //   this.createBlocker(new Vector2(8, i + 3));
     // }
     this.ecs.update(0, this);
-    this.northSouthPath = [new Vector2(25, 0), new Vector2(25, 30)];
-    this.eastWestPath = [new Vector2(10, 15), new Vector2(40, 15)];
+    this.northSouthPath = this.getPath().findNorthSouth(new Set());
+    this.eastWestPath = this.getPath().findEastWest(new Set());
+
+    this.northSpawnerID = this.createSpawner(new Vector2(25, 0), false);
+    this.eastSpawnerID = this.createSpawner(new Vector2(10, 15), true);
 
     for (let y = 0; y < 30; y++) {
       for (let x = 10; x < 40; x++) {
@@ -198,8 +274,6 @@ export class GameModel extends BaseGameModel {
       this.createBlocker(new Vector2(10, i));
       this.createBlocker(new Vector2(39, i));
     }
-
-    this.createSpawner(new Vector2(10, 15));
   }
 
   public addSystems(): void {
@@ -316,11 +390,11 @@ export class GameModel extends BaseGameModel {
     this.eastWestPath = eastWestPath;
   }
 
-  public getEastWestPath(): Vector2[] {
+  public _getEastWestPath(): Vector2[] {
     return this.eastWestPath;
   }
 
-  public getNorthSouthPath(): Vector2[] {
+  public _getNorthSouthPath(): Vector2[] {
     return this.northSouthPath;
   }
 

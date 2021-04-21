@@ -21,11 +21,13 @@ import { GameModel } from "../GameModel";
 
 export function makeFlyingCreepProducer(
   path: DynamicConstant<Array<Vector2>>,
-  model: GameModel
+  model: GameModel,
+  statModifier: DynamicConstant<number>
 ): EntityProducer {
   return function (parent: SpawnerEntity, ecs: ECSManager): void {
     const position = getDynamic(parent.data.position.position);
     const entityID = ecs.createEntity();
+    const modifier = getDynamic(statModifier);
     ecs.addComponent(entityID, PositionComponent, {
       position,
     });
@@ -34,7 +36,7 @@ export function makeFlyingCreepProducer(
     });
     ecs.addComponent(entityID, RotationComponent);
     ecs.addComponent(entityID, VelocityTargetComponent, {
-      velocity: 4,
+      velocity: 4 + 0.8 * modifier,
     });
     ecs.addComponent(entityID, RotationTargetComponent);
     ecs.addComponent(entityID, PathFollowerComponent, {
@@ -53,11 +55,14 @@ export function makeFlyingCreepProducer(
       size: Vector2.matching(3.0),
       frameSize: new Vector2(64, 64),
     });
-    ecs.addComponent(entityID, HealthComponent);
-    ecs.addComponent(entityID, CreepComponent);
+    ecs.addComponent(entityID, HealthComponent, {
+      health: Math.floor(10 * (0.8 * modifier)),
+    });
+    ecs.addComponent(entityID, CreepComponent, {
+      tags: ["air"],
+    });
     ecs.addComponent(entityID, NameComponent, {
       name: "Flying Creep",
-      flags: ["air"],
     });
   };
 }

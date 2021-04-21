@@ -58,6 +58,7 @@ export class HomePage implements Page<GS> {
     if (!this.firstTimeLoad) {
       this.setPlayLoaded();
       this.setCreditsLoaded();
+      this.setKeysLoaded();
       this.setScoresLoaded();
     }
     this.firstTimeLoad = false;

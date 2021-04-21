@@ -38,19 +38,23 @@ export class SplashDamageSystem extends BaseSystem {
   onEvent(_: string, entity: DamageSplashEntity): void {
     if (entity.active === false) {
       this.manager.removeEntity(entity);
+      return;
     }
     const { splashDamage, damage } = entity.data;
     for (let entityIdx = 0; entityIdx < this.targets.length; entityIdx++) {
-      const entity = this.targets[entityIdx];
+      const target = this.targets[entityIdx];
+      if (!target.active || target.data.creep === undefined) {
+        continue;
+      }
       if (
         PointRadiusPointCollision(
           getDynamic(splashDamage.target.data.position.position),
           splashDamage.radius,
-          getDynamic(entity.data.position.position)
+          getDynamic(target.data.position.position)
         ) &&
-        intersection(splashDamage.tags, entity.data.creep.tags).length > 0
+        intersection(splashDamage.tags, target.data.creep.tags).length > 0
       ) {
-        entity.data.health.health -= damage.damage;
+        target.data.health.health -= damage.damage;
       }
     }
     this.manager.removeEntity(entity);

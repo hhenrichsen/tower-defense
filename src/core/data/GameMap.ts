@@ -29,13 +29,14 @@ export class GameMap implements Pathable {
 
   private listener(entityEvent: EntityEvent) {
     const entityID = entityEvent.entity.id;
-    if (this.entities.has(entityID)) {
+    if (this.owners.has(entityID)) {
       const spaces = this.owners.get(entityID);
       for (const space of spaces) {
         this.positions.delete(space);
       }
       this.owners.delete(entityID);
     }
+    this.entities.delete(entityID);
   }
 
   public clear(): void {

@@ -33,7 +33,7 @@ export class Spawner extends Component {
       producer: () => {
         return;
       },
-      limit: 0,
+      limit: -1,
       total: 0,
     };
   }

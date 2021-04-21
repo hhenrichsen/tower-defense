@@ -1,29 +1,30 @@
-import { AbstractClickComponent } from "../core/components/behavior/click/AbstractClick";
-import { ClickableComponent } from "../core/components/behavior/click/Clickable";
-import { RotationTargetComponent } from "../core/components/behavior/RotationTarget";
-import { FootprintComponent } from "../core/components/data/Footprint";
-import { NameComponent } from "../core/components/data/Name";
-import { PositionComponent } from "../core/components/data/Position";
-import { RangeComponent } from "../core/components/data/Range";
-import { RotationComponent } from "../core/components/data/Rotation";
-import { ValueComponent } from "../core/components/data/Value";
-import SellableComponent from "../core/components/marker/Sellable";
-import SpriteComponent from "../core/components/rendering/Sprite";
-import { DynamicConstant, getDynamic } from "../core/data/DynamicConstant";
-import { ECSManager } from "../core/ecs/ECSManager";
-import Vector2 from "../core/geometry/Vector2";
-import TurretBaseComponent from "./components/BaseComponent";
-import WeaponComponent from "./components/Weapon";
-import { GameModel } from "./GameModel";
-import { bullet } from "./prefabs/Bullet";
-import { TowerType } from "./types/TowerType";
-import { Texture } from "../core/rendering/Texture";
-import { EntityProducer } from "../core/ecs/EntityProducer";
-import { missile } from "./prefabs/Rocket";
-import { RangeDisplayComponent } from "../core/components/rendering/RangeDisplay";
-import { Pathfinder } from "../core/data/Pathfinder";
-import { Direction } from "../core/geometry/Direction";
-import CreepComponent, { CreepEntity } from "./components/Creep";
+import { AbstractClickComponent } from "../../core/components/behavior/click/AbstractClick";
+import { ClickableComponent } from "../../core/components/behavior/click/Clickable";
+import { RotationTargetComponent } from "../../core/components/behavior/RotationTarget";
+import { FootprintComponent } from "../../core/components/data/Footprint";
+import { NameComponent } from "../../core/components/data/Name";
+import { PositionComponent } from "../../core/components/data/Position";
+import { RangeComponent } from "../../core/components/data/Range";
+import { RotationComponent } from "../../core/components/data/Rotation";
+import { ValueComponent } from "../../core/components/data/Value";
+import SellableComponent from "../../core/components/marker/Sellable";
+import SpriteComponent from "../../core/components/rendering/Sprite";
+import { DynamicConstant, getDynamic } from "../../core/data/DynamicConstant";
+import { ECSManager } from "../../core/ecs/ECSManager";
+import Vector2 from "../../core/geometry/Vector2";
+import TurretBaseComponent from "../components/BaseComponent";
+import WeaponComponent from "../components/Weapon";
+import { GameModel } from "../GameModel";
+import { bullet } from "../prefabs/Bullet";
+import { TowerType } from "../types/TowerType";
+import { Texture } from "../../core/rendering/Texture";
+import { EntityProducer } from "../../core/ecs/EntityProducer";
+import { missile } from "../prefabs/Rocket";
+import { RangeDisplayComponent } from "../../core/components/rendering/RangeDisplay";
+import { Pathfinder } from "../../core/data/Pathfinder";
+import { Direction } from "../../core/geometry/Direction";
+import CreepComponent, { CreepEntity } from "../components/Creep";
+import { swarmMissile } from "../prefabs/SwarmMissile";
 
 export class TowerManager {
   private towerTextures: Record<string, Texture> = {
@@ -43,8 +44,9 @@ export class TowerManager {
   private towers: Map<string, TowerType> = new Map();
 
   private projectileSpawners: Record<string, EntityProducer> = {
-    bullet: bullet,
-    missile: missile,
+    bullet,
+    missile,
+    swarmMissile,
   };
 
   private baseSprite = new Texture("assets/turret-base.gif");
@@ -143,8 +145,9 @@ export class TowerManager {
     this.ecs.addComponent(id, TurretBaseComponent, {
       source: this.baseSprite,
     });
+    console.log(tower.tags);
     this.ecs.addComponent(id, WeaponComponent, {
-      projectile: bullet,
+      projectile: this.projectileSpawners[tower.projectileSpawner],
       rate: tower.fireRate,
       damage: tower.projectile.damage,
       tags: tower.tags,
@@ -173,6 +176,14 @@ export class TowerManager {
     }
     console.debug("Tower money check passed");
 
+    if (position.x < 11 || position.x + tower.size > 40) {
+      return false;
+    }
+
+    if (position.y < 1 || position.y + tower.size > 30) {
+      return false;
+    }
+
     // Check for collisions with other towers.
     const { collides, blocked } = this.checkCollision(position.floor(), tower);
     if (collides) {
@@ -196,12 +207,14 @@ export class TowerManager {
     // Update model
     if (!dryRun) {
       this.model.setEastWestPath(eastWestPath);
-      this.model.setNorthSouthPath(eastWestPath);
+      this.model.setNorthSouthPath(northSouthPath);
       this.ecs
         .getEntitiesWithComponent(CreepComponent)
-        .forEach(
-          (it: CreepEntity) => (it.data.pathFollower.invalidated = true)
-        );
+        .forEach((it: CreepEntity) => {
+          if (it !== undefined) {
+            it.data.pathFollower.invalidated = true;
+          }
+        });
     }
     return true;
   }

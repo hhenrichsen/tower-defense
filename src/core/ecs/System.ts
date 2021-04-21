@@ -39,6 +39,9 @@ export abstract class BaseSystem implements System {
   protected manager: ECSManager;
 
   protected checkInterval(deltaTime: number, data: IntervalStorage): boolean {
+    if (deltaTime < 0) {
+      return false;
+    }
     if (data.rate <= 0 || data.elapsed < 0) {
       return false;
     }

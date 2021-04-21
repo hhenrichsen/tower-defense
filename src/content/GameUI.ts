@@ -190,7 +190,7 @@ export function createUI(ecs: ECSManager, model: GameModel): void {
     new Vector2(5, 26.5),
     new Vector2(4.5, 1),
     true,
-    () => model.actionMap.invoke("exit")
+    () => model.actionMap.invoke("wave")
   );
   ecs.addComponent(nextWave, TextRenderComponent, {
     text: "Send Next Wave",

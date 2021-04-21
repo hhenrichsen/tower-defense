@@ -198,7 +198,11 @@ export class ECSManager {
       const res: Array<Entity> = [];
       for (const id of this.entityComponents.get(componentName)) {
         const entity = this.resolveEntity(id, true);
-        if (entity !== null && entity.active) {
+        if (
+          entity !== null &&
+          entity.active &&
+          entity.data[componentName] !== undefined
+        ) {
           res.push(entity);
         }
       }

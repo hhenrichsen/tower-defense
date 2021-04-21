@@ -10,11 +10,11 @@ export interface Score {
 }
 
 export const DEFAULT_PERSISTED_DATA: PersistedData = {
-  actions: ["upgrade", "sell", "nextWave"],
+  actions: ["upgrade", "sell", "wave"],
   scores: [],
   keyMap: {
     upgrade: "u",
     sell: "s",
-    start: "g",
+    wave: "g",
   },
 };

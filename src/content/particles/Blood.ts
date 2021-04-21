@@ -29,7 +29,7 @@ export function makeBlood(parent: PositionEntity, manager: ECSManager): void {
     rotation: random.gaussian() * 720,
   });
   manager.addComponent(entity, SpriteComponent, {
-    size: Vector2.matching(0.25),
+    size: Vector2.matching(0.5),
     source: new Texture("assets/Gear.png"),
   });
   manager.addComponent(entity, LifetimeComponent);

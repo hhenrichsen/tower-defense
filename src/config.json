@@ -1,7 +1,9 @@
 {
     "gameName": "Tower Defense",
-    "actions": ["pause"],
+    "actions": ["wave", "sell", "upgrade"],
     "keyMap": {
-        "pause": "p"
+        "wave": "g",
+        "sell": "s",
+        "upgrade": "u"
     }
 }

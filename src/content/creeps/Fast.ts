@@ -21,11 +21,13 @@ import { GameModel } from "../GameModel";
 
 export function makeFastCreepProducer(
   path: DynamicConstant<Array<Vector2>>,
-  model: GameModel
+  model: GameModel,
+  statModifier: DynamicConstant<number>
 ): EntityProducer {
   return function (parent: SpawnerEntity, ecs: ECSManager): void {
     const position = getDynamic(parent.data.position.position);
     const entityID = ecs.createEntity();
+    const modifier = getDynamic(statModifier);
     ecs.addComponent(entityID, PositionComponent, {
       position,
     });
@@ -34,9 +36,11 @@ export function makeFastCreepProducer(
     });
     ecs.addComponent(entityID, RotationComponent);
     ecs.addComponent(entityID, VelocityTargetComponent, {
-      velocity: 5,
+      velocity: 5 + 1.2 * modifier,
     });
-    ecs.addComponent(entityID, RotationTargetComponent);
+    ecs.addComponent(entityID, RotationTargetComponent, {
+      turnRate: 720,
+    });
     ecs.addComponent(entityID, PathFollowerComponent, {
       path: path,
     });
@@ -53,11 +57,14 @@ export function makeFastCreepProducer(
       size: Vector2.matching(2),
       frameSize: new Vector2(64, 64),
     });
-    ecs.addComponent(entityID, HealthComponent);
-    ecs.addComponent(entityID, CreepComponent);
+    ecs.addComponent(entityID, HealthComponent, {
+      health: Math.floor(8 * modifier),
+    });
+    ecs.addComponent(entityID, CreepComponent, {
+      tags: ["ground"],
+    });
     ecs.addComponent(entityID, NameComponent, {
       name: "Normal Creep",
-      flags: ["ground"],
     });
   };
 }

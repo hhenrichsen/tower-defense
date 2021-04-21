@@ -165,6 +165,7 @@ export abstract class BaseGameModel {
   public uninstall(): void {
     this.virtualCanvas.uninstall();
     this.keys.uninstall();
+    this.ecs.clear();
     this.parentElement = null;
   }
 

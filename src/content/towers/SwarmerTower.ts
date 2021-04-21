@@ -5,7 +5,7 @@ export const SwarmerTower: TowerType = {
   description: "Rapidfire Anti-Air Tower",
   size: 2,
   range: 5,
-  rotationRate: 90,
+  rotationRate: 270,
   fireRate: 0.25,
   cost: 20,
   projectile: {
