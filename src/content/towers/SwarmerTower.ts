@@ -15,4 +15,6 @@ export const SwarmerTower: TowerType = {
   },
   levelSprites: ["tower-3-1", "tower-3-2", "tower-3-3"],
   tags: ["air"],
+  upgrades: [],
+  projectileSpawner: "swarmMissile",
 };

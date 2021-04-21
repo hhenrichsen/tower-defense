@@ -7,10 +7,12 @@ import { Entity } from "../../core/ecs/Entity";
 import { EntityProducer } from "../../core/ecs/EntityProducer";
 import { IntervalStorage } from "../../core/ecs/System";
 import Vector2 from "../../core/geometry/Vector2";
+import { ProjectileType } from "../types/ProjectileType";
 import { CreepEntity } from "./Creep";
 
 export interface WeaponData extends Record<string, unknown>, IntervalStorage {
   projectile: EntityProducer;
+  projectileType: ProjectileType;
   rate: number; // entities per second
   elapsed: number;
   target: CreepEntity;
@@ -19,7 +21,6 @@ export interface WeaponData extends Record<string, unknown>, IntervalStorage {
   barrel: number;
   fireStrictness: number;
   arcReached: boolean;
-  damage: number;
   tags: Array<string>;
 }
 
@@ -43,7 +44,7 @@ export class Weapon extends Component {
       barrel: 0,
       fireStrictness: 1,
       arcReached: false,
-      damage: 1,
+      projectileType: ProjectileType.DEFAULT,
       tags: [],
     };
   }

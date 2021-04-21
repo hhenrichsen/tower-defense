@@ -1,4 +1,3 @@
-import { size } from "lodash";
 import { AbstractClickComponent } from "../core/components/behavior/click/AbstractClick";
 import { ClickableComponent } from "../core/components/behavior/click/Clickable";
 import { PositionComponent } from "../core/components/data/Position";
@@ -118,17 +117,6 @@ export function createUI(ecs: ECSManager, model: GameModel): void {
     text: "4",
     style: "#ffffff",
   });
-  const sellButton = createUIRegion(
-    ecs,
-    new Vector2(2.5, 24),
-    new Vector2(2, 1),
-    true,
-    () => model.actionMap.invoke("sell")
-  );
-  ecs.addComponent(sellButton, TextRenderComponent, {
-    text: "Sell",
-    style: "#ffffff",
-  });
   createUIText(ecs, new Vector2(5, 7), "Selected", "#ffffff");
   createUIText(
     ecs,
@@ -167,9 +155,6 @@ export function createUI(ecs: ECSManager, model: GameModel): void {
             (sel.data.upgrade.cost as number).toFixed(0) +
             "\n";
         }
-        if ("value" in sel.data) {
-          val += "Value: " + (sel.data.value.value as number).toFixed(0) + "\n";
-        }
         return val;
       }
       return "";
@@ -178,10 +163,21 @@ export function createUI(ecs: ECSManager, model: GameModel): void {
     1,
     "left"
   );
+  const sellButton = createUIRegion(
+    ecs,
+    new Vector2(2.675, 24),
+    new Vector2(2.125, 1),
+    true,
+    () => model.actionMap.invoke("sell")
+  );
+  ecs.addComponent(sellButton, TextRenderComponent, {
+    text: "Sell",
+    style: "#ffffff",
+  });
   const upgradeButton = createUIRegion(
     ecs,
-    new Vector2(7.5, 24),
-    new Vector2(2, 1),
+    new Vector2(7.375, 24),
+    new Vector2(2.125, 1),
     true,
     () => model.actionMap.invoke("upgrade")
   );
@@ -192,7 +188,7 @@ export function createUI(ecs: ECSManager, model: GameModel): void {
   const nextWave = createUIRegion(
     ecs,
     new Vector2(5, 26.5),
-    new Vector2(5, 1),
+    new Vector2(4.5, 1),
     true,
     () => model.actionMap.invoke("exit")
   );
@@ -203,7 +199,7 @@ export function createUI(ecs: ECSManager, model: GameModel): void {
   const exitButton = createUIRegion(
     ecs,
     new Vector2(5, 29),
-    new Vector2(5, 1),
+    new Vector2(4.5, 1),
     true,
     () => model.actionMap.invoke("exit")
   );

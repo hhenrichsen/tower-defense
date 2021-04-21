@@ -1,3 +1,4 @@
+import { intersection } from "lodash";
 import { VelocityTargetComponent } from "../../core/components/behavior/PositionTarget";
 import {
   HealthComponent,
@@ -13,6 +14,7 @@ import { Required } from "../../core/ecs/decorators/Required";
 import { Entity } from "../../core/ecs/Entity";
 import { BaseSystem } from "../../core/ecs/System";
 import { PointRadiusPointCollision } from "../../core/geometry/Collision";
+import CreepComponent, { CreepEntity } from "../components/Creep";
 import DamageComponent from "../components/Damage";
 import SplashDamageComponent, {
   DamageSplashEntity,
@@ -21,19 +23,16 @@ import SplashDamageComponent, {
 @Basis(SplashDamageComponent)
 @Required([VelocityTargetComponent, DamageComponent])
 export class SplashDamageSystem extends BaseSystem {
-  private targets: Array<HealthEntity & PositionEntity> = [];
+  private targets: Array<CreepEntity> = [];
 
   onManagerAwake(): void {
     this.listen("velocityTarget:reached");
   }
 
   systemUpdate(): void {
-    const tmp = this.manager.getEntitiesWithComponent(
-      HealthComponent
-    ) as Array<HealthEntity>;
-    this.targets = tmp.filter((it) =>
-      this.manager.hasComponent(it, PositionComponent)
-    ) as Array<HealthEntity & PositionEntity>;
+    this.targets = this.manager.getEntitiesWithComponent(
+      CreepComponent
+    ) as Array<CreepEntity>;
   }
 
   onEvent(_: string, entity: DamageSplashEntity): void {
@@ -41,7 +40,6 @@ export class SplashDamageSystem extends BaseSystem {
       this.manager.removeEntity(entity);
     }
     const { splashDamage, damage } = entity.data;
-    splashDamage.target.data.health.health -= damage.damage;
     for (let entityIdx = 0; entityIdx < this.targets.length; entityIdx++) {
       const entity = this.targets[entityIdx];
       if (
@@ -49,7 +47,8 @@ export class SplashDamageSystem extends BaseSystem {
           getDynamic(splashDamage.target.data.position.position),
           splashDamage.radius,
           getDynamic(entity.data.position.position)
-        )
+        ) &&
+        intersection(splashDamage.tags, entity.data.creep.tags).length > 0
       ) {
         entity.data.health.health -= damage.damage;
       }

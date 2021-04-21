@@ -8,6 +8,7 @@ import { DamageEntity } from "./Damage";
 export interface DamageSplashData extends Record<string, unknown> {
   radius: number; // virtual coordinate units
   target: HealthEntity & PositionEntity;
+  tags: Array<string>;
 }
 
 export type DamageSplashEntity = VelocityTargetEntity &
@@ -19,6 +20,7 @@ export class SplashDamage extends Component {
     return {
       radius: 1,
       target: null,
+      tags: ["ground"],
     };
   }
 }

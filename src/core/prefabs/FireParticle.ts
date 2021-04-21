@@ -25,7 +25,7 @@ export function makeFireParticle(
   manager.addComponent(entity, LifetimeComponent);
   manager.addComponent(entity, SpriteComponent, {
     size: Vector2.matching(0.25),
-    source: new Texture("assets/smoke.png"),
+    source: new Texture("assets/Smoke.png"),
   });
   manager.addComponent(entity, LifetimeRenderComponent);
   return manager.getEntity(entity);

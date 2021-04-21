@@ -7,6 +7,7 @@ import { Required } from "../../core/ecs/decorators/Required";
 import { RotationTargetComponent } from "../../core/components/behavior/RotationTarget";
 import CreepComponent, { CreepEntity } from "../components/Creep";
 import { PointRadiusPointCollision as pointRadiusPointCollision } from "../../core/geometry/Collision";
+import { intersection } from "lodash";
 
 @Basis(WeaponComponent)
 @Required([RotationTargetComponent])
@@ -32,7 +33,6 @@ export class WeaponSystem extends BaseSystem {
     const { weapon, rotationTarget } = targetEntity.data;
     if (!weapon.canFire && this.checkInterval(deltaTime, weapon)) {
       weapon.canFire = true;
-      console.log(`${entity.id} is ready to fire.`);
     }
 
     if (weapon.target === undefined) {
@@ -44,11 +44,18 @@ export class WeaponSystem extends BaseSystem {
       for (let creepIdx = 0; creepIdx < this.creeps.length; creepIdx++) {
         if (
           this.creeps[creepIdx] === undefined ||
+          this.creeps[creepIdx].data.creep === undefined ||
           !this.creeps[creepIdx].active
         ) {
           continue;
         }
-        if (this.creepInRange(targetEntity, this.creeps[creepIdx], 1)) {
+        if (
+          this.creepInRange(targetEntity, this.creeps[creepIdx], 1) &&
+          intersection(
+            targetEntity.data.weapon.tags,
+            this.creeps[creepIdx].data.creep.tags
+          ).length > 0
+        ) {
           if (best === null || !best.active) {
             best = this.creeps[creepIdx];
           } else if (

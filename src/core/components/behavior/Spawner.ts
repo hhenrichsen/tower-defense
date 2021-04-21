@@ -10,6 +10,8 @@ export interface SpawnerData extends Record<string, unknown>, IntervalStorage {
   rate: number; // entities per second
   elapsed: number;
   count: number;
+  limit: number;
+  total: number;
 }
 
 export interface ChildDataGenerator {
@@ -24,7 +26,16 @@ export class Spawner extends Component {
   }
 
   protected defaultData(): SpawnerData {
-    return { rate: 1, elapsed: 0, count: 1, producer: null };
+    return {
+      rate: 1,
+      elapsed: 0,
+      count: 1,
+      producer: () => {
+        return;
+      },
+      limit: 0,
+      total: 0,
+    };
   }
 }
 

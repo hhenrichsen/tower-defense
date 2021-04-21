@@ -173,8 +173,8 @@ export class ECSManager {
     this.entityComponents.get(component.getName()).add(entity.id);
   }
 
-  public getEntity(entity: EntityResolvable): Entity | null {
-    return this.resolveEntity(entity);
+  public getEntity(entity: EntityResolvable, quiet = false): Entity | null {
+    return this.resolveEntity(entity, quiet);
   }
 
   public getEntityIDsWithComponent(component: Component): Array<number> {
@@ -182,7 +182,10 @@ export class ECSManager {
     if (this.entityComponents.has(componentName)) {
       const res: Array<number> = [];
       for (const id of this.entityComponents.get(componentName)) {
-        res.push(id);
+        const entity = this.resolveEntity(id, true);
+        if (entity !== null && entity.active) {
+          res.push(id);
+        }
       }
       return res;
     }

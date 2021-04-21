@@ -15,4 +15,6 @@ export const MissileTower: TowerType = {
   },
   levelSprites: ["tower-2-1", "tower-2-2", "tower-2-3"],
   tags: ["ground"],
+  upgrades: [],
+  projectileSpawner: "missile",
 };

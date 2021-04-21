@@ -10,7 +10,9 @@ export class HealthSystem extends BaseSystem {
     const { health } = targetEntity.data;
 
     if (health.health <= 0) {
-      this.manager.emitEvent("health:die", targetEntity);
+      this.manager.emitEvent("health:die", targetEntity, {
+        ...targetEntity.data,
+      });
       this.manager.removeEntity(targetEntity);
     }
   }

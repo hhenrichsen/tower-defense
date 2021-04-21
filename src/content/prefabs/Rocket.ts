@@ -17,9 +17,9 @@ import DamageTargetComponent from "../components/DamageTarget";
 import SplashDamageComponent from "../components/SplashDamage";
 import { WeaponEntity } from "../components/Weapon";
 
-const tex = new Texture("assets/Bullet.png");
+const tex = new Texture("assets/Missile.png");
 
-export function bullet(parent: WeaponEntity, manager: ECSManager): Entity {
+export function missile(parent: WeaponEntity, manager: ECSManager): Entity {
   const id = manager.createEntity();
   const entity = manager.getEntity(id);
   const target = parent.data.weapon.target;
@@ -47,8 +47,6 @@ export function bullet(parent: WeaponEntity, manager: ECSManager): Entity {
     },
   });
   manager.addComponent(entity, VelocityComponent);
-  console.log("speed:" + weapon.projectileType.speed);
-  console.log("splash:" + weapon.projectileType.splashRadius);
   manager.addComponent(entity, VelocityTargetComponent, {
     target: () => {
       if (!target.active) {
@@ -63,6 +61,11 @@ export function bullet(parent: WeaponEntity, manager: ECSManager): Entity {
   manager.addComponent(entity, SpriteComponent, {
     source: tex,
     rotationOffset: 90,
+  });
+  manager.addComponent(entity, SpawnerComponent, {
+    producer: makeSmokeTrail,
+    count: 1,
+    rate: 0.1,
   });
   manager.addComponent(entity, DamageComponent, {
     damage: parent.data.weapon.projectileType.damage,

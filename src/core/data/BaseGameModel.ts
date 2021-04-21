@@ -21,6 +21,7 @@ import { FootprintSystem } from "../systems/FootprintSystem";
 import { HealthSystem } from "../systems/HealthSystem";
 import { LifetimeRenderSystem } from "../systems/LifetimeRenderSystem";
 import { LifetimeSystem } from "../systems/LifetimeSystem";
+import { LowSpriteRenderSystem } from "../systems/LowSpriteRenderSystem";
 import { MagnetSystem } from "../systems/MagnetSystem";
 import { PathFollowerSystem } from "../systems/PathFollowerSystem";
 import { PositionDebugSystem } from "../systems/PositionDebugSystem";
@@ -62,11 +63,17 @@ export abstract class BaseGameModel {
   }
 
   public getSelection(): Entity | null {
-    if (this.selection === -1) return null;
-    return this.ecs.getEntity(this.selection);
+    if (this.selection === -1) {
+      return null;
+    }
+    const entity = this.ecs.getEntity(this.selection, true);
+    if (entity === undefined || entity === null) {
+      return null;
+    }
+    return entity;
   }
 
-  protected setSelection(id: number): void {
+  public setSelection(id: number): void {
     this.selection = id;
     const ids = this.ecs.getEntityIDsWithComponent(SelectedComponent);
 
@@ -76,6 +83,10 @@ export abstract class BaseGameModel {
       if (this.ecs.hasComponent(ids[i], RangeComponent)) {
         this.ecs.removeComponent(ids[i], RangeDisplayComponent);
       }
+    }
+
+    if (id === -1) {
+      return;
     }
 
     this.ecs.addComponent(id, SelectedComponent);
@@ -189,6 +200,7 @@ export abstract class BaseGameModel {
     this.ecs.createSystem(new VelocitySystem());
 
     // Rendering
+    this.ecs.createSystem(new LowSpriteRenderSystem(this.virtualCanvas), 41);
     this.ecs.createSystem(new LifetimeRenderSystem(), 40);
     this.ecs.createSystem(new RangeDisplaySystem(this.virtualCanvas), 49);
     this.ecs.createSystem(new SpriteRenderSystem(this.virtualCanvas), 50);

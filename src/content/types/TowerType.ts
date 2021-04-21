@@ -11,4 +11,6 @@ export interface TowerType {
   projectile: ProjectileType;
   levelSprites: Array<string>;
   tags: Array<string>;
+  upgrades: Array<Partial<TowerType>>;
+  projectileSpawner: string;
 }
