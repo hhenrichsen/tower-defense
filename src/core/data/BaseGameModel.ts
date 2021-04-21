@@ -61,7 +61,7 @@ export abstract class BaseGameModel {
     this.selection = -1;
   }
 
-  protected getSelection(): Entity | null {
+  public getSelection(): Entity | null {
     if (this.selection === -1) return null;
     return this.ecs.getEntity(this.selection);
   }

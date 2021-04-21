@@ -20,6 +20,7 @@ export interface WeaponData extends Record<string, unknown>, IntervalStorage {
   fireStrictness: number;
   arcReached: boolean;
   damage: number;
+  tags: Array<string>;
 }
 
 export interface ChildDataGenerator {
@@ -43,6 +44,7 @@ export class Weapon extends Component {
       fireStrictness: 1,
       arcReached: false,
       damage: 1,
+      tags: [],
     };
   }
 }

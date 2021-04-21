@@ -48,6 +48,15 @@ import { bullet } from "./prefabs/Bullet";
 import { MouseInteraction } from "../core/input/MouseInput";
 import { DamageTargetSystem } from "./systems/DamageTargetSystem";
 import { SplashDamageSystem } from "./systems/SplashDamageSystem";
+import { MinigunTower } from "./towers/MinigunTower";
+import { MissileTower } from "./towers/MissileTower";
+import { SwarmerTower } from "./towers/SwarmerTower";
+import { SniperTower } from "./towers/SniperTower";
+import { createUI } from "./GameUI";
+import UpgradeComponent, {
+  UpgradeEntity,
+} from "../core/components/behavior/Upgrade";
+import { merge } from "lodash";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
@@ -68,6 +77,14 @@ export class GameModel extends BaseGameModel {
     "tower-1-2": new Texture("assets/turret-1-2.png"),
     "tower-1-3": new Texture("assets/turret-1-3.png"),
     "tower-2-1": new Texture("assets/turret-2-1.png"),
+    "tower-2-2": new Texture("assets/turret-2-2.png"),
+    "tower-2-3": new Texture("assets/turret-2-3.png"),
+    "tower-3-1": new Texture("assets/turret-3-1.png"),
+    "tower-3-2": new Texture("assets/turret-3-2.png"),
+    "tower-3-3": new Texture("assets/turret-3-3.png"),
+    "tower-4-1": new Texture("assets/turret-4-1.png"),
+    "tower-4-2": new Texture("assets/turret-4-2.png"),
+    "tower-4-3": new Texture("assets/turret-4-3.png"),
   };
   baseSprite = new Texture("assets/turret-base.gif");
   activeTower: TowerType = null;
@@ -119,27 +136,13 @@ export class GameModel extends BaseGameModel {
     this.mouse.addListener(this.handleClick.bind(this));
 
     this.towers = new Map();
-    this.towers.set("tower-1", {
-      cost: 5,
-      size: 2,
-      name: "Basic Tower",
-      description: "A really basic tower",
-      rotationRate: 720,
-      range: 5,
-      fireRate: 0.2,
-      projectile: ProjectileType.DEFAULT,
-      levelSprites: ["tower-1-1"],
-    });
-    this.towers.set("tower-2", {
-      cost: 10,
-      size: 2,
-      name: "Basic Tower",
-      description: "A really basic tower",
-      rotationRate: 180,
-      range: 8,
-      fireRate: 3,
-      projectile: ProjectileType.DEFAULT,
-      levelSprites: ["tower-2-1"],
+    this.towers.set("tower-1", MinigunTower);
+    this.towers.set("tower-2", MissileTower);
+    this.towers.set("tower-3", SwarmerTower);
+    this.towers.set("tower-4", SniperTower);
+
+    this.ecs.listenEvent("die", (evt) => {
+      this.money += 5;
     });
   }
 
@@ -162,7 +165,7 @@ export class GameModel extends BaseGameModel {
 
   public preStart(): void {
     // this.ecs.addComponent(entityID, SpawnerComponent, { rate: 0.05, spawnCount: 2, prefab: makeSmokeParticle });
-    this.createUI();
+    createUI(this.ecs, this);
     this.createDrone(new Vector2(5, 7));
     this.createDrone(new Vector2(6, 7));
     this.createDrone(new Vector2(7, 7));
@@ -180,128 +183,6 @@ export class GameModel extends BaseGameModel {
     this.ecs.createSystem(new SplashDamageSystem());
   }
 
-  private createUI(): void {
-    this.createUIRegion(new Vector2(5, 15), new Vector2(5, 15));
-    this.createUIText(new Vector2(5, 1), "Tower Defense", "#ffffff", 2);
-    this.createUIText(
-      new Vector2(2.5, 2),
-      () => "Lives: " + this.lives.toFixed(0),
-      "#ffffff"
-    );
-    this.createUIText(
-      new Vector2(7.5, 2),
-      () => "Money: " + this.money.toFixed(0),
-      "#ffffff"
-    );
-    this.createUIText(new Vector2(5, 4), "Towers", "#ffffff");
-    const sellButton = this.createUIRegion(
-      new Vector2(2.5, 24),
-      new Vector2(2, 1),
-      true,
-      () => this.actionMap.invoke("sell")
-    );
-    this.ecs.addComponent(sellButton, TextRenderComponent, {
-      text: "Sell",
-      style: "#ffffff",
-    });
-    this.createUIText(new Vector2(5, 7), "Selected", "#ffffff");
-    this.createUIText(
-      new Vector2(1, 8),
-      (): string => {
-        const sel = this.getSelection();
-        if (sel !== null) {
-          let val = "";
-          if ("name" in sel.data) {
-            val += (sel.data.name.name as string) + "\n";
-          }
-          if ("health" in sel.data) {
-            val +=
-              "Health: " + (sel.data.health.health as number).toFixed(0) + "\n";
-          }
-          if ("value" in sel.data) {
-            val +=
-              "Value: " + (sel.data.value.value as number).toFixed(0) + "\n";
-          }
-          if ("weapon" in sel.data) {
-            val += "Can Fire: " + sel.data.weapon.canFire + "\n";
-            val += "Proper Rotation: " + sel.data.weapon.arcReached + "\n";
-          }
-          if ("rotation" in sel.data) {
-            val +=
-              "Rotation: " +
-              (sel.data.rotation.rotation as number).toFixed(0) +
-              "\n";
-          }
-          if ("rotationTarget" in sel.data) {
-            val +=
-              "Target: " +
-              (sel.data.rotationTarget.targetRotation as number).toFixed(0) +
-              "\n";
-          }
-          if ("value" in sel.data) {
-            val +=
-              "Value: " + (sel.data.value.value as number).toFixed(0) + "\n";
-          }
-          return val;
-        }
-        return "";
-      },
-      "#ffffff",
-      1,
-      "left"
-    );
-    const upgradeButton = this.createUIRegion(
-      new Vector2(7.5, 24),
-      new Vector2(2, 1),
-      true,
-      () => this.actionMap.invoke("upgrade")
-    );
-    this.ecs.addComponent(upgradeButton, TextRenderComponent, {
-      text: "Upgrade",
-      style: "#ffffff",
-    });
-    const nextWave = this.createUIRegion(
-      new Vector2(5, 26.5),
-      new Vector2(5, 1),
-      true,
-      () => this.actionMap.invoke("exit")
-    );
-    this.ecs.addComponent(nextWave, TextRenderComponent, {
-      text: "Send Next Wave",
-      style: "#ffffff",
-    });
-    const exitButton = this.createUIRegion(
-      new Vector2(5, 29),
-      new Vector2(5, 1),
-      true,
-      () => this.actionMap.invoke("exit")
-    );
-    this.ecs.addComponent(exitButton, TextRenderComponent, {
-      text: "Exit",
-      style: "#ffffff",
-    });
-    const tower1 = this.createUIRegion(
-      new Vector2(2, 5),
-      new Vector2(0.5, 0.5),
-      true,
-      () => this.actionMap.invoke("setTower", { tower: "tower-1" })
-    );
-    this.ecs.addComponent(tower1, TextRenderComponent, {
-      text: "1",
-      style: "#ffffff",
-    });
-    const tower2 = this.createUIRegion(
-      new Vector2(4, 5),
-      new Vector2(0.5, 0.5),
-      true,
-      () => this.actionMap.invoke("setTower", { tower: "tower-2" })
-    );
-    this.ecs.addComponent(tower2, TextRenderComponent, {
-      text: "2",
-      style: "#ffffff",
-    });
-  }
-
   private clearMouseMode() {
     if (this.mouseEntity === null) {
       return;
@@ -312,6 +193,7 @@ export class GameModel extends BaseGameModel {
   }
 
   private setMouseMode(_action: string, data: Record<string, unknown>) {
+    console.log("Setting mouse mode");
     const towerName = data["tower"] as string;
     const tower = this.towers.get(towerName);
     this.activeTower = tower;
@@ -364,51 +246,18 @@ export class GameModel extends BaseGameModel {
     if (entity === null) {
       return;
     }
-  }
-
-  private createUIText(
-    position: Vector2,
-    text: DynamicConstant<string>,
-    style?: string,
-    size?: number,
-    align?: CanvasTextAlign
-  ) {
-    const el = this.ecs.createEntity();
-    this.ecs.addComponent(el, PositionComponent, {
-      position,
-    });
-    this.ecs.addComponent(el, TextRenderComponent, {
-      text,
-      style,
-      size,
-      align,
-    });
-  }
-
-  private createUIRegion(
-    position: Vector2,
-    delta?: Vector2,
-    clickable = false,
-    action?: (entity: Entity) => void
-  ): number {
-    const el = this.ecs.createEntity();
-    this.ecs.addComponent(el, PositionComponent, {
-      position,
-    });
-    if (!clickable && delta) {
-      this.ecs.addComponent(el, RegionComponent, {
-        delta,
-      });
-    } else {
-      this.ecs.addComponent(el, ClickableComponent, {
-        delta,
-      });
-      this.ecs.addComponent(el, AbstractClickComponent, {
-        action,
-      });
-      this.ecs.addComponent(el, ClickableDisplayComponent, {});
+    if (!this.ecs.hasComponent(entity, UpgradeComponent)) {
+      return;
     }
-    return el;
+    const targetEntity = entity as UpgradeEntity;
+    const cost = getDynamic<number>(
+      entity.data.upgrade.cost as DynamicConstant<number>
+    );
+    if (cost > this.money) {
+      return;
+    }
+    this.money -= cost;
+    targetEntity.data = merge(targetEntity.data, entity.data.upgrade.dataDelta);
   }
 
   public onUpdate(): void {
@@ -537,6 +386,12 @@ export class GameModel extends BaseGameModel {
     this.ecs.addComponent(id, WeaponComponent, {
       projectile: bullet,
       rate: tower.fireRate,
+      damage: tower.projectile.damage,
+      tags: tower.tags,
+    });
+    this.ecs.addComponent(id, SellableComponent);
+    this.ecs.addComponent(id, ValueComponent, {
+      value: Math.floor(tower.cost * 0.8),
     });
   }
 

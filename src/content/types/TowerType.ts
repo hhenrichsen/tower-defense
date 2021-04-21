@@ -10,4 +10,5 @@ export interface TowerType {
   cost: number;
   projectile: ProjectileType;
   levelSprites: Array<string>;
+  tags: Array<string>;
 }

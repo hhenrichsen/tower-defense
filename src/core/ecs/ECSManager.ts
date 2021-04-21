@@ -18,7 +18,7 @@ export type EntityResolvable = Entity | number;
 export class ECSManager {
   private nextId = 0;
   private entities: Map<number, Entity>;
-  private entityComponents: Map<string, Array<number>>;
+  private entityComponents: Map<string, Set<number>>;
   private systems: Map<number, Set<System>>;
   private interestedSystems: Map<string, Set<System>>;
   private allSystems: Set<System>;
@@ -92,16 +92,23 @@ export class ECSManager {
     return entity.id;
   }
 
-  private resolveEntity(entity: EntityResolvable): Entity | null {
+  private resolveEntity(
+    entity: EntityResolvable,
+    quiet = false
+  ): Entity | null {
     if (typeof entity === "number" || typeof entity === "bigint") {
       const entityID = entity;
       if (entityID >= this.nextId || !this.entities.has(entityID)) {
-        console.warn(`Cannot resolve entity ${entity}; it does not exist.`);
+        if (!quiet) {
+          console.warn(`Cannot resolve entity ${entity}; it does not exist.`);
+        }
         return null;
       }
       const e = this.entities.get(entity);
       if (!e.active) {
-        console.warn(`Cannot resolve entity ${entity}; it has been deleted.`);
+        if (!quiet) {
+          console.warn(`Cannot resolve entity ${entity}; it has been deleted.`);
+        }
         return null;
       }
       return e;
@@ -138,7 +145,7 @@ export class ECSManager {
 
   public hasComponent(entity: EntityResolvable, component: Component): boolean {
     const e = this.resolveEntity(entity);
-    if (!e.active) {
+    if (e === null || e === undefined) {
       return false;
     }
     return component.getName() in e.data;
@@ -161,9 +168,9 @@ export class ECSManager {
     this.emitEvent("ecs:addComponent", entity, { component });
 
     if (!this.entityComponents.has(component.getName())) {
-      this.entityComponents.set(component.getName(), []);
+      this.entityComponents.set(component.getName(), new Set());
     }
-    this.entityComponents.get(component.getName()).push(entity.id);
+    this.entityComponents.get(component.getName()).add(entity.id);
   }
 
   public getEntity(entity: EntityResolvable): Entity | null {
@@ -187,7 +194,7 @@ export class ECSManager {
     if (this.entityComponents.has(componentName)) {
       const res: Array<Entity> = [];
       for (const id of this.entityComponents.get(componentName)) {
-        const entity = this.getEntity(id);
+        const entity = this.resolveEntity(id, true);
         if (entity !== null && entity.active) {
           res.push(entity);
         }
@@ -208,16 +215,11 @@ export class ECSManager {
     }
 
     if (!this.entityComponents.has(component.getName())) {
-      this.entityComponents.set(component.getName(), []);
+      this.entityComponents.set(component.getName(), new Set());
     }
     this.emitEvent("ecs:removeComponent", entity, { component });
 
-    this.entityComponents.set(
-      component.getName(),
-      this.entityComponents
-        .get(component.getName())
-        .filter((ent) => ent !== entityID)
-    );
+    this.entityComponents.get(component.getName()).delete(entity.id);
 
     if (this.interestedSystems.has(component.getName())) {
       const systems = this.interestedSystems.get(component.getName());
