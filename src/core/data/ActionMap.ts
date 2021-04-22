@@ -20,6 +20,10 @@ export class Action {
     }
   }
 
+  public clear() {
+    this.handlers = [];
+  }
+
   public get name(): string {
     return this._name;
   }
@@ -60,6 +64,16 @@ export class ActionMap {
     }
 
     this.actions.get(name).invoke(data);
+  }
+
+  public clear(): void {
+    this.actions.clear();
+  }
+
+  public clearListeners(): void {
+    for (const action of this.actions) {
+      action[1].clear();
+    }
   }
 
   public serialize(): Array<string> {

@@ -33,6 +33,11 @@ export class KeyboardInput {
     this.keyListeners.get(key.toLowerCase()).push(listener);
   }
 
+  public clearListeners(): void {
+    this.keyListeners.clear();
+    this.listeners = [];
+  }
+
   public update(): void {
     for (let i = 0; i < this.events.length; i++) {
       const event = this.events[i];

@@ -84,8 +84,11 @@ export class GameModel extends BaseGameModel {
 
   constructor() {
     super(new Vector2(40, 30));
-    console.log("GM Constructor");
     const persistedData = globalState.persistence.get(this);
+
+    const { keyMap } = persistedData;
+    this._actionMap = new ActionMap();
+    this.initActions();
     this.towerManager = new TowerManager(this, this.ecs);
     this.pathChecker = new PathChecker(this);
 
@@ -95,46 +98,6 @@ export class GameModel extends BaseGameModel {
 
     this.particleManager = new ParticleManager();
     this.initParticleEffects();
-
-    const { keyMap } = persistedData;
-
-    this._actionMap = new ActionMap();
-    this.initActions();
-    for (const action of Object.keys(keyMap)) {
-      this.keys.addKeyListener(keyMap[action], (evt) => {
-        if (!evt.down) return;
-        this._actionMap.invoke(action);
-      });
-    }
-    this.keys.addKeyListener("escape", () => {
-      this._actionMap.invoke("clear");
-    });
-    this.keys.addKeyListener("]", (evt) => {
-      if (!evt.down) return;
-      this.paused = !this.paused;
-    });
-    this.timeScale = 1;
-    this.keys.addKeyListener("[", (evt) => {
-      if (!evt.down) return;
-      if (this.timeScale < 2) {
-        this.timeScale = 2;
-      } else {
-        this.timeScale = 1;
-      }
-    });
-
-    this._actionMap.addHandler("sell", this.attemptSell.bind(this));
-    this._actionMap.addHandler("wave", this.sendWave.bind(this));
-    this._actionMap.addHandler("upgrade", this.attemptUpgrade.bind(this));
-    this._actionMap.addHandler("clear", this.clearMouseMode.bind(this));
-    this._actionMap.addHandler("setTower", this.setMouseMode.bind(this));
-    this._actionMap.addHandler("exit", () => {
-      this.running = false;
-      this.entityMap.clear();
-      this.audioLoop.stop();
-      this.ecs.clear();
-      globalState.router.requestTransition("home");
-    });
 
     this.mouse.addListener(this.handleClick.bind(this));
 
@@ -302,6 +265,48 @@ export class GameModel extends BaseGameModel {
   }
 
   public preStart(): void {
+    const persistedData = globalState.persistence.get(this);
+
+    const { keyMap } = persistedData;
+    console.log(keyMap);
+    this._actionMap.clearListeners();
+    this.keys.clearListeners();
+    for (const action of Object.keys(keyMap)) {
+      this.keys.addKeyListener(keyMap[action], (evt) => {
+        if (!evt.down) return;
+        this._actionMap.invoke(action);
+      });
+    }
+    this.keys.addKeyListener("escape", () => {
+      this._actionMap.invoke("clear");
+    });
+    this.keys.addKeyListener("]", (evt) => {
+      if (!evt.down) return;
+      this.paused = !this.paused;
+    });
+    this.timeScale = 1;
+    this.keys.addKeyListener("[", (evt) => {
+      if (!evt.down) return;
+      if (this.timeScale < 2) {
+        this.timeScale = 2;
+      } else {
+        this.timeScale = 1;
+      }
+    });
+
+    this._actionMap.addHandler("sell", this.attemptSell.bind(this));
+    this._actionMap.addHandler("wave", this.sendWave.bind(this));
+    this._actionMap.addHandler("upgrade", this.attemptUpgrade.bind(this));
+    this._actionMap.addHandler("clear", this.clearMouseMode.bind(this));
+    this._actionMap.addHandler("setTower", this.setMouseMode.bind(this));
+    this._actionMap.addHandler("exit", () => {
+      this.running = false;
+      this.entityMap.clear();
+      this.audioLoop.stop();
+      this.ecs.clear();
+      globalState.router.requestTransition("home");
+    });
+
     this.entityMap.clear();
     this.running = true;
     this.ecs.clear();
