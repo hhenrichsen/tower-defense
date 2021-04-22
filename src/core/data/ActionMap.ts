@@ -20,7 +20,7 @@ export class Action {
     }
   }
 
-  public clear() {
+  public clear(): void {
     this.handlers = [];
   }
 

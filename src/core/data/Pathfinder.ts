@@ -71,7 +71,6 @@ export class Pathfinder {
         queue.push(path);
       }
     }
-    console.log("No path found.");
     return [];
   }
 

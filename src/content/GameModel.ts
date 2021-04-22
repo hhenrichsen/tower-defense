@@ -10,7 +10,7 @@ import { ParticleManager } from "../core/rendering/ParticleManager";
 import { Texture } from "../core/rendering/Texture";
 import { WaveManifest } from "./types/WaveManifest";
 import { PersistenceManager } from "../core/data/Persistence";
-import { DEFAULT_PERSISTED_DATA, PersistedData } from "./PersistedData";
+import { PersistedData } from "./PersistedData";
 import { FootprintComponent } from "../core/components/data/Footprint";
 import SpriteComponent, {
   SpriteEntity,
@@ -84,9 +84,6 @@ export class GameModel extends BaseGameModel {
 
   constructor() {
     super(new Vector2(40, 30));
-    const persistedData = globalState.persistence.get(this);
-
-    const { keyMap } = persistedData;
     this._actionMap = new ActionMap();
     this.initActions();
     this.towerManager = new TowerManager(this, this.ecs);
@@ -213,7 +210,6 @@ export class GameModel extends BaseGameModel {
     } else {
       eastSprite.size = Vector2.ZERO;
     }
-    console.log("East count " + eastCount);
 
     const {
       count: northCount,
@@ -228,7 +224,6 @@ export class GameModel extends BaseGameModel {
     } else {
       northSprite.size = Vector2.ZERO;
     }
-    console.log("North count " + northCount);
     this.creepManager.nextWave();
   }
 
@@ -268,7 +263,6 @@ export class GameModel extends BaseGameModel {
     const persistedData = globalState.persistence.get(this);
 
     const { keyMap } = persistedData;
-    console.log(keyMap);
     this._actionMap.clearListeners();
     this.keys.clearListeners();
     for (const action of Object.keys(keyMap)) {
@@ -378,7 +372,6 @@ export class GameModel extends BaseGameModel {
   }
 
   private setMouseMode(_action: string, data: Record<string, unknown>) {
-    console.log("Setting mouse mode");
     const towerName = data["tower"] as string;
     this.activeTower = towerName;
     if (this.mouseEntity !== null) {
@@ -407,26 +400,20 @@ export class GameModel extends BaseGameModel {
   }
 
   private attemptUpgrade() {
-    console.log("Attempting upgrade...");
     const entity = this.getSelection();
     if (entity === null) {
-      console.log("Selection is null");
       return;
     }
     if (!this.ecs.hasComponent(entity, UpgradeComponent)) {
-      console.log("Cannot be upgraded.");
       return;
     }
     const targetEntity = entity as UpgradeEntity;
-    console.log(entity.data.upgrade);
     const cost = getDynamic<number>(
       entity.data.upgrade.cost as DynamicConstant<number>
     );
     if (cost > this.money) {
-      console.log("Not enough money");
       return;
     }
-    console.log("Upgrade done");
     this.money -= cost;
     targetEntity.data = merge(targetEntity.data, entity.data.upgrade.dataDelta);
   }

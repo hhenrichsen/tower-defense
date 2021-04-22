@@ -21,8 +21,6 @@ import { Texture } from "../../core/rendering/Texture";
 import { EntityProducer } from "../../core/ecs/EntityProducer";
 import { missile } from "../prefabs/Rocket";
 import { RangeDisplayComponent } from "../../core/components/rendering/RangeDisplay";
-import { Pathfinder } from "../../core/data/Pathfinder";
-import { Direction } from "../../core/geometry/Direction";
 import CreepComponent, { CreepEntity } from "../components/Creep";
 import { swarmMissile } from "../prefabs/SwarmMissile";
 import UpgradeComponent from "../../core/components/behavior/Upgrade";
@@ -149,7 +147,6 @@ export class TowerManager {
     this.ecs.addComponent(id, TurretBaseComponent, {
       source: this.baseSprite,
     });
-    console.log(tower.tags);
     this.ecs.addComponent(id, WeaponComponent, {
       projectile: this.projectileSpawners[tower.projectileSpawner],
       rate: tower.fireRate,
@@ -190,12 +187,10 @@ export class TowerManager {
     if (tower === null || tower === undefined) {
       return false;
     }
-    console.debug("Tower null check passed");
 
     if (this.model.money < tower.cost) {
       return false;
     }
-    console.debug("Tower money check passed");
 
     if (position.x < 11 || position.x + tower.size > 40) {
       return false;
@@ -210,20 +205,17 @@ export class TowerManager {
     if (collides) {
       return false;
     }
-    console.debug("Tower collision check passed");
 
     // Find and check paths
     const eastWestPath = this.model.getPath().findEastWest(blocked);
     if (eastWestPath.length == 0) {
       return false;
     }
-    console.debug("Tower east-west path check passed");
 
     const northSouthPath = this.model.getPath().findNorthSouth(blocked);
     if (northSouthPath.length == 0) {
       return false;
     }
-    console.debug("Tower north-south path check passed");
 
     // Update model
     if (!dryRun) {
