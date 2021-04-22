@@ -146,8 +146,12 @@ var GameModel = /*#__PURE__*/function (_BaseGameModel) {
     _this.creepDeathSound = new _core_SoundEffectPool__WEBPACK_IMPORTED_MODULE_41__.SoundEffectPool(5, "assets/crunch.mp3", 0, 1);
     _this.creepEscapeSound = new _core_SoundEffectPool__WEBPACK_IMPORTED_MODULE_41__.SoundEffectPool(3, "assets/escape.mp3", 0, 1);
     _this.buildSound = new _core_SoundEffect__WEBPACK_IMPORTED_MODULE_39__.SoundEffect("assets/construction.mp3", 2);
-    console.log("GM Constructor");
     var persistedData = ___WEBPACK_IMPORTED_MODULE_36__.globalState.persistence.get((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__.default)(_this));
+    var keyMap = persistedData.keyMap;
+    _this._actionMap = new _core_data_ActionMap__WEBPACK_IMPORTED_MODULE_9__.ActionMap();
+
+    _this.initActions();
+
     _this.towerManager = new _towers_TowerManager__WEBPACK_IMPORTED_MODULE_32__.TowerManager((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__.default)(_this), _this.ecs);
     _this.pathChecker = new _PathChecker__WEBPACK_IMPORTED_MODULE_33__.PathChecker((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__.default)(_this));
     _this.getEastWestPath = _this._getEastWestPath.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__.default)(_this));
@@ -156,68 +160,6 @@ var GameModel = /*#__PURE__*/function (_BaseGameModel) {
     _this.particleManager = new _core_rendering_ParticleManager__WEBPACK_IMPORTED_MODULE_12__.ParticleManager();
 
     _this.initParticleEffects();
-
-    var keyMap = persistedData.keyMap;
-    _this._actionMap = new _core_data_ActionMap__WEBPACK_IMPORTED_MODULE_9__.ActionMap();
-
-    _this.initActions();
-
-    var _loop = function _loop() {
-      var action = _Object$keys[_i];
-
-      _this.keys.addKeyListener(keyMap[action], function (evt) {
-        if (!evt.down) return;
-
-        _this._actionMap.invoke(action);
-      });
-    };
-
-    for (var _i = 0, _Object$keys = Object.keys(keyMap); _i < _Object$keys.length; _i++) {
-      _loop();
-    }
-
-    _this.keys.addKeyListener("escape", function () {
-      _this._actionMap.invoke("clear");
-    });
-
-    _this.keys.addKeyListener("]", function (evt) {
-      if (!evt.down) return;
-      _this.paused = !_this.paused;
-    });
-
-    _this.timeScale = 1;
-
-    _this.keys.addKeyListener("[", function (evt) {
-      if (!evt.down) return;
-
-      if (_this.timeScale < 2) {
-        _this.timeScale = 2;
-      } else {
-        _this.timeScale = 1;
-      }
-    });
-
-    _this._actionMap.addHandler("sell", _this.attemptSell.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__.default)(_this)));
-
-    _this._actionMap.addHandler("wave", _this.sendWave.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__.default)(_this)));
-
-    _this._actionMap.addHandler("upgrade", _this.attemptUpgrade.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__.default)(_this)));
-
-    _this._actionMap.addHandler("clear", _this.clearMouseMode.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__.default)(_this)));
-
-    _this._actionMap.addHandler("setTower", _this.setMouseMode.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__.default)(_this)));
-
-    _this._actionMap.addHandler("exit", function () {
-      _this.running = false;
-
-      _this.entityMap.clear();
-
-      _this.audioLoop.stop();
-
-      _this.ecs.clear();
-
-      ___WEBPACK_IMPORTED_MODULE_36__.globalState.router.requestTransition("home");
-    });
 
     _this.mouse.addListener(_this.handleClick.bind((0,_babel_runtime_helpers_assertThisInitialized__WEBPACK_IMPORTED_MODULE_3__.default)(_this)));
 
@@ -423,6 +365,70 @@ var GameModel = /*#__PURE__*/function (_BaseGameModel) {
   }, {
     key: "preStart",
     value: function preStart() {
+      var _this2 = this;
+
+      var persistedData = ___WEBPACK_IMPORTED_MODULE_36__.globalState.persistence.get(this);
+      var keyMap = persistedData.keyMap;
+      console.log(keyMap);
+
+      this._actionMap.clearListeners();
+
+      this.keys.clearListeners();
+
+      var _loop = function _loop() {
+        var action = _Object$keys[_i];
+
+        _this2.keys.addKeyListener(keyMap[action], function (evt) {
+          if (!evt.down) return;
+
+          _this2._actionMap.invoke(action);
+        });
+      };
+
+      for (var _i = 0, _Object$keys = Object.keys(keyMap); _i < _Object$keys.length; _i++) {
+        _loop();
+      }
+
+      this.keys.addKeyListener("escape", function () {
+        _this2._actionMap.invoke("clear");
+      });
+      this.keys.addKeyListener("]", function (evt) {
+        if (!evt.down) return;
+        _this2.paused = !_this2.paused;
+      });
+      this.timeScale = 1;
+      this.keys.addKeyListener("[", function (evt) {
+        if (!evt.down) return;
+
+        if (_this2.timeScale < 2) {
+          _this2.timeScale = 2;
+        } else {
+          _this2.timeScale = 1;
+        }
+      });
+
+      this._actionMap.addHandler("sell", this.attemptSell.bind(this));
+
+      this._actionMap.addHandler("wave", this.sendWave.bind(this));
+
+      this._actionMap.addHandler("upgrade", this.attemptUpgrade.bind(this));
+
+      this._actionMap.addHandler("clear", this.clearMouseMode.bind(this));
+
+      this._actionMap.addHandler("setTower", this.setMouseMode.bind(this));
+
+      this._actionMap.addHandler("exit", function () {
+        _this2.running = false;
+
+        _this2.entityMap.clear();
+
+        _this2.audioLoop.stop();
+
+        _this2.ecs.clear();
+
+        ___WEBPACK_IMPORTED_MODULE_36__.globalState.router.requestTransition("home");
+      });
+
       this.entityMap.clear();
       this.running = true;
       this.ecs.clear();
@@ -6139,6 +6145,13 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+function _createForOfIteratorHelper(o, allowArrayLike) { var it; if (typeof Symbol === "undefined" || o[Symbol.iterator] == null) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = o[Symbol.iterator](); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 var Action = /*#__PURE__*/function () {
   function Action(name) {
     (0,_babel_runtime_helpers_classCallCheck__WEBPACK_IMPORTED_MODULE_1__.default)(this, Action);
@@ -6159,6 +6172,11 @@ var Action = /*#__PURE__*/function () {
       for (var handler = 0; handler < this.handlers.length; handler++) {
         this.handlers[handler](this, data);
       }
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.handlers = [];
     }
   }, {
     key: "name",
@@ -6208,6 +6226,29 @@ var ActionMap = /*#__PURE__*/function () {
       }
 
       this.actions.get(name).invoke(data);
+    }
+  }, {
+    key: "clear",
+    value: function clear() {
+      this.actions.clear();
+    }
+  }, {
+    key: "clearListeners",
+    value: function clearListeners() {
+      var _iterator = _createForOfIteratorHelper(this.actions),
+          _step;
+
+      try {
+        for (_iterator.s(); !(_step = _iterator.n()).done;) {
+          var _action = _step.value;
+
+          _action[1].clear();
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
     }
   }, {
     key: "serialize",
@@ -8261,6 +8302,12 @@ var KeyboardInput = /*#__PURE__*/function () {
       }
 
       this.keyListeners.get(key.toLowerCase()).push(listener);
+    }
+  }, {
+    key: "clearListeners",
+    value: function clearListeners() {
+      this.keyListeners.clear();
+      this.listeners = [];
     }
   }, {
     key: "update",
