@@ -47,6 +47,8 @@ import { globalState } from "..";
 import { VelocityComponent } from "../core/components/data/Velocity";
 import TextRenderComponent from "../core/components/ui/TextRender";
 import { SoundEffect } from "../core/SoundEffect";
+import { isAudioEnabled } from "./GlobalUtil";
+import { SoundEffectPool } from "../core/SoundEffectPool";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
@@ -73,10 +75,16 @@ export class GameModel extends BaseGameModel {
   public getEastWestPath: () => Vector2[];
   public getNorthSouthPath: () => Vector2[];
   private first = true;
-  private audioLoop = new SoundEffect("assets/loop.mp3", 145);
+  private audioLoop = new SoundEffect("assets/loop.mp3", 147, true);
+  private turretFireSound = new SoundEffectPool(10, "assets/gun.mp3", 0.6, 2);
+  private sellSound = new SoundEffectPool(5, "assets/sell.mp3", 0, 3);
+  private creepDeathSound = new SoundEffectPool(5, "assets/crunch.mp3", 0, 1);
+  private creepEscapeSound = new SoundEffectPool(3, "assets/escape.mp3", 0, 1);
+  private buildSound = new SoundEffect("assets/construction.mp3", 2);
 
   constructor() {
     super(new Vector2(40, 30));
+    console.log("GM Constructor");
     const persistedData = globalState.persistence.get(this);
     this.towerManager = new TowerManager(this, this.ecs);
     this.pathChecker = new PathChecker(this);
@@ -121,8 +129,10 @@ export class GameModel extends BaseGameModel {
     this._actionMap.addHandler("clear", this.clearMouseMode.bind(this));
     this._actionMap.addHandler("setTower", this.setMouseMode.bind(this));
     this._actionMap.addHandler("exit", () => {
+      this.running = false;
       this.entityMap.clear();
       this.audioLoop.stop();
+      this.ecs.clear();
       globalState.router.requestTransition("home");
     });
 
@@ -133,11 +143,44 @@ export class GameModel extends BaseGameModel {
     this.towerManager.add("tower-3", SwarmerTower);
     this.towerManager.add("tower-4", SniperTower);
 
+    this.ecs.listenEvent("weapon:fire", (evt) => {
+      if (isAudioEnabled()) {
+        this.turretFireSound.play();
+      }
+    });
+
+    this.ecs.listenEvent("sellable:sell", (evt) => {
+      const { extra } = evt;
+      const { position } = extra;
+      const ent = this.ecs.createEntity();
+      this.ecs.addComponent(ent, PositionComponent, {
+        position: (position as PositionData).position,
+      });
+      this.ecs.addComponent(ent, SpawnerComponent, {
+        producer: makeBlood,
+        rate: 10,
+        elapsed: 10,
+        count: 30,
+      });
+      this.ecs.addComponent(ent, LifetimeComponent, {
+        lifetime: 1.5,
+      });
+      if (isAudioEnabled()) {
+        this.sellSound.play();
+      }
+    });
+
     this.ecs.listenEvent("pathFollower:done", (evt) => {
       this.lives--;
       this.ecs.removeEntity(evt.entity);
+      if (isAudioEnabled()) {
+        this.creepEscapeSound.play();
+      }
       if (this.lives <= 0) {
         this.running = false;
+        this.entityMap.clear();
+        this.audioLoop.stop();
+        this.ecs.clear();
         globalState.router.requestTransition("scores", false, {
           score: this.score,
         });
@@ -169,6 +212,9 @@ export class GameModel extends BaseGameModel {
       this.ecs.addComponent(ent, LifetimeComponent, {
         lifetime: 1.5,
       });
+      if (isAudioEnabled()) {
+        this.creepDeathSound.play();
+      }
     });
   }
 
@@ -262,7 +308,7 @@ export class GameModel extends BaseGameModel {
     this.money = 400;
     this.lives = 20;
     this.score = 0;
-    if (globalState.getData().audio) {
+    if (isAudioEnabled()) {
       this.audioLoop.play();
     }
 
@@ -329,11 +375,7 @@ export class GameModel extends BaseGameModel {
   private setMouseMode(_action: string, data: Record<string, unknown>) {
     console.log("Setting mouse mode");
     const towerName = data["tower"] as string;
-    const tower = this.towerManager.getTower(towerName);
     this.activeTower = towerName;
-    if (this.money < tower.cost) {
-      return;
-    }
     if (this.mouseEntity !== null) {
       this.clearMouseMode();
     }
@@ -352,6 +394,7 @@ export class GameModel extends BaseGameModel {
     }
     if (this.ecs.hasComponent(entity.id, SellableComponent)) {
       const value = (entity as ValueEntity).data.value.value;
+      this.ecs.emitEvent("sellable:sell", entity, { ...entity.data });
       this.money += getDynamic(value);
       this.ecs.removeEntity(entity.id);
       this.invalidateSelection();
@@ -387,6 +430,9 @@ export class GameModel extends BaseGameModel {
     if (this.towerManager.canPlace(getDynamic(position), tower)) {
       this.towerManager.createTower(getDynamic(position), tower);
       this.money -= this.towerManager.getTower(tower).cost;
+      if (isAudioEnabled()) {
+        this.buildSound.play();
+      }
     }
   }
 

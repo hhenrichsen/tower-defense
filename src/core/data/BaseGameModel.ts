@@ -140,10 +140,8 @@ export abstract class BaseGameModel {
     this.virtualCanvas.install(element);
     this.lastTime = performance.now();
     this.parentElement = element;
-    this.mouse.install(element, this.virtualCanvas);
-    this.keys.install();
     if (this.firstLoad) {
-      this.firstInit();
+      this.firstInit(element);
     }
   }
 
@@ -151,9 +149,11 @@ export abstract class BaseGameModel {
     return;
   }
 
-  public firstInit(): void {
+  public firstInit(element: HTMLElement): void {
     this.firstLoad = false;
     this.initSystems();
+    this.mouse.install(element, this.virtualCanvas);
+    this.keys.install();
     this.mouse.addListener((interaction: MouseInteraction) => {
       if (interaction.leftDown) {
         this.mouseAction = "click";

@@ -79,6 +79,7 @@ export class WeaponSystem extends BaseSystem {
         weapon.projectile(targetEntity, this.manager);
         weapon.canFire = false;
         weapon.barrel = (weapon.barrel + 1) % weapon.barrelOffsets.length;
+        this.manager.emitEvent("weapon:fire", targetEntity);
       }
     }
     weapon.arcReached = false;
