@@ -40,17 +40,19 @@ import SpawnerComponent, {
 import { makeBlood } from "./particles/Blood";
 import { TowerManager } from "./towers/TowerManager";
 import { GameMap } from "../core/data/GameMap";
-import { makeNormalCreepProducer } from "./creeps/Normal";
 import { PathChecker } from "./PathChecker";
 import LowSpriteComponent from "../core/components/rendering/LowSprite";
 import { CreepManager } from "./creeps/CreepManager";
 import { globalState } from "..";
+import { VelocityComponent } from "../core/components/data/Velocity";
+import TextRenderComponent from "../core/components/ui/TextRender";
+import { SoundEffect } from "../core/SoundEffect";
 
 export class GameModel extends BaseGameModel {
   private particleManager: ParticleManager<GameModel>;
   private unstructured: Map<string, unknown>;
   public lives = 20;
-  public money = 100;
+  public money = 30;
   public wave: number;
   public waveSet: Array<WaveManifest>;
   public persistence: PersistenceManager<GameModel, PersistedData>;
@@ -66,29 +68,22 @@ export class GameModel extends BaseGameModel {
   activeTower: string = null;
   private northSpawnerID = -1;
   private eastSpawnerID = -1;
+  public score = 0;
   private arrow = new Texture("assets/Arrow.png");
   public getEastWestPath: () => Vector2[];
   public getNorthSouthPath: () => Vector2[];
+  private first = true;
+  private audioLoop = new SoundEffect("assets/loop.mp3", 145);
 
   constructor() {
     super(new Vector2(40, 30));
-    this.persistence = new PersistenceManager(
-      "towerDefense",
-      () => DEFAULT_PERSISTED_DATA
-    );
-    const persistedData = this.persistence.get(this);
-    // Put defaults in for next time.
-    this.persistence.put(persistedData);
+    const persistedData = globalState.persistence.get(this);
     this.towerManager = new TowerManager(this, this.ecs);
     this.pathChecker = new PathChecker(this);
 
     this.getEastWestPath = this._getEastWestPath.bind(this);
     this.getNorthSouthPath = this._getNorthSouthPath.bind(this);
     this.creepManager = new CreepManager(this);
-    this.creepManager.nextWave();
-    this.creepManager.nextWave();
-    this.creepManager.nextWave();
-    this.creepManager.nextWave();
 
     this.particleManager = new ParticleManager();
     this.initParticleEffects();
@@ -98,7 +93,8 @@ export class GameModel extends BaseGameModel {
     this._actionMap = new ActionMap();
     this.initActions();
     for (const action of Object.keys(keyMap)) {
-      this.keys.addKeyListener(keyMap[action], () => {
+      this.keys.addKeyListener(keyMap[action], (evt) => {
+        if (!evt.down) return;
         this._actionMap.invoke(action);
       });
     }
@@ -109,13 +105,13 @@ export class GameModel extends BaseGameModel {
       if (!evt.down) return;
       this.paused = !this.paused;
     });
-    this.timeScale = 0.01;
+    this.timeScale = 1;
     this.keys.addKeyListener("[", (evt) => {
       if (!evt.down) return;
-      if (Math.abs(this.timeScale - 0.01) < 0.01) {
-        this.timeScale = 1;
+      if (this.timeScale < 2) {
+        this.timeScale = 2;
       } else {
-        this.timeScale = 0.01;
+        this.timeScale = 1;
       }
     });
 
@@ -126,6 +122,7 @@ export class GameModel extends BaseGameModel {
     this._actionMap.addHandler("setTower", this.setMouseMode.bind(this));
     this._actionMap.addHandler("exit", () => {
       this.entityMap.clear();
+      this.audioLoop.stop();
       globalState.router.requestTransition("home");
     });
 
@@ -136,13 +133,32 @@ export class GameModel extends BaseGameModel {
     this.towerManager.add("tower-3", SwarmerTower);
     this.towerManager.add("tower-4", SniperTower);
 
+    this.ecs.listenEvent("pathFollower:done", (evt) => {
+      this.lives--;
+      this.ecs.removeEntity(evt.entity);
+      if (this.lives <= 0) {
+        this.running = false;
+        globalState.router.requestTransition("scores", false, {
+          score: this.score,
+        });
+      }
+    });
+
     this.ecs.listenEvent("health:die", (evt) => {
       const { extra } = evt;
       const { position } = extra;
       this.money += 5;
+      this.score += 5;
       const ent = this.ecs.createEntity();
       this.ecs.addComponent(ent, PositionComponent, {
         position: (position as PositionData).position,
+      });
+      this.ecs.addComponent(ent, VelocityComponent, {
+        velocity: new Vector2(0, -0.5),
+      });
+      this.ecs.addComponent(ent, TextRenderComponent, {
+        text: "+5",
+        style: "#ffffff",
       });
       this.ecs.addComponent(ent, SpawnerComponent, {
         producer: makeBlood,
@@ -151,7 +167,7 @@ export class GameModel extends BaseGameModel {
         count: 30,
       });
       this.ecs.addComponent(ent, LifetimeComponent, {
-        lifetime: 0.5,
+        lifetime: 1.5,
       });
     });
   }
@@ -180,6 +196,7 @@ export class GameModel extends BaseGameModel {
       entity: eastEntity,
     } = this.creepManager.getEastWave();
     eastSpawnerData.producer = eastEntity;
+    eastSpawnerData.rate = 1 / this.creepManager.getStatModifier();
     eastSpawnerData.total = 0;
     eastSpawnerData.limit = eastCount;
     if (this.creepManager.nextEast()) {
@@ -194,6 +211,7 @@ export class GameModel extends BaseGameModel {
       entity: northEntity,
     } = this.creepManager.getNorthWave();
     northSpawnerData.producer = northEntity;
+    northSpawnerData.rate = 1 / this.creepManager.getStatModifier();
     northSpawnerData.total = 0;
     northSpawnerData.limit = northCount;
     if (this.creepManager.nextNorth()) {
@@ -238,12 +256,22 @@ export class GameModel extends BaseGameModel {
   }
 
   public preStart(): void {
-    // this.ecs.addComponent(entityID, SpawnerComponent, { rate: 0.05, spawnCount: 2, prefab: makeSmokeParticle });
-    createUI(this.ecs, this);
-    // for (let i = 0; i <= 12; i++) {
-    //   this.createBlocker(new Vector2(8, i + 3));
+    this.entityMap.clear();
+    this.running = true;
+    this.ecs.clear();
+    this.money = 400;
+    this.lives = 20;
+    this.score = 0;
+    if (globalState.getData().audio) {
+      this.audioLoop.play();
+    }
+
+    // if (!this.first) {
+    //   return;
     // }
-    this.ecs.update(0, this);
+    this.first = false;
+    createUI(this.ecs, this);
+
     this.northSouthPath = this.getPath().findNorthSouth(new Set());
     this.eastWestPath = this.getPath().findEastWest(new Set());
 
@@ -331,20 +359,26 @@ export class GameModel extends BaseGameModel {
   }
 
   private attemptUpgrade() {
+    console.log("Attempting upgrade...");
     const entity = this.getSelection();
     if (entity === null) {
+      console.log("Selection is null");
       return;
     }
     if (!this.ecs.hasComponent(entity, UpgradeComponent)) {
+      console.log("Cannot be upgraded.");
       return;
     }
     const targetEntity = entity as UpgradeEntity;
+    console.log(entity.data.upgrade);
     const cost = getDynamic<number>(
       entity.data.upgrade.cost as DynamicConstant<number>
     );
     if (cost > this.money) {
+      console.log("Not enough money");
       return;
     }
+    console.log("Upgrade done");
     this.money -= cost;
     targetEntity.data = merge(targetEntity.data, entity.data.upgrade.dataDelta);
   }

@@ -5,15 +5,15 @@ export class SoundEffect {
   private loop = false;
   private _playing = false;
   private cutoff = 0;
-  constructor(source: string, cutoff?: number) {
+  constructor(source: string, cutoff?: number, loop = false) {
     this.el = new Audio(source);
     this.el.addEventListener("load", () => {
       this.ready = true;
     });
     if (cutoff) {
-      this.loop = true;
       this.cutoff = cutoff;
     }
+    this.loop = loop;
   }
 
   play(): void {

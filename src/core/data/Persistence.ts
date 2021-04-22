@@ -18,13 +18,18 @@ export class PersistenceManager<T, R> {
       return this.getDefault(state);
     } else {
       const val = JSON.parse(localStorage.getItem(this.name));
+      console.log(val);
       if (this.typeGuard && !this.typeGuard(val)) {
         console.warn(
           `Found invalid shape of persistent data ${this.name}, assigning to default.`
         );
-        return Object.assign(this.getDefault(state), val);
+        const res = Object.assign(this.getDefault(state), val);
+        console.log(res);
+        return res;
       }
-      return Object.assign(this.getDefault(state), val);
+      const res = Object.assign(this.getDefault(state), val);
+      console.log(res);
+      return res;
     }
   }
 

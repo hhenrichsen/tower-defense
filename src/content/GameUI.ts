@@ -8,6 +8,7 @@ import { DynamicConstant } from "../core/data/DynamicConstant";
 import { ECSManager } from "../core/ecs/ECSManager";
 import { Entity } from "../core/ecs/Entity";
 import Vector2 from "../core/geometry/Vector2";
+import { WeaponData } from "./components/Weapon";
 import { GameModel } from "./GameModel";
 
 function createUIText(
@@ -136,20 +137,15 @@ export function createUI(ecs: ECSManager, model: GameModel): void {
           val += "Value: " + (sel.data.value.value as number).toFixed(0) + "\n";
         }
         if ("weapon" in sel.data) {
-          val += "Ready to Fire: " + sel.data.weapon.canFire + "\n";
+          const weapon = sel.data.weapon as WeaponData;
+          val += "Ready to Fire: " + weapon.canFire + "\n";
           val +=
-            "Fire Rate: " +
-            (1 / (sel.data.weapon.rate as number)).toFixed(2) +
-            " per second" +
-            "\n";
+            "Fire Rate: " + (1 / weapon.rate).toFixed(2) + " per second" + "\n";
+          val += "Damage: " + weapon.projectileType.damage.toFixed(2) + "\n";
           val +=
-            "Damage: " + (sel.data.weapon.damage as number).toFixed(2) + "\n";
-          val +=
-            "Can Target: " +
-            (sel.data.weapon.tags as Array<string>).join(", ") +
-            "\n";
+            "Can Target: " + (weapon.tags as Array<string>).join(", ") + "\n";
         }
-        if ("upgrade" in sel.data) {
+        if ("upgrade" in sel.data && sel.data.upgrade.cost > 0) {
           val +=
             "Upgrade cost: " +
             (sel.data.upgrade.cost as number).toFixed(0) +

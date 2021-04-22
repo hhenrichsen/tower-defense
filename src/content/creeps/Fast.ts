@@ -9,6 +9,7 @@ import { NameComponent } from "../../core/components/data/Name";
 import { PositionComponent } from "../../core/components/data/Position";
 import { RotationComponent } from "../../core/components/data/Rotation";
 import { VelocityComponent } from "../../core/components/data/Velocity";
+import HealthDisplayComponent from "../../core/components/marker/HealthDisplay";
 import AnimatedSpriteComponent from "../../core/components/rendering/AnimatedSprite";
 import { DynamicConstant, getDynamic } from "../../core/data/DynamicConstant";
 import { ECSManager } from "../../core/ecs/ECSManager";
@@ -53,13 +54,15 @@ export function makeFastCreepProducer(
     });
     ecs.addComponent(entityID, AnimatedSpriteComponent, {
       source: new Texture("assets/Fast.png"),
-      frames: [0.1, 0.1],
+      frames: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1],
       size: Vector2.matching(2),
       frameSize: new Vector2(64, 64),
     });
     ecs.addComponent(entityID, HealthComponent, {
       health: Math.floor(8 * modifier),
+      maxHealth: Math.floor(8 * modifier),
     });
+    ecs.addComponent(entityID, HealthDisplayComponent);
     ecs.addComponent(entityID, CreepComponent, {
       tags: ["ground"],
     });

@@ -18,6 +18,7 @@ import { ClickComponentToggleSystem } from "../systems/ClickComponentToggleSyste
 import { ClickDataMutateSystem } from "../systems/ClickDataMutationSystem";
 import { DraggableSystem } from "../systems/DraggableSystem";
 import { FootprintSystem } from "../systems/FootprintSystem";
+import { HealthRenderSystem } from "../systems/HealthDisplaySystem";
 import { HealthSystem } from "../systems/HealthSystem";
 import { LifetimeRenderSystem } from "../systems/LifetimeRenderSystem";
 import { LifetimeSystem } from "../systems/LifetimeSystem";
@@ -146,6 +147,10 @@ export abstract class BaseGameModel {
     }
   }
 
+  public onFirstInit(): void {
+    return;
+  }
+
   public firstInit(): void {
     this.firstLoad = false;
     this.initSystems();
@@ -207,8 +212,9 @@ export abstract class BaseGameModel {
     this.ecs.createSystem(new SpriteRenderSystem(this.virtualCanvas), 50);
     this.ecs.createSystem(
       new AnimatedSpriteRenderSystem(this.virtualCanvas),
-      51
+      50
     );
+    this.ecs.createSystem(new HealthRenderSystem(this.virtualCanvas), 50);
     this.ecs.createSystem(new RegionRenderSystem(this.virtualCanvas), 54);
     this.ecs.createSystem(new TextRenderSystem(this.virtualCanvas), 55);
     this.ecs.createSystem(

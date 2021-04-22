@@ -6,6 +6,7 @@ import { Router } from "../core/menus/Router";
 export class KeysPage implements Page<GlobalState<BasePersistedData>> {
   private listeningEvent: string;
   private state: GlobalState<BasePersistedData>;
+  private parent: HTMLElement;
 
   constructor() {
     this.updateKey = this.updateKey.bind(this);
@@ -17,6 +18,7 @@ export class KeysPage implements Page<GlobalState<BasePersistedData>> {
     state: GlobalState<BasePersistedData>
   ): void {
     this.state = state;
+    this.parent = base;
     const { actions, keyMap } = state.getData();
     const header = document.createElement("h1");
     header.innerText = "Key Configuration";
@@ -48,7 +50,7 @@ export class KeysPage implements Page<GlobalState<BasePersistedData>> {
   }
 
   init(): void {
-    document.addEventListener("keydown", this.updateKey);
+    this.parent.addEventListener("keydown", this.updateKey);
     return;
   }
 

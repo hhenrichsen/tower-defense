@@ -38,7 +38,7 @@ export class PathFollowerSystem extends BaseSystem {
           idx = i;
         }
       }
-      pathFollower.point = idx;
+      pathFollower.point = idx + 1;
       pathFollower.invalidated = false;
     }
 
@@ -56,6 +56,8 @@ export class PathFollowerSystem extends BaseSystem {
       const pt = path[pathFollower.point];
       velocityTarget.target = pt;
       rotationTarget.target = pt;
+    } else {
+      this.manager.emitEvent("pathFollower:done", targetEntity);
     }
   }
 

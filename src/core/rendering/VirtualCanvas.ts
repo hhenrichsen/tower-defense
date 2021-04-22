@@ -68,6 +68,29 @@ export class VirtualCanvas {
     this.parent.removeEventListener("resize", this.resize);
   }
 
+  public drawWorldText(
+    text: string,
+    position: Vector2,
+    style?: string,
+    size = 1,
+    font = "Montserrat",
+    textAlign: CanvasTextAlign = "center",
+    weight = 500
+  ): void {
+    const splits = text.trim().split("\n");
+    this.context.fillStyle = style || "#ffffff";
+    this.context.font = `${weight} ${
+      size * this.vcs.translateValueY(0.5)
+    }px ${font}`;
+    this.context.textAlign = textAlign;
+    for (let i = 0; i < splits.length; i++) {
+      const adjustedPosition = this.vcs.translate(
+        position.addConstant(0.5, i + 0.5)
+      );
+      this.context.fillText(splits[i], adjustedPosition.x, adjustedPosition.y);
+    }
+  }
+
   public drawText(
     text: string,
     position: Vector2,
@@ -182,6 +205,32 @@ export class VirtualCanvas {
     );
     this.context.restore();
     this.context.globalAlpha = 1;
+  }
+
+  public drawWorldRectangle(
+    p1: Vector2,
+    p2: Vector2,
+    fillStyle: string | CanvasPattern | CanvasGradient = "#ffffff00",
+    strokeStyle: string | CanvasPattern | CanvasGradient = "#ffffff00"
+  ): void {
+    const p1adj = this.vcs.translate(p1.addConstant(0.5, 0.5));
+    const p2adj = this.vcs.translate(p2.addConstant(0.5, 0.5));
+
+    this.context.fillStyle = fillStyle || "#ff0000";
+    this.context.fillRect(
+      p1adj.x,
+      p1adj.y,
+      p2adj.x - p1adj.x,
+      p2adj.y - p1adj.y
+    );
+
+    this.context.strokeStyle = strokeStyle || "#ff0000";
+    this.context.strokeRect(
+      p1adj.x,
+      p1adj.y,
+      p2adj.x - p1adj.x,
+      p2adj.y - p1adj.y
+    );
   }
 
   public drawRectangle(

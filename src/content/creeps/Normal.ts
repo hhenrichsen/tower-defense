@@ -9,6 +9,7 @@ import { NameComponent } from "../../core/components/data/Name";
 import { PositionComponent } from "../../core/components/data/Position";
 import { RotationComponent } from "../../core/components/data/Rotation";
 import { VelocityComponent } from "../../core/components/data/Velocity";
+import HealthDisplayComponent from "../../core/components/marker/HealthDisplay";
 import AnimatedSpriteComponent from "../../core/components/rendering/AnimatedSprite";
 import { DynamicConstant, getDynamic } from "../../core/data/DynamicConstant";
 import { ECSManager } from "../../core/ecs/ECSManager";
@@ -59,7 +60,9 @@ export function makeNormalCreepProducer(
     });
     ecs.addComponent(entityID, HealthComponent, {
       health: Math.floor(10 * modifier),
+      maxHealth: Math.floor(10 * modifier),
     });
+    ecs.addComponent(entityID, HealthDisplayComponent);
     ecs.addComponent(entityID, CreepComponent, {
       tags: ["ground"],
     });

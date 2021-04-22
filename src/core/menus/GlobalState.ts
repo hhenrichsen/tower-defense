@@ -24,6 +24,7 @@ export class BaseGlobalState<T extends BasePersistedData>
       () => defaultData
     );
     this.data = this.persistence.get(this) as T;
+    this.persistence.put(this.data);
   }
 
   public addScore(score: Score): void {

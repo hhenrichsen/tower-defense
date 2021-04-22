@@ -4,6 +4,7 @@ import { Entity } from "../../ecs/Entity";
 
 export interface HealthData extends Record<string, unknown> {
   health: number; // health units
+  maxHealth: number;
 }
 
 export type HealthEntity = Entity & { data: { health: HealthData } };
@@ -14,7 +15,7 @@ export class Health extends Component {
   }
 
   protected defaultData(): HealthData {
-    return { health: 10 };
+    return { health: 10, maxHealth: 10 };
   }
 }
 

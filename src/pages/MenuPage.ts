@@ -1,3 +1,4 @@
+import { globalState } from "..";
 import { BasePersistedData } from "../core/data/BasePersistedData";
 import { GlobalState } from "../core/menus/GlobalState";
 import { Page } from "../core/menus/Page";
@@ -30,6 +31,20 @@ export class HomePage implements Page<GS> {
     play.classList.add("inactive");
     base.appendChild(play);
     this.playElement = play;
+
+    const gs = globalState.getData();
+    const audio = document.createElement("a");
+    audio.href = "#";
+    audio.id = "audio";
+    audio.innerText = gs.audio ? "Audio (On)" : "Audio (Off)";
+    base.appendChild(audio);
+
+    audio.addEventListener("click", () => {
+      const data = globalState.getData();
+      data.audio = !data.audio;
+      globalState.setData(data);
+      audio.innerText = data.audio ? "Audio (On)" : "Audio (Off)";
+    });
 
     const controls = document.createElement("a");
     controls.href = "#";

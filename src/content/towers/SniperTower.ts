@@ -1,4 +1,8 @@
+import { Texture } from "../../core/rendering/Texture";
 import { TowerType } from "../types/TowerType";
+
+const t2 = new Texture("assets/turret-4-2.png");
+const t3 = new Texture("assets/turret-4-3.png");
 
 export const SniperTower: TowerType = {
   name: "Sniper Tower",
@@ -17,13 +21,39 @@ export const SniperTower: TowerType = {
   tags: ["air", "ground"],
   upgrades: [
     {
-      projectile: { damage: 15, speed: 20, splashRadius: 0 },
-      fireRate: 2.5,
-      rotationRate: 60,
+      cost: 50,
+      dataDelta: {
+        weapon: {
+          projectileType: { damage: 15 },
+          rate: 2.5,
+        },
+        rotationTarget: {
+          turnRate: 60,
+        },
+        range: {
+          range: 13,
+        },
+        sprite: {
+          source: t2,
+        },
+      },
     },
     {
-      projectile: { damage: 20, speed: 20, splashRadius: 0.5 },
-      rotationRate: 60,
+      cost: 100,
+      dataDelta: {
+        weapon: {
+          projectileType: { damage: 20, splashRadius: 0.5 },
+        },
+        rotationTarget: {
+          turnRate: 90,
+        },
+        range: {
+          range: 15,
+        },
+        sprite: {
+          source: t3,
+        },
+      },
     },
   ],
   projectileSpawner: "bullet",

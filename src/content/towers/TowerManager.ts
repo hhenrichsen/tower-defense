@@ -25,6 +25,8 @@ import { Pathfinder } from "../../core/data/Pathfinder";
 import { Direction } from "../../core/geometry/Direction";
 import CreepComponent, { CreepEntity } from "../components/Creep";
 import { swarmMissile } from "../prefabs/SwarmMissile";
+import UpgradeComponent from "../../core/components/behavior/Upgrade";
+import { cloneDeep } from "lodash";
 
 export class TowerManager {
   private towerTextures: Record<string, Texture> = {
@@ -42,6 +44,7 @@ export class TowerManager {
     "tower-4-3": new Texture("assets/turret-4-3.png"),
   };
   private towers: Map<string, TowerType> = new Map();
+  private upgrades: Map<string, any> = new Map();
 
   private projectileSpawners: Record<string, EntityProducer> = {
     bullet,
@@ -55,6 +58,7 @@ export class TowerManager {
 
   public add(name: string, towerType: TowerType): void {
     this.towers.set(name, towerType);
+    this.upgrades.set(name, this.combineUpgrades(towerType));
   }
 
   public getTower(name: string): TowerType {
@@ -150,14 +154,31 @@ export class TowerManager {
       projectile: this.projectileSpawners[tower.projectileSpawner],
       rate: tower.fireRate,
       damage: tower.projectile.damage,
+      barrels: tower.barrels || [Vector2.ZERO],
       tags: tower.tags,
-      projectileType: tower.projectile,
+      projectileType: { ...tower.projectile },
     });
     this.ecs.addComponent(id, SellableComponent);
     this.ecs.addComponent(id, ValueComponent, {
       value: Math.floor(tower.cost * 0.8),
     });
+    this.ecs.addComponent(id, UpgradeComponent, {
+      ...cloneDeep(this.upgrades.get(towerName)),
+    });
     return id;
+  }
+  combineUpgrades(tower: TowerType): any {
+    const upgrades = tower.upgrades.slice();
+    const baseData: any = {};
+    let dataLayer = baseData;
+    for (const upgrade of upgrades) {
+      Object.assign(dataLayer, upgrade);
+      dataLayer.dataDelta = { ...dataLayer.dataDelta };
+      dataLayer.dataDelta.upgrade = { ...dataLayer.dataDelta.upgrade };
+      dataLayer = dataLayer.dataDelta.upgrade;
+    }
+    dataLayer.cost = 0;
+    return baseData;
   }
 
   public canPlace(

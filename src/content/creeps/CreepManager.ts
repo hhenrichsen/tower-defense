@@ -14,11 +14,12 @@ export class CreepManager {
   private eastFastCreepGenerator;
   private northFlyingCreepGenerator;
   private eastFlyingCreepGenerator;
-  private statModifier = 0.1;
+  private statModifier = 1;
   private wave = 0;
+  public getStatModifier: () => number;
 
   constructor(private model: GameModel) {
-    this.getStatModifier = this.getStatModifier.bind(this);
+    this.getStatModifier = this._getStatModifier.bind(this);
     this.northNormalCreepGenerator = makeNormalCreepProducer(
       model.getNorthSouthPath,
       model,
@@ -112,7 +113,7 @@ export class CreepManager {
     return this.wave % 3 !== 1;
   }
 
-  private getStatModifier(): number {
+  private _getStatModifier(): number {
     return this.statModifier;
   }
 

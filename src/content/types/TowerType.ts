@@ -1,3 +1,4 @@
+import Vector2 from "../../core/geometry/Vector2";
 import { ProjectileType } from "./ProjectileType";
 
 export interface TowerType {
@@ -11,6 +12,7 @@ export interface TowerType {
   projectile: ProjectileType;
   levelSprites: Array<string>;
   tags: Array<string>;
-  upgrades: Array<Partial<TowerType>>;
+  upgrades: Array<any>;
   projectileSpawner: string;
+  barrels?: Vector2[];
 }
