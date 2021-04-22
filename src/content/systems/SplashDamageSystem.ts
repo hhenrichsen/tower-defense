@@ -25,7 +25,7 @@ import SplashDamageComponent, {
 @Required([VelocityTargetComponent, DamageComponent])
 export class SplashDamageSystem extends BaseSystem {
   private targets: Array<CreepEntity> = [];
-  private fireTex = new Texture("assets/Fire.png");
+  private fireTex = new Texture("assets/fire.png");
 
   onManagerAwake(): void {
     this.listen("velocityTarget:reached");
