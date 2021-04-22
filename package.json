@@ -8,14 +8,16 @@
     "directory": ".git"
   },
   "scripts": {
-    "build": "webpack",
+    "build": "webpack -c ./webpack.dev.js",
     "build:watch": "webpack watch -c ./webpack.dev.js",
     "build:prod": "webpack -c ./webpack.prod.js",
     "serve": "webpack serve --open -c ./webpack.dev.js",
     "deploy": "npm run build:prod && gh-pages -d dist",
     "format": "prettier --write \"src/**/*.ts\"",
     "check": "prettier --check \"src/**/*.ts\"",
-    "lint": ""
+    "lint": "",
+    "start": "npm run build && node ./server/index.js",
+    "start:prod": "npm run build:prod && node ./server/index.js"
   },
   "author": "Hunter Henrichsen <hunter.henrichsen@gmail.com>",
   "license": "UNLICENSED",
@@ -23,11 +25,16 @@
     "@babel/runtime": "^7.13.10",
     "@types/lodash": "^4.14.168",
     "gh-pages": "^3.1.0",
-    "immutable": "^4.0.0-rc.12",
+    "koa": "^2.13.1",
+    "koa-compress": "^5.0.1",
+    "koa-logger": "^3.2.1",
+    "koa-mount": "^4.0.0",
+    "koa-static": "^5.0.0",
     "lodash": "^4.17.21",
-    "typescript": "^4.2.3"
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
+    "typescript": "^4.2.3",
     "@babel/core": "^7.13.10",
     "@babel/plugin-proposal-decorators": "^7.13.15",
     "@babel/plugin-transform-runtime": "^7.13.15",
