@@ -305,7 +305,7 @@ export class GameModel extends BaseGameModel {
     this.entityMap.clear();
     this.running = true;
     this.ecs.clear();
-    this.money = 400;
+    this.money = 30;
     this.lives = 20;
     this.score = 0;
     if (isAudioEnabled()) {
